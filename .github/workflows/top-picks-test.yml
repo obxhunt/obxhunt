@@ -1,0 +1,23 @@
+name: Send TEST Top Picks email
+# One-off test with two sample listings. Runs when tools/test-request.txt changes, or from the Run workflow button.
+on:
+  push:
+    branches: [main]
+    paths: ["tools/test-request.txt"]
+  workflow_dispatch: {}
+permissions:
+  contents: read
+jobs:
+  send:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - run: npm install --no-save --no-package-lock nodemailer@6.9.16
+      - run: node tools/top-picks.mjs
+        env:
+          FAMILY_CODE: ${{ secrets.FAMILY_CODE }}
+          GMAIL_APP_PASSWORD: ${{ secrets.GMAIL_APP_PASSWORD }}
+          TEST_IDS: "241-wax-myrtle-trail-southern-shores,4326-carrenda-lane-kitty-hawk"

@@ -61,6 +61,8 @@ for (const [p, doc] of Object.entries(data)) {
   const name = String(doc.name || p.slice(6, -5)).replace(/ \(shared\)$/, "");
   for (const [id, it] of Object.entries(doc.items || {})) { if (!savers.has(id)) savers.set(id, []); savers.get(id).push({ name, it: it || {} }); }
 }
+// One-off test sends: TEST_IDS lists the listings to feature, and the email is marked as a test.
+const TEST_IDS = (process.env.TEST_IDS || "").split(",").map(x => x.trim()).filter(Boolean);
 const weekAgo = new Date(Date.now() - 7 * 864e5).toISOString();
 const picks = [...savers].filter(([, a]) => a.length >= 2).map(([id, a]) => {
   const cur = listings.get(id); const snapL = a.find(x => x.it.snapshot)?.it.snapshot || {};
@@ -69,6 +71,14 @@ const picks = [...savers].filter(([, a]) => a.length >= 2).map(([id, a]) => {
   const was = snapL.price && cur && cur.price && cur.price !== snapL.price ? cur.price - snapL.price : 0;
   return { id, a, x, gone: !cur, fresh: (at[1] || "") > weekAgo, chg: was };
 }).sort((p, q) => q.a.length - p.a.length || (p.x.price || 0) - (q.x.price || 0));
+if (TEST_IDS.length) {
+  picks.length = 0;
+  for (const id of TEST_IDS) {
+    const cur = listings.get(id); if (!cur) { console.error("Test listing not found:", id); process.exit(1); }
+    const a = savers.get(id) || [];
+    picks.push({ id, a, x: cur, gone: false, fresh: false, chg: 0, test: true });
+  }
+}
 
 const link = id => SITE + "#" + CODE + (id ? "&l=" + encodeURIComponent(id) : "");
 const topLink = SITE + "#" + CODE + "&top";
@@ -84,7 +94,7 @@ const card = p => {
       <div style="font-size:22px;font-weight:700">${money(l.price)}${p.chg ? ` <span style="font-size:13px;color:${p.chg < 0 ? "#1d7a46" : "#b3261e"}">${p.chg < 0 ? "▼" : "▲"} ${money(Math.abs(p.chg))} since saved</span>` : ""}${p.fresh ? ` <span style="font-size:11px;background:#b3157c;color:#fff;border-radius:10px;padding:2px 8px;vertical-align:middle">NEW THIS WEEK</span>` : ""}</div>
       <div style="font-size:16px;font-weight:600;margin-top:2px">${esc(l.address || p.id)}</div>
       <div style="font-size:13px;color:#5b6675;margin-top:2px">${esc(l.area || l.town || "")} · ${esc(KIND[l.kind] || "")}${facts(l) ? " · " + esc(facts(l)) : ""}${l.status && l.status !== "Active" ? " · " + esc(l.status) : ""}${p.gone ? " · no longer in the listings feed" : ""}</div>
-      <div style="font-size:14px;margin-top:8px"><b>★ Saved by ${p.a.length}:</b> ${esc(p.a.map(s => s.name).join(", "))}</div>
+      <div style="font-size:14px;margin-top:8px">${p.test && p.a.length < 2 ? `<b>★ Sample pick</b> <span style="color:#5b6675">(chosen for this test${p.a.length ? "; saved by " + esc(p.a.map(s => s.name).join(", ")) : ""})</span>` : `<b>★ Saved by ${p.a.length}:</b> ${esc(p.a.map(s => s.name).join(", "))}`}</div>
       ${p.a.filter(s => s.it.note).map(s => `<div style="font-size:13px;color:#5b6675;margin-top:3px">${esc(s.name)}: “${esc(s.it.note)}”</div>`).join("")}
       <div style="margin-top:10px;font-size:14px"><a href="${esc(link(p.id))}" style="color:#b3157c;font-weight:700;text-decoration:none">Open on the map</a> &nbsp;·&nbsp; <a href="${esc(zillow(l))}" style="color:#17263a;text-decoration:none">All photos on Zillow</a></div>
     </td></tr></table></td></tr>`;
@@ -93,18 +103,19 @@ const card = p => {
 const html = `<!doctype html><html><body style="margin:0;background:#f3f0e8">
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#f3f0e8"><tr><td align="center" style="padding:20px 12px">
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:560px">
+${TEST_IDS.length ? `<tr><td style="font-family:Helvetica,Arial,sans-serif;padding:0 0 16px"><div style="background:#fff4cc;border:1px solid #e6c34a;border-radius:10px;padding:12px 14px;font-size:14px;color:#5a4500"><b>This is a test email.</b> Drew is trying out the weekly Top Picks email, so the two listings below are samples he picked, not real overlaps. From now on, this email arrives every Sunday morning with the listings two or more of us have saved, and without this note.</div></td></tr>` : ""}
 <tr><td style="font-family:Helvetica,Arial,sans-serif;color:#17263a;padding:0 0 16px">
   <div style="font-size:13px;letter-spacing:.12em;text-transform:uppercase;color:#b3157c;font-weight:700">OBX House Hunt</div>
   <div style="font-size:28px;font-weight:800;margin-top:2px">Top Picks</div>
-  <div style="font-size:14px;color:#5b6675;margin-top:4px">${esc(today)} · ${picks.length ? `${picks.length} listing${picks.length === 1 ? "" : "s"} saved by two or more of us` : "no overlaps yet"}</div>
+  <div style="font-size:14px;color:#5b6675;margin-top:4px">${esc(today)} · ${TEST_IDS.length ? `${picks.length} sample listings` : picks.length ? `${picks.length} listing${picks.length === 1 ? "" : "s"} saved by two or more of us` : "no overlaps yet"}</div>
 </td></tr>
 ${picks.length ? picks.map(card).join("") : `<tr><td style="font-family:Helvetica,Arial,sans-serif;font-size:15px;color:#17263a;padding:0 0 18px">Nobody has saved the same listing yet. ${counts.length ? "Saved so far: " + esc(counts.map(([n, c]) => `${n} ${c}`).join(", ")) + "." : ""} Heart the places you like on the map and the shared ones will show up here next week.</td></tr>`}
 <tr><td style="font-family:Helvetica,Arial,sans-serif;font-size:14px;padding:4px 0 24px"><a href="${esc(topLink)}" style="display:inline-block;background:#17263a;color:#fff;text-decoration:none;font-weight:700;padding:10px 16px;border-radius:8px">Open Top Picks on the map</a></td></tr>
 <tr><td style="font-family:Helvetica,Arial,sans-serif;font-size:11.5px;color:#7a8390;padding-bottom:20px">Listing photos courtesy of the listing brokers. Prices and status as of the latest daily refresh (${esc(String(snap.asOf || "").slice(0, 10))}). Sent weekly to the family; the link above is private, so please don't forward it.</td></tr>
 </table></td></tr></table></body></html>`;
 
-const text = `OBX House Hunt: Top Picks, ${today}\n\n` + (picks.length ? picks.map(p => `${money(p.x.price)}  ${p.x.address} (${p.x.area || p.x.town})\n  ${facts(p.x)}\n  Saved by: ${p.a.map(s => s.name).join(", ")}\n  ${link(p.id)}\n`).join("\n") : "No overlaps yet.\n") + `\nOpen Top Picks: ${topLink}\n`;
-const subject = `OBX Top Picks: ${picks.length ? `${picks.length} shared favorite${picks.length === 1 ? "" : "s"}` : "no overlaps yet"} (${today})`;
+const text = (TEST_IDS.length ? "TEST EMAIL: these are sample listings Drew picked to try out the weekly Top Picks email. Future emails won't include this note.\n\n" : "") + `OBX House Hunt: Top Picks, ${today}\n\n` + (picks.length ? picks.map(p => `${money(p.x.price)}  ${p.x.address} (${p.x.area || p.x.town})\n  ${facts(p.x)}\n  Saved by: ${p.a.map(s => s.name).join(", ")}\n  ${link(p.id)}\n`).join("\n") : "No overlaps yet.\n") + `\nOpen Top Picks: ${topLink}\n`;
+const subject = (TEST_IDS.length ? "[TEST] OBX Top Picks: sample email" : `OBX Top Picks: ${picks.length ? `${picks.length} shared favorite${picks.length === 1 ? "" : "s"}` : "no overlaps yet"}`) + ` (${today})`;
 
 if (process.env.OUT) { fs.writeFileSync(process.env.OUT, html); console.log("Wrote preview:", picks.length, "picks"); process.exit(0); }
 const pass = (process.env.GMAIL_APP_PASSWORD || "").replace(/\s+/g, "");
