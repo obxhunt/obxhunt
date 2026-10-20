@@ -1,0 +1,20 @@
+name: Weekly Top Picks email
+on:
+  schedule:
+    - cron: "52 11 * * 0"   # Sundays, about 7:52am Eastern (6:52 in winter)
+  workflow_dispatch: {}      # "Run workflow" button for a test send
+permissions:
+  contents: read
+jobs:
+  send:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - run: npm install --no-save --no-package-lock nodemailer@6.9.16
+      - run: node tools/top-picks.mjs
+        env:
+          FAMILY_CODE: ${{ secrets.FAMILY_CODE }}
+          GMAIL_APP_PASSWORD: ${{ secrets.GMAIL_APP_PASSWORD }}

@@ -310,6 +310,25 @@ table.matrix td.best{color:var(--accent);font-weight:700}
 .car.mini .cslide img{cursor:pointer}
 .car.mini .carr{width:28px;height:28px;font-size:20px}
 .car.mini .ccount{top:6px;right:6px;font-size:11px;padding:2px 7px}
+.scard .sphoto{width:calc(100% + 28px);margin:-12px -14px 4px;height:150px;object-fit:cover;display:block;border-radius:10px 10px 0 0}
+.savers.big{display:flex;align-items:center;gap:4px;flex-wrap:wrap}
+.savers.big .m{margin-left:4px}
+.pill.new{background:var(--accent);color:#fff;border-color:var(--accent)}
+.scard{overflow:hidden}
+/* loan calculator fits phones */
+.dbody>*,.loan-grid>*,.row2>*{min-width:0}
+.dialog .dbody{overflow-x:hidden;overflow-y:auto}
+.matrix-wrap{max-width:100%;-webkit-overflow-scrolling:touch}
+.row2 input,.row2 select{width:100%;min-width:0}
+@media (max-width:640px){
+  .modal{padding:0;place-items:stretch}
+  .dialog{width:100%;max-height:100%;height:100%;border-radius:0;border:0}
+  .dialog header{padding-top:max(14px,env(safe-area-inset-top))}
+  .dialog header h2{font-size:17px;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  table.matrix{font-size:12.5px}
+  table.matrix th,table.matrix td{padding:5px 6px}
+}
+.modal{grid-template-columns:minmax(0,1fr);grid-template-rows:minmax(0,1fr)}
 </style>
 </head><body>
 <div id="lock" hidden><div class="box"><h1>OBX House Hunt</h1><p>This map is private. Open it with the family link Drew sent you.</p></div></div>
@@ -399,6 +418,7 @@ table.matrix td.best{color:var(--accent);font-weight:700}
                 <div class="chips" id="statusChips"></div>
                 <label class="check"><input type="checkbox" id="favOnly"> Only my saved listings</label>
                 <label class="check"><input type="checkbox" id="savedAny"> Saved by anyone in the family</label>
+                <label class="check"><input type="checkbox" id="topPicks"> ★ Top picks: saved by 2 or more people</label>
                 <label class="check"><input type="checkbox" id="familyAdded"> Added by family</label>
                 <label class="f" for="q">Search address, street or MLS #<input type="text" id="q" placeholder="e.g. Harbour View or 134206"></label>
               </div>
@@ -589,7 +609,7 @@ const S = {
   f: Object.assign(defaultFilters(), store.get("obx.filters", {})),
   listPerson:null, schools:false
 };
-function defaultFilters(){return {mode:"town", towns:[], radius:10, kinds:["house","condo","lot"], pmin:0, pmax:0, beds:0, baths:0, sqft:0, acres:0, commute:60, elem:15, high:25, tags:[], statuses:["Active","Pending","Unverified"], favOnly:false, savedAny:false, familyAdded:false, q:"", sort:"price-asc"};}
+function defaultFilters(){return {mode:"town", towns:[], radius:10, kinds:["house","condo","lot"], pmin:0, pmax:0, beds:0, baths:0, sqft:0, acres:0, commute:60, elem:15, high:25, tags:[], statuses:["Active","Pending","Unverified"], favOnly:false, savedAny:false, topPicks:false, familyAdded:false, q:"", sort:"price-asc"};}
 function saveFilters(){store.set("obx.filters",S.f);}
 
 function peopleList(){
@@ -630,6 +650,7 @@ function passes(l){
   if(f.tags.length){const t=l.tags||{};for(const k of f.tags) if(!t[k]) return false;}
   if(f.favOnly && !isMine(l.id)) return false;
   if(f.savedAny && !saversOf(l.id).length) return false;
+  if(f.topPicks && saversOf(l.id).length<2) return false;
   if(f.familyAdded && (l.addedBy||"Claude")==="Claude") return false;
   if(f.q){const q=f.q.toLowerCase();if(!((l.address||"").toLowerCase().includes(q)||(l.area||"").toLowerCase().includes(q)||String(l.mls||"").includes(q)))return false;}
   return true;
@@ -869,7 +890,7 @@ function buildControls(){
   TAGS.forEach(([k,n])=>tg.appendChild(chipBtn(n,f.tags.includes(k),()=>{f.tags=f.tags.includes(k)?f.tags.filter(x=>x!==k):[...f.tags,k];changed();})));
   const sc=$("#statusChips");sc.innerHTML="";
   STATUSES.forEach(s=>sc.appendChild(chipBtn(s,f.statuses.includes(s),()=>{f.statuses=f.statuses.includes(s)?f.statuses.filter(x=>x!==s):[...f.statuses,s];if(!f.statuses.length)f.statuses=[s];changed();})));
-  $("#favOnly").checked=f.favOnly;$("#savedAny").checked=f.savedAny;$("#familyAdded").checked=f.familyAdded;
+  $("#favOnly").checked=f.favOnly;$("#savedAny").checked=f.savedAny;$("#topPicks").checked=!!f.topPicks;$("#familyAdded").checked=f.familyAdded;
   if(document.activeElement!==$("#q")) $("#q").value=f.q;
   $("#sort").value=f.sort;
   // summaries
@@ -882,7 +903,7 @@ function buildControls(){
   $("#sv-comm").textContent=[f.commute<60?"≤"+f.commute+" min":"",f.elem<15?"elem ≤"+f.elem+" mi":"",f.high<25?"high ≤"+f.high+" mi":""].filter(Boolean).join(" · ");
   $("#sv-amen").textContent=f.tags.map(t=>TAGNAME[t]).join(", ");
   const st=STATUSES.filter(s=>f.statuses.includes(s));
-  $("#sv-status").textContent=[st.length===3&&st.join()==="Active,Pending,Unverified"?"":st.join(", "),f.favOnly?"mine":"",f.savedAny?"saved":"",f.familyAdded?"family-added":""].filter(Boolean).join(" · ");
+  $("#sv-status").textContent=[st.length===3&&st.join()==="Active,Pending,Unverified"?"":st.join(", "),f.favOnly?"mine":"",f.savedAny?"saved":"",f.topPicks?"top picks":"",f.familyAdded?"family-added":""].filter(Boolean).join(" · ");
 }
 function toggleTown(t){const f=S.f;if(f.mode==="radius"){f.mode="town";f.towns=[t];}else f.towns=f.towns.includes(t)?f.towns.filter(x=>x!==t):[...f.towns,t];changed(true);}
 function chipsOverlay(){
@@ -904,6 +925,7 @@ function chipsOverlay(){
   const defSt=["Active","Pending","Unverified"];if(f.statuses.slice().sort().join()!==defSt.slice().sort().join()) add("Status",f.statuses.join(", "),()=>{f.statuses=defSt;changed();});
   if(f.favOnly) add("List",(S.user?S.user.name:"My")+"'s saves",()=>{f.favOnly=false;changed();});
   if(f.savedAny) add("List","Saved by family",()=>{f.savedAny=false;changed();});
+  if(f.topPicks) add("List","Top picks",()=>{f.topPicks=false;changed();});
   if(f.familyAdded) add("Added by","Family",()=>{f.familyAdded=false;changed();});
   if(f.q) add("Search",f.q,()=>{f.q="";changed();});
 }
@@ -1177,10 +1199,38 @@ function renderLoan(){
 }
 
 /* ---------- lists view ---------- */
+/* Top picks: listings two or more people have saved */
+function topPicks(){
+  const m=new Map();
+  for(const p of peopleList()){const sv=savesOf(p.id);for(const id in sv){if(!m.has(id))m.set(id,[]);m.get(id).push({p,it:sv[id]});}}
+  return [...m].filter(([,a])=>a.length>=2).map(([id,a])=>{const cur=S.listings.get(id);const snap=(a[0].it&&a[0].it.snapshot)||{};
+    const at=a.map(x=>String(x.it.savedAt||"")).sort();return {id,savers:a,cur,x:cur||snap,since:at[1]||at[0]||""};})
+    .sort((a,b)=>b.savers.length-a.savers.length||(a.x.price||0)-(b.x.price||0));
+}
+function renderTopPicks(picks){
+  const body=$("#listBody");const sb=$("#shareBox");if(sb)sb.innerHTML="";
+  if(!picks.length){body.innerHTML=`<p class="lede">No overlaps yet. When two or more people save the same listing, it shows up here, and in the weekly Top Picks email.</p>`;return;}
+  const wk=new Date(Date.now()-7*864e5).toISOString();
+  body.innerHTML=`<p class="lede" style="margin:0">Listings saved by two or more people, most-shared first. This list goes out by email every week.</p>`+KINDS.map(([k,n])=>{const g=picks.filter(t=>(t.x.kind||"house")===k);if(!g.length)return"";
+    return `<div class="group"><h2>${n} <small>${g.length}</small></h2><div class="cards">${g.map(t=>{const x=t.x,id=t.id;const ph=listingPhoto(Object.assign({mls:x.mls},x),0);
+      return `<div class="scard">${ph?`<img class="sphoto" alt="" loading="lazy" referrerpolicy="no-referrer" src="${esc(ph)}" onerror="this.remove()">`:""}
+        <div class="p num">${money(x.price)} ${t.since>wk?`<span class="pill new">New this week</span>`:""}</div>
+        <div class="a">${esc(x.address||id)}</div><div class="m num">${esc(x.area||"")} · ${esc(factLine(x))} · ~${t.cur?derive(t.cur).commute:(x.commute||"?")} min to FRF</div>
+        <div class="savers big">${t.savers.map(({p})=>`<span class="dot" title="${esc(p.name)}" style="background:${colorFor(p.name)}">${initial(p.name)}</span>`).join("")}<span class="m">${esc(t.savers.map(s=>s.p.name).join(", "))}</span></div>
+        ${t.savers.filter(s=>s.it.note).map(s=>`<div class="m">${esc(s.p.name)}: “${esc(s.it.note)}”</div>`).join("")}
+        <div class="row">${t.cur?`<button class="btn sm" data-open="${esc(id)}" type="button">Show on map</button><button class="btn sm" data-loan="${esc(id)}" type="button">Loan calculator</button>`:""}<a class="btn sm" target="_blank" rel="noopener" href="${esc(linksFor(Object.assign({zip:""},x))[1][1])}">Zillow</a>
+        ${S.user&&!t.savers.some(s=>s.p.id===S.user.id)&&t.cur?`<button class="btn sm" data-add="${esc(id)}" type="button">♡ Add to my list</button>`:""}</div></div>`;}).join("")}</div></div>`;}).join("");
+  body.querySelectorAll("[data-open]").forEach(b=>b.onclick=()=>{go("map");select(b.dataset.open,true);const l=S.listings.get(b.dataset.open);map.setView([l.lat,l.lng],14);});
+  body.querySelectorAll("[data-loan]").forEach(b=>b.onclick=()=>openLoan(b.dataset.loan));
+  body.querySelectorAll("[data-add]").forEach(b=>b.onclick=()=>toggleSave(b.dataset.add));
+}
 function renderLists(){
   const ppl=peopleList();if(!S.listPerson)S.listPerson=S.user?S.user.id:ppl[0].id;
   const tabs=$("#listPeople");tabs.innerHTML="";
+  const picks=topPicks();
+  tabs.appendChild(chipBtn(`★ Top picks (${picks.length})`,S.listPerson==="__top",()=>{S.listPerson="__top";renderLists();}));
   ppl.forEach(p=>{const n=Object.keys(savesOf(p.id)).length;tabs.appendChild(chipBtn(`${p.name} (${n})`,S.listPerson===p.id,()=>{S.listPerson=p.id;renderLists();}));});
+  if(S.listPerson==="__top"){renderTopPicks(picks);return;}
   const items=Object.entries(savesOf(S.listPerson));const who=(ppl.find(p=>p.id===S.listPerson)||{}).name||"";
   const body=$("#listBody");
   const shareBox=$("#shareBox");
@@ -1273,7 +1323,7 @@ function wire(){
   $("#pmin").onchange=e=>{S.f.pmin=+e.target.value;changed();};$("#pmax").onchange=e=>{S.f.pmax=+e.target.value;changed();};
   ["beds","baths","sqft","acres"].forEach(k=>$("#"+k).onchange=e=>{S.f[k]=+e.target.value;changed();});
   [["commute","commuteVal",60," min"],["elem","elemVal",15," mi"],["high","highVal",25," mi"]].forEach(([k,lab,max,u])=>{let tt;$("#"+k).oninput=e=>{S.f[k]=+e.target.value;$("#"+lab).textContent=S.f[k]>=max?"Any":"≤ "+S.f[k]+u;clearTimeout(tt);tt=setTimeout(changed,150);};});
-  ["favOnly","savedAny","familyAdded"].forEach(k=>$("#"+k).onchange=e=>{if(k==="favOnly"&&e.target.checked&&!S.user){e.target.checked=false;needUser();return;}S.f[k]=e.target.checked;changed();});
+  ["favOnly","savedAny","topPicks","familyAdded"].forEach(k=>$("#"+k).onchange=e=>{if(k==="favOnly"&&e.target.checked&&!S.user){e.target.checked=false;needUser();return;}S.f[k]=e.target.checked;changed();});
   let qt;$("#q").oninput=e=>{clearTimeout(qt);qt=setTimeout(()=>{S.f.q=e.target.value.trim();changed();},200);};
   $("#sort").onchange=e=>{S.f.sort=e.target.value;changed();};
   $("#resetBtn").onclick=()=>{S.f=defaultFilters();changed(true);};
@@ -1424,7 +1474,7 @@ function subscribe(){
   const db=S.db;S.unsubs=S.unsubs||[];const keep=u=>{S.unsubs.push(u);return u;};
   const onErr=e=>{console.warn(e);};
   let fromSets=new Map(),fromDocs=new Map(),gotSets=false,gotDocs=false;
-  const rebuild=()=>{if(!gotSets||(!gotDocs&&!db.github))return;const m=new Map(fromDocs);for(const [k,v] of fromSets)m.set(k,v);S.listings=m;S.dbReady=true;render();if(!subscribe._fit){subscribe._fit=true;fitResults();}};
+  const rebuild=()=>{if(!gotSets||(!gotDocs&&!db.github))return;const m=new Map(fromDocs);for(const [k,v] of fromSets)m.set(k,v);S.listings=m;S.dbReady=true;render();if(S.pendingSelect&&S.listings.has(S.pendingSelect)){const id=S.pendingSelect;S.pendingSelect=null;const l=S.listings.get(id);go("map");if(map)map.setView([l.lat,l.lng],15);select(id,false);}if(!subscribe._fit){subscribe._fit=true;fitResults();}};
   keep(db.collection("sets").limit(100).onSnapshot(snap=>{fromSets=new Map();snap.docs.forEach(d=>{const items=(d.data()||{}).items||{};for(const id in items)fromSets.set(id,Object.assign({},items[id],{id,_ref:"sets/"+d.id}));});gotSets=true;rebuild();},onErr));
   keep(db.collection("listings").limit(1000).onSnapshot(snap=>{fromDocs=new Map(snap.docs.map(d=>[d.id,Object.assign({},d.data(),{id:d.id,_ref:"listings/"+d.id})]));gotDocs=true;rebuild();},onErr));
   keep(db.collection("people").limit(200).onSnapshot(snap=>{S.people=new Map(snap.docs.map(d=>[d.id,d.data()]));render();},onErr));
@@ -1443,7 +1493,11 @@ function showLocalBanner(){
 }
 async function boot(){
   wire();initMap();render();
-  const h=(location.hash||"").replace("#","");if(["lists","users"].includes(h))go(h);else if(!S.user)go("users");
+  const h=(location.hash||"").replace("#","");const lm=h.match(/(?:^|&)l=([^&]+)/);
+  if(lm){S.pendingSelect=decodeURIComponent(lm[1]);}
+  if(/(?:^|&)top(?:&|$)/.test(h)){S.listPerson="__top";go("lists");}
+  else if(["lists","users"].includes(h))go(h);else if(!S.user&&!lm)go("users");
+  if(lm||/(?:^|&)top/.test(h)){try{history.replaceState(null,"",location.pathname+location.search);}catch(e){}}
   S.db=WEB?null:await getCap("db");
   if(S.db){getCap("assets").then(a=>{S.assets=a;});}
   else if(WEB&&window.__DATA_TOKEN){S.db=makeGitHubDb(window.__DATA_TOKEN);S.shared=true;S.assets={upload:b=>S.db.upload(b)};}
