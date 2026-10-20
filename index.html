@@ -457,9 +457,12 @@ table.matrix td.best{color:var(--accent);font-weight:700}
               </div>
             </details>
             <details class="fg">
-              <summary>Status &amp; lists <span class="sv" id="sv-status"></span></summary>
+              <summary>Status, time on market &amp; lists <span class="sv" id="sv-status"></span></summary>
               <div class="fbody">
                 <div class="chips" id="statusChips"></div>
+                <div class="f" style="margin-top:4px">Time on market</div>
+                <div class="chips" id="domChips"></div>
+                <p class="hint" style="margin:0">Listings with a long time on market may have more room to negotiate.</p>
                 <label class="check"><input type="checkbox" id="favOnly"> Only my saved listings</label>
                 <label class="check"><input type="checkbox" id="savedAny"> Saved by anyone in the family</label>
                 <label class="check"><input type="checkbox" id="topPicks"> ★ Top picks: saved by 2 or more people</label>
@@ -477,7 +480,7 @@ table.matrix td.best{color:var(--accent);font-weight:700}
               <option value="price-desc">Price, high to low</option>
               <option value="commute">Shortest drive to FRF</option>
               <option value="ppsf">Price per sq ft</option>
-              <option value="newest">Newest added</option>
+              <option value="newest">Newest listed</option>
               <option value="beds">Most bedrooms</option>
             </select>
           </div>
@@ -686,7 +689,7 @@ const S = {
     return f;})(),
   listPerson:null, schools:false
 };
-function defaultFilters(){return {mode:"town", towns:[], radius:10, kinds:["house","condo","lot"], pmin:0, pmax:0, beds:0, baths:0, sqft:0, acres:0, commute:60, elem:15, high:25, tags:[], statuses:["Active","Pending","Unverified"], favOnly:false, savedAny:false, topPicks:false, familyAdded:false, q:"", sort:"price-asc"};}
+function defaultFilters(){return {mode:"town", towns:[], radius:10, kinds:["house","condo","lot"], pmin:0, pmax:0, beds:0, baths:0, sqft:0, acres:0, commute:60, elem:15, high:25, tags:[], statuses:["Active","Pending","Unverified"], favOnly:false, savedAny:false, topPicks:false, familyAdded:false, dom:"", q:"", sort:"price-asc"};}
 function saveFilters(){store.set("obx.filters",S.f);}
 
 function peopleList(){
@@ -728,13 +731,14 @@ function passes(l){
   if(f.savedAny && !saversOf(l.id).length) return false;
   if(f.topPicks && saversOf(l.id).length<2) return false;
   if(f.familyAdded && (l.addedBy||"Claude")==="Claude") return false;
+  if(f.dom){const d=domDays(l);if(d==null)return false;const r=DOMS.find(x=>x[0]===f.dom);if(r&&!(d>=r[2]&&d<=r[3]))return false;}
   if(f.q){const q=f.q.toLowerCase();if(!((l.address||"").toLowerCase().includes(q)||(l.area||"").toLowerCase().includes(q)||String(l.mls||"").includes(q)))return false;}
   return true;
 }
 function sorted(arr){
   const s=S.f.sort, A=arr.slice();
   const cmp={ "price-asc":(a,b)=>a.price-b.price, "price-desc":(a,b)=>b.price-a.price, "commute":(a,b)=>a.commute-b.commute||a.price-b.price,
-    "ppsf":(a,b)=>(a.ppsf??1e9)-(b.ppsf??1e9), "newest":(a,b)=>String(b.addedAt||"").localeCompare(String(a.addedAt||""))||a.price-b.price, "beds":(a,b)=>(b.beds||0)-(a.beds||0)||a.price-b.price }[s];
+    "ppsf":(a,b)=>(a.ppsf??1e9)-(b.ppsf??1e9), "newest":(a,b)=>String(b.listedAt||b.addedAt||"").localeCompare(String(a.listedAt||a.addedAt||""))||a.price-b.price, "beds":(a,b)=>(b.beds||0)-(a.beds||0)||a.price-b.price }[s];
   return A.sort(cmp);
 }
 let RESULTS=[];
@@ -968,6 +972,7 @@ function buildControls(){
   $("#high").value=f.high;$("#highVal").textContent=f.high>=25?"Any":"≤ "+f.high+" mi";
   const tg=$("#tagChips");tg.innerHTML="";
   TAGS.forEach(([k,n])=>tg.appendChild(chipBtn(n,f.tags.includes(k),()=>{f.tags=f.tags.includes(k)?f.tags.filter(x=>x!==k):[...f.tags,k];changed();})));
+  const dc=$("#domChips");if(dc){dc.innerHTML="";DOMS.forEach(([k,n])=>dc.appendChild(chipBtn(n,f.dom===k,()=>{f.dom=f.dom===k?"":k;changed();})));}
   const sc=$("#statusChips");sc.innerHTML="";
   STATUSES.forEach(s=>sc.appendChild(chipBtn(s,f.statuses.includes(s),()=>{f.statuses=f.statuses.includes(s)?f.statuses.filter(x=>x!==s):[...f.statuses,s];if(!f.statuses.length)f.statuses=[s];changed();})));
   $("#favOnly").checked=f.favOnly;$("#savedAny").checked=f.savedAny;$("#topPicks").checked=!!f.topPicks;$("#familyAdded").checked=f.familyAdded;
@@ -983,7 +988,7 @@ function buildControls(){
   $("#sv-comm").textContent=[f.elem<15?"elem ≤"+f.elem+" mi":"",f.high<25?"high ≤"+f.high+" mi":""].filter(Boolean).join(" · ");
   $("#sv-amen").textContent=f.tags.map(t=>TAGNAME[t]).join(", ");
   const st=STATUSES.filter(s=>f.statuses.includes(s));
-  $("#sv-status").textContent=[st.length===3&&st.join()==="Active,Pending,Unverified"?"":st.join(", "),f.favOnly?"mine":"",f.savedAny?"saved":"",f.topPicks?"top picks":"",f.familyAdded?"family-added":""].filter(Boolean).join(" · ");
+  $("#sv-status").textContent=[st.length===3&&st.join()==="Active,Pending,Unverified"?"":st.join(", "),f.favOnly?"mine":"",f.savedAny?"saved":"",f.topPicks?"top picks":"",f.familyAdded?"family-added":"",f.dom?(DOMS.find(x=>x[0]===f.dom)||[,""])[1].toLowerCase():""].filter(Boolean).join(" · ");
 }
 function toggleTown(t){const f=S.f;if(f.mode==="commute"){f.mode="town";f.towns=[t];}else f.towns=f.towns.includes(t)?f.towns.filter(x=>x!==t):[...f.towns,t];changed(true);}
 function chipsOverlay(){
@@ -1005,6 +1010,7 @@ function chipsOverlay(){
   if(f.favOnly) add("List",(S.user?S.user.name:"My")+"'s saves",()=>{f.favOnly=false;changed();});
   if(f.savedAny) add("List","Saved by family",()=>{f.savedAny=false;changed();});
   if(f.topPicks) add("List","Top picks",()=>{f.topPicks=false;changed();});
+  if(f.dom) add("Listed",(DOMS.find(x=>x[0]===f.dom)||[,""])[1],()=>{f.dom="";changed();});
   if(f.familyAdded) add("Added by","Family",()=>{f.familyAdded=false;changed();});
   if(f.q) add("Search",f.q,()=>{f.q="";changed();});
 }
@@ -1475,6 +1481,8 @@ async function submitAdd(e){
 }
 
 /* ---------- wiring ---------- */
+const DOMS=[["new","New this week",0,7],["30","Under 30 days",0,29],["90","Under 90 days",0,89],["90p","90+ days",90,1e9],["180p","6+ months",180,1e9]];
+function domDays(l){if(!l.listedAt)return null;const t=new Date().toLocaleDateString("en-CA",{timeZone:"America/New_York"});const d=Math.round((Date.parse(t)-Date.parse(l.listedAt))/864e5);return isNaN(d)?null:Math.max(0,d);}
 function domLine(l){
   if(!l.listedAt)return "";
   const today=new Date().toLocaleDateString("en-CA",{timeZone:"America/New_York"});
