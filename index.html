@@ -1094,7 +1094,7 @@ function renderLists(){
 function shareList(who,items){
   const payload={n:who,i:items.map(([id,it])=>[id,it.note||""])};
   const enc=btoa(unescape(encodeURIComponent(JSON.stringify(payload)))).replace(/\+/g,"-").replace(/\//g,"_").replace(/=+$/,"");
-  const url=location.href.split("#")[0]+"#"+(window.__FAMILY_KEY?"k="+window.__FAMILY_KEY+"&":"")+"share="+enc;
+  const url=location.href.split("#")[0]+"#"+(window.__FAMILY_KEY?window.__FAMILY_KEY+"&":"")+"share="+enc;
   const done=()=>toast("Link copied. Paste it in a text to family.");
   try{navigator.clipboard.writeText(url).then(done,()=>prompt2(url));}catch(e){prompt2(url);}
 }
@@ -1124,7 +1124,7 @@ function familyLinkBox(){
   const host=$("#familyLink");if(!host)return;host.innerHTML="";
   if(!WEB||!window.__FAMILY_KEY){host.hidden=true;return;}
   host.hidden=false;
-  const url=location.href.split("#")[0]+"#k="+window.__FAMILY_KEY;
+  const url=location.href.split("#")[0]+"#"+window.__FAMILY_KEY;
   host.innerHTML=`<b>Family link</b><p class="hint" style="margin:0">This site is locked. Only this link opens it, so send it just to family. It works on any phone or computer.</p><div><button class="btn pri" type="button">Copy family link</button></div>`;
   host.querySelector("button").onclick=()=>{const done=()=>toast("Family link copied");try{navigator.clipboard.writeText(url).then(done,()=>{const t=document.createElement("textarea");t.value=url;t.rows=3;host.appendChild(t);t.select();});}catch(e){}};
 }
@@ -1241,17 +1241,19 @@ boot();
 })();
 };</script>
 <script>(async function(){
-  var params=new URLSearchParams((location.hash||"").slice(1)),k=params.get("k");
+  var k=null,rest=[];((location.hash||"").slice(1)).split("&").forEach(function(p){if(!p)return;if(p.indexOf("=")<0&&!k)k=p;else if(p.indexOf("k=")===0)k=p.slice(2);else rest.push(p);});
   try{ if(k) localStorage.setItem("obx.k",k); else k=localStorage.getItem("obx.k"); }catch(e){}
   function lock(){document.getElementById("lock").hidden=false;}
   if(!k||!window.crypto||!crypto.subtle||!window.__ENC){lock();return;}
   function b64(s){s=s.replace(/-/g,"+").replace(/_/g,"/");s+="===".slice((s.length+3)%4);return Uint8Array.from(atob(s),function(c){return c.charCodeAt(0);});}
   try{
-    var key=await crypto.subtle.importKey("raw",b64(k),"AES-GCM",false,["decrypt"]);
+    var enc=new TextEncoder();
+    var base=await crypto.subtle.importKey("raw",enc.encode(k),"PBKDF2",false,["deriveKey"]);
+    var key=await crypto.subtle.deriveKey({name:"PBKDF2",salt:enc.encode("obxhunt-v2"),iterations:150000,hash:"SHA-256"},base,{name:"AES-GCM",length:256},false,["decrypt"]);
     var pt=await crypto.subtle.decrypt({name:"AES-GCM",iv:b64(__ENC.iv)},key,b64(__ENC.ct));
     window.__SNAPSHOT=JSON.parse(new TextDecoder().decode(pt));
     window.__FAMILY_KEY=k;
-    params.delete("k");var rest=params.toString();history.replaceState(null,"",location.pathname+location.search+(rest?"#"+rest:""));
+    history.replaceState(null,"",location.pathname+location.search+(rest.length?"#"+rest.join("&"):""));
     document.getElementById("app").hidden=false;
     window.__startApp();
   }catch(e){try{localStorage.removeItem("obx.k");}catch(_){}lock();}
