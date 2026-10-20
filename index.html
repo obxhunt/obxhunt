@@ -422,7 +422,7 @@ table.matrix td.best{color:var(--accent);font-weight:700}
                 <input type="range" id="elem" min="1" max="15" step="1" value="15">
                 <label class="f" for="high">Nearest high school: <span class="rangeval num" id="highVal">Any</span></label>
                 <input type="range" id="high" min="1" max="25" step="1" value="25">
-                <p class="hint" style="margin:0">Drive times come from a road model of NC‑12, US‑158 and the bridges. Summer Saturdays can double them. School distance is straight-line to the nearest campus; check Dare or Currituck school zoning for the assigned school.</p>
+                <p class="hint" style="margin:0">Drive times come from a road model of NC‑12, US‑158 and the bridges. Summer Saturdays can double them. School distance is straight-line to the nearest campus; check Dare or Currituck school zoning for the assigned school. Schools appear on the map while a school distance is set.</p>
               </div>
             </details>
             <details class="fg">
@@ -478,10 +478,7 @@ table.matrix td.best{color:var(--accent);font-weight:700}
         </div>
         <div class="mapbtns">
           <div class="seg basemap" id="baseSeg" role="group" aria-label="Map style" hidden><button type="button" data-base="sat" aria-pressed="true">Satellite</button><button type="button" data-base="streets" aria-pressed="false">Streets</button><button type="button" data-base="chart" aria-pressed="false">Chart</button></div>
-          <button class="btn sm" id="listBtn" type="button" aria-pressed="false">Hide list</button>
           <a class="btn sm" id="satBtn" target="_blank" rel="noopener" href="https://www.google.com/maps/@36.06,-75.73,11z/data=!3m1!1e3">Satellite ↗</a>
-          <button class="btn sm" id="schoolsBtn" type="button" aria-pressed="false">Schools</button>
-          <button class="btn sm" id="fitBtn" type="button">Fit results</button>
         </div>
       </div>
       <aside id="drawer" hidden aria-label="Listing details"></aside>
@@ -811,7 +808,7 @@ function updateSatLink(){const a=$("#satBtn");if(!a||!map)return;const c=map.get
 function setListHidden(h){
   if(innerWidth<900){setSheet(h?"mini":"mid");return;}
   S.listHidden=h;document.getElementById("view-map").classList.toggle("maponly",h);
-  const b=$("#listBtn");b.textContent=h?"Show list":"Hide list";b.setAttribute("aria-pressed",h);setTimeout(()=>map&&map.invalidateSize(),260);
+  const b=$("#listBtn");if(b){b.textContent=h?"Show list":"Hide list";b.setAttribute("aria-pressed",h);}setTimeout(()=>map&&map.invalidateSize(),260);
 }
 /* Phone bottom sheet: three resting heights, dragged by the handle or the header */
 function setSheet(st){
@@ -988,10 +985,15 @@ function renderList(){
   ul.appendChild(frag);
   $("#moreBox").hidden=RESULTS.length<=S.shown;
 }
-function changed(refit){saveFilters();S.shown=120;render();if(refit)fitResults();}
+let fitT;
+function changed(refit){saveFilters();S.shown=120;render();
+  // Results change -> the map follows them (a short pause so quick taps or slider drags settle first).
+  if(refit!==false&&map){clearTimeout(fitT);fitT=setTimeout(fitResults,250);}}
 function render(){
   compute(); buildControls(); chipsOverlay(); renderList();
-  if(map){updateMarkers();drawRadius();}
+  if(map){updateMarkers();drawRadius();
+    // School pins show while a school-distance filter is set.
+    const sch=S.f.elem<15||S.f.high<25;if(sch!==!!S.schools){S.schools=sch;if(sch)schoolLayer.addTo(map);else map.removeLayer(schoolLayer);}}
   if(S.selected) renderDrawer();
   if(S.view==="lists") renderLists();
   if(S.view==="users") renderUsers();
@@ -1465,14 +1467,12 @@ function wire(){
   [["commute","commuteVal",60," min"],["elem","elemVal",15," mi"],["high","highVal",25," mi"]].forEach(([k,lab,max,u])=>{let tt;$("#"+k).oninput=e=>{S.f[k]=+e.target.value;$("#"+lab).textContent=S.f[k]>=max?"Any":"≤ "+S.f[k]+u;clearTimeout(tt);tt=setTimeout(changed,150);};});
   ["favOnly","savedAny","topPicks","familyAdded"].forEach(k=>$("#"+k).onchange=e=>{if(k==="favOnly"&&e.target.checked&&!S.user){e.target.checked=false;needUser();return;}S.f[k]=e.target.checked;changed();});
   let qt;$("#q").oninput=e=>{clearTimeout(qt);qt=setTimeout(()=>{S.f.q=e.target.value.trim();changed();},200);};
-  $("#sort").onchange=e=>{S.f.sort=e.target.value;changed();};
+  $("#sort").onchange=e=>{S.f.sort=e.target.value;changed(false);};
   $("#resetBtn").onclick=()=>{S.f=defaultFilters();changed(true);};
   $("#moreBtn").onclick=()=>{S.shown+=150;renderList();};
-  $("#fitBtn").onclick=fitResults;
-  $("#listBtn").onclick=()=>setListHidden(!S.listHidden);
   document.querySelectorAll("#baseSeg button").forEach(b=>b.onclick=()=>setBase(b.dataset.base));
   if(WEB){const sb=$("#satBtn");if(sb)sb.hidden=true;const bs=$("#baseSeg");if(bs)bs.hidden=false;}
-  $("#schoolsBtn").onclick=e=>{S.schools=!S.schools;e.currentTarget.setAttribute("aria-pressed",S.schools);if(S.schools)schoolLayer.addTo(map);else map.removeLayer(schoolLayer);};
+
   $("#sheetHandle").onclick=()=>{if(sheetClickBlock)return;setSheet(S.sheet==="mini"?"mid":S.sheet==="full"?"mid":"full");};
   initSheetDrag();if(innerWidth<900)setSheet("mid");
   $("#addBtn").onclick=openAdd;$("#addForm").onsubmit=submitAdd;
