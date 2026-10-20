@@ -373,6 +373,8 @@ table.matrix td.best{color:var(--accent);font-weight:700}
 .dhead .hf{display:flex;flex-wrap:wrap;align-items:baseline;gap:2px 7px;font-size:15px;margin-top:4px;color:var(--ink)}
 .dhead .hf b{font-weight:700}
 .dhead .hf i{font-style:normal;color:var(--muted)}
+.dhead .hc{font-size:14px;margin-top:3px;color:var(--ink)}
+.dhead .hc span{color:var(--muted)}
 </style>
 </head><body>
 <div id="lock" hidden><div class="box"><h1>OBX House Hunt</h1><p>This map is private. Open it with the family link Drew sent you.</p></div></div>
@@ -402,16 +404,16 @@ table.matrix td.best{color:var(--accent);font-weight:700}
               <div class="fbody">
                 <div class="seg" role="group" aria-label="Location mode">
                   <button type="button" id="modeTown" aria-pressed="true">By town</button>
-                  <button type="button" id="modeRadius" aria-pressed="false">Radius from FRF</button>
+                  <button type="button" id="modeCommute" aria-pressed="false">Commute to FRF</button>
                 </div>
                 <div id="townBox">
                   <div class="chips" id="townChips"></div>
                   <p class="hint" style="margin:6px 0 0">Towns follow each listing's town or city. Colington is split out from Kill Devil Hills because it sits outside the town limits. Tap town names on the map too.</p>
                 </div>
-                <div id="radiusBox" hidden>
-                  <label class="f" for="radius">Within <span class="rangeval num" id="radiusVal">10 mi</span> of the FRF pier</label>
-                  <input type="range" id="radius" min="1" max="35" step="1" value="10">
-                  <p class="hint" style="margin:0">Radius ignores the town picks and searches every listing. Each result still shows its town.</p>
+                <div id="commuteBox" hidden>
+                  <label class="f" for="commute">Drive to the FRF pier: <span class="rangeval num" id="commuteVal">≤ 20 min</span></label>
+                  <input type="range" id="commute" min="5" max="60" step="5" value="20">
+                  <p class="hint" style="margin:0">Searches every town by off-season drive time from a road model of NC‑12, US‑158 and the bridges. Summer Saturdays can double it. Each result still shows its town.</p>
                 </div>
               </div>
             </details>
@@ -438,15 +440,13 @@ table.matrix td.best{color:var(--accent);font-weight:700}
               </div>
             </details>
             <details class="fg">
-              <summary>Commute &amp; schools <span class="sv" id="sv-comm"></span></summary>
+              <summary>Schools <span class="sv" id="sv-comm"></span></summary>
               <div class="fbody">
-                <label class="f" for="commute">Drive to FRF, off-season: <span class="rangeval num" id="commuteVal">Any</span></label>
-                <input type="range" id="commute" min="5" max="60" step="5" value="60">
                 <label class="f" for="elem">Nearest elementary school: <span class="rangeval num" id="elemVal">Any</span></label>
                 <input type="range" id="elem" min="1" max="15" step="1" value="15">
                 <label class="f" for="high">Nearest high school: <span class="rangeval num" id="highVal">Any</span></label>
                 <input type="range" id="high" min="1" max="25" step="1" value="25">
-                <p class="hint" style="margin:0">Drive times come from a road model of NC‑12, US‑158 and the bridges. Summer Saturdays can double them. School distance is straight-line to the nearest campus; check Dare or Currituck school zoning for the assigned school. Schools appear on the map while a school distance is set.</p>
+                <p class="hint" style="margin:0">School distance is straight-line to the nearest campus; check Dare or Currituck school zoning for the assigned school. Schools appear on the map while a school distance is set.</p>
               </div>
             </details>
             <details class="fg">
@@ -507,7 +507,6 @@ table.matrix td.best{color:var(--accent);font-weight:700}
             <li><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" style="fill:var(--house);stroke:var(--accent);stroke-width:3"/></svg>Big pink ring: the listing you have open</li>
             <li><span class="kfrf">FRF PIER</span>Your work, the USACE Field Research Facility</li>
             <li><span class="kschool">E</span><span class="kschool">M</span><span class="kschool">H</span>Elementary, middle and high schools (shown while a school distance is set)</li>
-            <li><svg viewBox="0 0 20 20"><circle cx="10" cy="10" r="8" style="fill:var(--accent);fill-opacity:.08;stroke:var(--accent);stroke-width:1.6;stroke-dasharray:3 3"/></svg>Dashed circle: your radius from FRF</li>
             <li><span class="ktown">DUCK</span>Town name: tap to filter. Bold is picked, faded is filtered out</li>
           </ul>
           <h4>On listings</h4>
@@ -680,7 +679,11 @@ const S = {
   db:null, dbReady:false, canWrite:true,
   listings:new Map(), people:new Map(), saves:new Map(), notes:new Map(), meta:null,
   user: store.get("obx.user", null), view:"map", selected:null, shown:120,
-  f: Object.assign(defaultFilters(), store.get("obx.filters", {})),
+  f: (()=>{const f=Object.assign(defaultFilters(), store.get("obx.filters", {}));
+    // the old "Radius from FRF" mode became "Commute to FRF"; the old separate drive-time slider is gone
+    if(f.mode==="radius"){f.mode="commute";f.commute=f.commute<60?f.commute:20;}
+    if(f.mode!=="commute"&&f.commute<60)f.commute=60;
+    return f;})(),
   listPerson:null, schools:false
 };
 function defaultFilters(){return {mode:"town", towns:[], radius:10, kinds:["house","condo","lot"], pmin:0, pmax:0, beds:0, baths:0, sqft:0, acres:0, commute:60, elem:15, high:25, tags:[], statuses:["Active","Pending","Unverified"], favOnly:false, savedAny:false, topPicks:false, familyAdded:false, q:"", sort:"price-asc"};}
@@ -710,7 +713,7 @@ function passes(l){
   const f=S.f;
   if(!f.statuses.includes(l.status||"Active")) return false;
   if(!f.kinds.includes(l.kind)) return false;
-  if(f.mode==="radius"){ if(l.frfMi>f.radius) return false; }
+  if(f.mode==="commute"){ if(l.commute>f.commute) return false; }
   else if(f.towns.length && !f.towns.includes(l.area)) return false;
   if(f.pmin && l.price<f.pmin) return false;
   if(f.pmax && l.price>f.pmax) return false;
@@ -718,7 +721,6 @@ function passes(l){
   if(f.baths && !(l.baths>=f.baths)) return false;
   if(f.sqft && !(l.sqft>=f.sqft)) return false;
   if(f.acres && !(l.acres>=f.acres)) return false;
-  if(f.commute<60 && l.commute>f.commute) return false;
   if(f.elem<15 && l.elem.d>f.elem) return false;
   if(f.high<25 && l.high.d>f.high) return false;
   if(f.tags.length){const t=l.tags||{};for(const k of f.tags) if(!t[k]) return false;}
@@ -932,15 +934,14 @@ function updateMarkers(force){
     else { m.setLatLng([l.lat,l.lng]); m.setStyle(markerStyle(l)); m.setRadius(markerStyle(l).radius); }
     if(S.selected===l.id||isMine(l.id)) m.bringToFront();
   }
-  document.querySelectorAll(".town-label").forEach(el=>{const t=el.dataset.town;const on=S.f.mode==="town"&&S.f.towns.includes(t);el.classList.toggle("on",on);el.classList.toggle("dim",S.f.mode==="radius"||(S.f.towns.length>0&&!on));});
+  document.querySelectorAll(".town-label").forEach(el=>{const t=el.dataset.town;const on=S.f.mode==="town"&&S.f.towns.includes(t);el.classList.toggle("on",on);el.classList.toggle("dim",S.f.mode==="commute"||(S.f.towns.length>0&&!on));});
 }
 function drawRadius(){
   radiusLayer.clearLayers();
-  if(S.f.mode==="radius") L.circle([FRF.lat,FRF.lng],{radius:S.f.radius*1609.34,color:css("--accent"),weight:2,dashArray:"6 6",fillColor:css("--accent"),fillOpacity:.05,interactive:false}).addTo(radiusLayer);
+  if(false) L.circle([FRF.lat,FRF.lng],{radius:S.f.radius*1609.34,color:css("--accent"),weight:2,dashArray:"6 6",fillColor:css("--accent"),fillOpacity:.05,interactive:false}).addTo(radiusLayer);
 }
 function fitResults(){
   const pts=RESULTS.map(l=>[l.lat,l.lng]);
-  if(S.f.mode==="radius"){map.fitBounds(L.latLng(FRF.lat,FRF.lng).toBounds(S.f.radius*1609.34*2),{padding:[30,30]});return;}
   if(!pts.length) return; pts.push([FRF.lat,FRF.lng]);
   map.fitBounds(pts,{padding:[40,40],maxZoom:14});
 }
@@ -949,12 +950,11 @@ function fitResults(){
 function chipBtn(label,pressed,on,disabled){const b=document.createElement("button");b.type="button";b.className="chip";b.textContent=label;b.setAttribute("aria-pressed",pressed?"true":"false");if(disabled)b.disabled=true;b.onclick=on;return b;}
 function buildControls(){
   const f=S.f;
-  $("#modeTown").setAttribute("aria-pressed",f.mode==="town");$("#modeRadius").setAttribute("aria-pressed",f.mode==="radius");
-  $("#townBox").hidden=false; $("#radiusBox").hidden=f.mode!=="radius";
+  $("#modeTown").setAttribute("aria-pressed",f.mode==="town");$("#modeCommute").setAttribute("aria-pressed",f.mode==="commute");
+  $("#townBox").hidden=f.mode==="commute"; $("#commuteBox").hidden=f.mode!=="commute";
   const tc=$("#townChips");tc.innerHTML="";
-  tc.appendChild(chipBtn("All towns",!f.towns.length,()=>{f.towns=[];changed();},f.mode==="radius"));
-  TOWNS.forEach(t=>tc.appendChild(chipBtn(t.name,f.towns.includes(t.name),()=>toggleTown(t.name),f.mode==="radius")));
-  $("#radius").value=f.radius;$("#radiusVal").textContent=f.radius+" mi";
+  tc.appendChild(chipBtn("All towns",!f.towns.length,()=>{f.towns=[];changed();}));
+  TOWNS.forEach(t=>tc.appendChild(chipBtn(t.name,f.towns.includes(t.name),()=>toggleTown(t.name))));
   const kc=$("#kindChips");kc.innerHTML="";
   KINDS.forEach(([k,n])=>kc.appendChild(chipBtn(n,f.kinds.includes(k),()=>{f.kinds=f.kinds.includes(k)?f.kinds.filter(x=>x!==k):[...f.kinds,k];if(!f.kinds.length)f.kinds=[k];changed();})));
   const pm=$("#pmin"),px=$("#pmax");
@@ -963,7 +963,7 @@ function buildControls(){
   const pq=$("#priceQuick");pq.innerHTML="";
   [["Under $400k",0,400000],["Under $500k",0,500000],["$500k–$800k",500000,800000],["$800k+",800000,0]].forEach(([n,a,b])=>pq.appendChild(chipBtn(n,f.pmin===a&&f.pmax===b,()=>{if(f.pmin===a&&f.pmax===b){f.pmin=0;f.pmax=0;}else{f.pmin=a;f.pmax=b;}changed();})));
   $("#beds").value=f.beds;$("#baths").value=f.baths;$("#sqft").value=f.sqft;$("#acres").value=f.acres;
-  $("#commute").value=f.commute;$("#commuteVal").textContent=f.commute>=60?"Any":"≤ "+f.commute+" min";
+  $("#commute").value=Math.min(f.commute,60);$("#commuteVal").textContent="≤ "+f.commute+" min";
   $("#elem").value=f.elem;$("#elemVal").textContent=f.elem>=15?"Any":"≤ "+f.elem+" mi";
   $("#high").value=f.high;$("#highVal").textContent=f.high>=25?"Any":"≤ "+f.high+" mi";
   const tg=$("#tagChips");tg.innerHTML="";
@@ -974,23 +974,23 @@ function buildControls(){
   if(document.activeElement!==$("#q")) $("#q").value=f.q;
   $("#sort").value=f.sort;
   // summaries
-  $("#sv-where").textContent = f.mode==="radius" ? `${f.radius} mi of FRF` : (f.towns.length? f.towns.join(", ") : "All towns");
+  $("#sv-where").textContent = f.mode==="commute" ? `≤ ${f.commute} min to FRF` : (f.towns.length? f.towns.join(", ") : "All towns");
   const kinds = f.kinds.length===3?"All types":f.kinds.map(k=>KINDNAME[k]).join(", ");
   const pr = (f.pmin||f.pmax)? ` · ${f.pmin?kmoney(f.pmin):"$0"}–${f.pmax?kmoney(f.pmax):"any"}` : "";
   $("#sv-type").textContent = kinds+pr;
   const sz=[f.beds?f.beds+"+ bd":"",f.baths?f.baths+"+ ba":"",f.sqft?f.sqft.toLocaleString()+"+ sf":"",f.acres?f.acres+"+ ac":""].filter(Boolean).join(" · ");
   $("#sv-size").textContent=sz;
-  $("#sv-comm").textContent=[f.commute<60?"≤"+f.commute+" min":"",f.elem<15?"elem ≤"+f.elem+" mi":"",f.high<25?"high ≤"+f.high+" mi":""].filter(Boolean).join(" · ");
+  $("#sv-comm").textContent=[f.elem<15?"elem ≤"+f.elem+" mi":"",f.high<25?"high ≤"+f.high+" mi":""].filter(Boolean).join(" · ");
   $("#sv-amen").textContent=f.tags.map(t=>TAGNAME[t]).join(", ");
   const st=STATUSES.filter(s=>f.statuses.includes(s));
   $("#sv-status").textContent=[st.length===3&&st.join()==="Active,Pending,Unverified"?"":st.join(", "),f.favOnly?"mine":"",f.savedAny?"saved":"",f.topPicks?"top picks":"",f.familyAdded?"family-added":""].filter(Boolean).join(" · ");
 }
-function toggleTown(t){const f=S.f;if(f.mode==="radius"){f.mode="town";f.towns=[t];}else f.towns=f.towns.includes(t)?f.towns.filter(x=>x!==t):[...f.towns,t];changed(true);}
+function toggleTown(t){const f=S.f;if(f.mode==="commute"){f.mode="town";f.towns=[t];}else f.towns=f.towns.includes(t)?f.towns.filter(x=>x!==t):[...f.towns,t];changed(true);}
 function chipsOverlay(){
   const f=S.f,bar=$("#chipbar");bar.innerHTML="";
   const add=(label,val,clear,lead)=>{const d=document.createElement("span");d.className="fchip"+(lead?" lead":"");d.innerHTML=`<b>${esc(label)}</b> ${esc(val)}`;if(clear){const b=document.createElement("button");b.type="button";b.setAttribute("aria-label","Remove "+label+" filter");b.textContent="×";b.onclick=clear;d.appendChild(b);}bar.appendChild(d);};
   add("Showing",`${RESULTS.length} of ${S.listings.size}`,null,true);
-  if(f.mode==="radius") add("Radius",`${f.radius} mi of FRF`,()=>{f.mode="town";changed(true);});
+  if(f.mode==="commute") add("Drive",`≤ ${f.commute} min to FRF`,()=>{f.mode="town";changed(true);});
   else if(f.towns.length) f.towns.forEach(t=>add("Town",t,()=>{f.towns=f.towns.filter(x=>x!==t);changed(true);}));
   if(f.kinds.length<3) add("Type",f.kinds.map(k=>KINDNAME[k]).join(", "),()=>{f.kinds=["house","condo","lot"];changed();});
   if(f.pmin||f.pmax) add("Price",`${f.pmin?kmoney(f.pmin):"$0"}–${f.pmax?kmoney(f.pmax):"any"}`,()=>{f.pmin=0;f.pmax=0;changed();});
@@ -998,7 +998,6 @@ function chipsOverlay(){
   if(f.baths) add("Baths",f.baths+"+",()=>{f.baths=0;changed();});
   if(f.sqft) add("Size",f.sqft.toLocaleString()+"+ sq ft",()=>{f.sqft=0;changed();});
   if(f.acres) add("Lot",f.acres+"+ ac",()=>{f.acres=0;changed();});
-  if(f.commute<60) add("Drive",`≤ ${f.commute} min`,()=>{f.commute=60;changed();});
   if(f.elem<15) add("Elem school",`≤ ${f.elem} mi`,()=>{f.elem=15;changed();});
   if(f.high<25) add("High school",`≤ ${f.high} mi`,()=>{f.high=25;changed();});
   f.tags.forEach(t=>add("Has",TAGNAME[t],()=>{f.tags=f.tags.filter(x=>x!==t);changed();}));
@@ -1104,6 +1103,7 @@ function renderDrawer(){
       <div class="p num">${money(l.price)}</div>
       <div class="a">${esc(l.address)}</div>
       <div class="hf num">${headFacts(l)}</div>
+      <div class="hc num">🚗 <b>~${derive(l).commute} min</b> drive to FRF<span> · ${derive(l).frfMi!=null?derive(l).frfMi.toFixed(1)+" mi away":""}</span></div>
       <div class="m">${esc(l.area)}${l.area!==l.town?` (${esc(l.town)} mailing address)`:""}, NC ${esc(l.zip||"")} · <span class="pill ${esc(l.status)}">${esc(l.status)}</span></div>
    </div><button class="x" type="button" id="dClose" aria-label="Close details">×</button></div>
    <div class="dbody">
@@ -1424,7 +1424,7 @@ function renderAlerts(force){
     box.querySelectorAll("#alTowns .chip").forEach(b=>b.setAttribute("aria-pressed",String(f.mode==="town"&&f.towns.includes(b.dataset.t))));
     $("#alPmin").value=String(PRICES.includes(f.pmin)?f.pmin:0);$("#alPmax").value=String(PRICES.includes(f.pmax)?f.pmax:0);
     $("#alBeds").value=String(Math.min(f.beds,5));$("#alBaths").value=String(Math.min(f.baths,4));
-    $("#alRadius").value=String(f.mode==="radius"?(RADII.filter(r=>r&&r>=f.radius)[0]||30):0);
+    $("#alRadius").value="0";
     dirty();toast("Copied the map filters. Tap Save to keep them.");};
   $("#alSave").onclick=()=>saveAlerts(pid,who);
 }
@@ -1535,11 +1535,12 @@ function wire(){
   document.querySelectorAll(".tabs button").forEach(b=>b.onclick=()=>go(b.dataset.view));
   $("#whoBtn").onclick=()=>go("users");
   $("#modeTown").onclick=()=>{S.f.mode="town";changed(true);};
-  $("#modeRadius").onclick=()=>{S.f.mode="radius";changed(true);};
-  let rt;$("#radius").oninput=e=>{S.f.radius=+e.target.value;$("#radiusVal").textContent=S.f.radius+" mi";drawRadius();clearTimeout(rt);rt=setTimeout(()=>changed(true),150);};
+  let ct;$("#commute").oninput=e=>{S.f.commute=+e.target.value;$("#commuteVal").textContent="≤ "+S.f.commute+" min";clearTimeout(ct);ct=setTimeout(()=>changed(true),150);};
+  $("#modeCommute").onclick=()=>{S.f.mode="commute";if(!(S.f.commute<60))S.f.commute=20;changed(true);};
+
   $("#pmin").onchange=e=>{S.f.pmin=+e.target.value;changed();};$("#pmax").onchange=e=>{S.f.pmax=+e.target.value;changed();};
   ["beds","baths","sqft","acres"].forEach(k=>$("#"+k).onchange=e=>{S.f[k]=+e.target.value;changed();});
-  [["commute","commuteVal",60," min"],["elem","elemVal",15," mi"],["high","highVal",25," mi"]].forEach(([k,lab,max,u])=>{let tt;$("#"+k).oninput=e=>{S.f[k]=+e.target.value;$("#"+lab).textContent=S.f[k]>=max?"Any":"≤ "+S.f[k]+u;clearTimeout(tt);tt=setTimeout(changed,150);};});
+  [["elem","elemVal",15," mi"],["high","highVal",25," mi"]].forEach(([k,lab,max,u])=>{let tt;$("#"+k).oninput=e=>{S.f[k]=+e.target.value;$("#"+lab).textContent=S.f[k]>=max?"Any":"≤ "+S.f[k]+u;clearTimeout(tt);tt=setTimeout(changed,150);};});
   ["favOnly","savedAny","topPicks","familyAdded"].forEach(k=>$("#"+k).onchange=e=>{if(k==="favOnly"&&e.target.checked&&!S.user){e.target.checked=false;needUser();return;}S.f[k]=e.target.checked;changed();});
   let qt;$("#q").oninput=e=>{clearTimeout(qt);qt=setTimeout(()=>{S.f.q=e.target.value.trim();changed();},200);};
   $("#sort").onchange=e=>{S.f.sort=e.target.value;changed(false);};
