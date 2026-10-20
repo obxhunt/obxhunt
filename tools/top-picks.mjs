@@ -80,6 +80,13 @@ if (TEST_IDS.length) {
   }
 }
 
+// New listings first seen in the past 7 days (the first full load on Oct 19, 2026 doesn't count as "new").
+const SEED_DATE = process.env.SEED_DATE || "2026-10-19";
+const weekAgoDay = weekAgo.slice(0, 10);
+const fresh = [...listings].map(([id, l]) => Object.assign({ id }, l))
+  .filter(l => l.addedAt && String(l.addedAt).slice(0, 10) >= weekAgoDay && String(l.addedAt).slice(0, 10) > SEED_DATE && !["Gone", "Sold"].includes(l.status))
+  .sort((a, b) => ({ house: 0, condo: 1, lot: 2 }[a.kind] ?? 0) - ({ house: 0, condo: 1, lot: 2 }[b.kind] ?? 0) || (a.price || 0) - (b.price || 0));
+const NEW_CAP = 30;
 const link = id => SITE + "#" + CODE + (id ? "&l=" + encodeURIComponent(id) : "");
 const topLink = SITE + "#" + CODE + "&top";
 const today = new Date().toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric", timeZone: "America/New_York" });
@@ -100,6 +107,19 @@ const card = p => {
     </td></tr></table></td></tr>`;
 };
 
+const newRow = l => { const ph = photo(l); return `<tr><td style="padding:0 0 10px"><table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#fff;border:1px solid #e3ddd0;border-radius:10px"><tr>
+  ${ph ? `<td width="112" style="padding:8px 0 8px 8px;vertical-align:top"><a href="${esc(link(l.id))}"><img src="${esc(ph)}" width="104" height="72" alt="" style="display:block;width:104px;height:72px;object-fit:cover;border-radius:6px;border:0"></a></td>` : ""}
+  <td style="padding:8px 12px;font-family:Helvetica,Arial,sans-serif;color:#17263a;vertical-align:top">
+    <div style="font-size:16px;font-weight:700">${money(l.price)}${l.addedBy && l.addedBy !== "Claude" ? ` <span style="font-size:11px;color:#5b6675;font-weight:400">added by ${esc(l.addedBy)}</span>` : ""}</div>
+    <div style="font-size:14px;font-weight:600"><a href="${esc(link(l.id))}" style="color:#17263a;text-decoration:none">${esc(l.address)}</a></div>
+    <div style="font-size:12.5px;color:#5b6675">${esc(l.area || l.town || "")} · ${esc(KIND[l.kind] || "")}${facts(l) ? " · " + esc(facts(l)) : ""}${l.status && l.status !== "Active" ? " · " + esc(l.status) : ""}</div>
+  </td></tr></table></td></tr>`; };
+const kindCounts = ["house", "condo", "lot"].map(k => [k, fresh.filter(l => l.kind === k).length]).filter(([, n]) => n);
+const under500 = fresh.filter(l => l.price && l.price < 500000 && l.kind !== "lot").length;
+const newSection = TEST_IDS.length ? "" : `<tr><td style="font-family:Helvetica,Arial,sans-serif;color:#17263a;padding:10px 0 12px">
+  <div style="font-size:22px;font-weight:800">New listings this week</div>
+  <div style="font-size:14px;color:#5b6675;margin-top:4px">${fresh.length ? `${fresh.length} new: ${esc(kindCounts.map(([k, n]) => n + " " + ({ house: n === 1 ? "house" : "houses", condo: n === 1 ? "condo / townhome" : "condos / townhomes", lot: n === 1 ? "lot" : "lots" }[k])).join(", "))}${under500 ? ` · ${under500} home${under500 === 1 ? "" : "s"} under $500k` : ""}. Homes first, then lots, lowest price first.` : "No new listings came on the market this week."}</div>
+</td></tr>${fresh.slice(0, NEW_CAP).map((l, i, a) => (i === 0 || a[i - 1].kind !== l.kind ? `<tr><td style="font-family:Helvetica,Arial,sans-serif;font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:#5b6675;font-weight:700;padding:6px 0 6px">${esc({ house: "Houses", condo: "Condos & townhomes", lot: "Lots" }[l.kind] || "Other")}</td></tr>` : "") + newRow(l)).join("")}${fresh.length > NEW_CAP ? `<tr><td style="font-family:Helvetica,Arial,sans-serif;font-size:14px;color:#5b6675;padding:0 0 10px">And ${fresh.length - NEW_CAP} more on the map (sort by “Newest added”).</td></tr>` : ""}`;
 const html = `<!doctype html><html><body style="margin:0;background:#f3f0e8">
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#f3f0e8"><tr><td align="center" style="padding:20px 12px">
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:560px">
@@ -110,14 +130,16 @@ ${TEST_IDS.length ? `<tr><td style="font-family:Helvetica,Arial,sans-serif;paddi
   <div style="font-size:14px;color:#5b6675;margin-top:4px">${esc(today)} · ${TEST_IDS.length ? `${picks.length} sample listings` : picks.length ? `${picks.length} listing${picks.length === 1 ? "" : "s"} saved by two or more of us` : "no overlaps yet"}</div>
 </td></tr>
 ${picks.length ? picks.map(card).join("") : `<tr><td style="font-family:Helvetica,Arial,sans-serif;font-size:15px;color:#17263a;padding:0 0 18px">Nobody has saved the same listing yet. ${counts.length ? "Saved so far: " + esc(counts.map(([n, c]) => `${n} ${c}`).join(", ")) + "." : ""} Heart the places you like on the map and the shared ones will show up here next week.</td></tr>`}
-<tr><td style="font-family:Helvetica,Arial,sans-serif;font-size:14px;padding:4px 0 24px"><a href="${esc(topLink)}" style="display:inline-block;background:#17263a;color:#fff;text-decoration:none;font-weight:700;padding:10px 16px;border-radius:8px">Open Top Picks on the map</a></td></tr>
+${newSection}
+<tr><td style="font-family:Helvetica,Arial,sans-serif;font-size:14px;padding:8px 0 24px"><a href="${esc(topLink)}" style="display:inline-block;background:#17263a;color:#fff;text-decoration:none;font-weight:700;padding:10px 16px;border-radius:8px">Open Top Picks on the map</a></td></tr>
 <tr><td style="font-family:Helvetica,Arial,sans-serif;font-size:11.5px;color:#7a8390;padding-bottom:20px">Listing photos courtesy of the listing brokers. Prices and status as of the latest daily refresh (${esc(String(snap.asOf || "").slice(0, 10))}). Sent weekly to the family; the link above is private, so please don't forward it.</td></tr>
 </table></td></tr></table></body></html>`;
 
-const text = (TEST_IDS.length ? "TEST EMAIL: these are sample listings Drew picked to try out the weekly Top Picks email. Future emails won't include this note.\n\n" : "") + `OBX House Hunt: Top Picks, ${today}\n\n` + (picks.length ? picks.map(p => `${money(p.x.price)}  ${p.x.address} (${p.x.area || p.x.town})\n  ${facts(p.x)}\n  Saved by: ${p.a.map(s => s.name).join(", ")}\n  ${link(p.id)}\n`).join("\n") : "No overlaps yet.\n") + `\nOpen Top Picks: ${topLink}\n`;
-const subject = (TEST_IDS.length ? "[TEST] OBX Top Picks: sample email" : `OBX Top Picks: ${picks.length ? `${picks.length} shared favorite${picks.length === 1 ? "" : "s"}` : "no overlaps yet"}`) + ` (${today})`;
+const newText = TEST_IDS.length ? "" : "\nNEW LISTINGS THIS WEEK (" + fresh.length + ")\n" + (fresh.length ? fresh.slice(0, NEW_CAP).map(l => `${money(l.price)}  ${l.address} (${l.area || l.town}) ${facts(l)}\n  ${link(l.id)}`).join("\n") + (fresh.length > NEW_CAP ? `\n...and ${fresh.length - NEW_CAP} more on the map` : "") : "None this week.") + "\n";
+const text = (TEST_IDS.length ? "TEST EMAIL: these are sample listings Drew picked to try out the weekly Top Picks email. Future emails won't include this note.\n\n" : "") + `OBX House Hunt: Top Picks, ${today}\n\n` + (picks.length ? picks.map(p => `${money(p.x.price)}  ${p.x.address} (${p.x.area || p.x.town})\n  ${facts(p.x)}\n  Saved by: ${p.a.map(s => s.name).join(", ")}\n  ${link(p.id)}\n`).join("\n") : "No overlaps yet.\n") + newText + `\nOpen Top Picks: ${topLink}\n`;
+const subject = (TEST_IDS.length ? "[TEST] OBX Top Picks: sample email" : `OBX Top Picks: ${picks.length ? `${picks.length} shared favorite${picks.length === 1 ? "" : "s"}` : "no overlaps yet"}${fresh.length ? `, ${fresh.length} new listing${fresh.length === 1 ? "" : "s"}` : ""}`) + ` (${today})`;
 
-if (process.env.OUT) { fs.writeFileSync(process.env.OUT, html); console.log("Wrote preview:", picks.length, "picks"); process.exit(0); }
+if (process.env.OUT) { fs.writeFileSync(process.env.OUT, html); console.log("Wrote preview:", picks.length, "picks,", fresh.length, "new;", subject); process.exit(0); }
 const pass = (process.env.GMAIL_APP_PASSWORD || "").replace(/\s+/g, "");
 if (!pass) { console.error("GMAIL_APP_PASSWORD secret is missing"); process.exit(1); }
 const nodemailer = (await import("nodemailer")).default;
