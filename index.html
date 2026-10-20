@@ -1103,6 +1103,7 @@ function renderDrawer(){
       <div class="p num">${money(l.price)}</div>
       <div class="a">${esc(l.address)}</div>
       <div class="hf num">${headFacts(l)}</div>
+      ${domLine(l)}
       <div class="hc num">🚗 <b>~${derive(l).commute} min</b> drive to FRF<span> · ${derive(l).frfMi!=null?derive(l).frfMi.toFixed(1)+" mi away":""}</span></div>
       <div class="m">${esc(l.area)}${l.area!==l.town?` (${esc(l.town)} mailing address)`:""}, NC ${esc(l.zip||"")} · <span class="pill ${esc(l.status)}">${esc(l.status)}</span></div>
    </div><button class="x" type="button" id="dClose" aria-label="Close details">×</button></div>
@@ -1474,6 +1475,15 @@ async function submitAdd(e){
 }
 
 /* ---------- wiring ---------- */
+function domLine(l){
+  if(!l.listedAt)return "";
+  const today=new Date().toLocaleDateString("en-CA",{timeZone:"America/New_York"});
+  const days=Math.round((Date.parse(today)-Date.parse(l.listedAt))/864e5);if(isNaN(days)||days<0)return "";
+  const nice=new Date(l.listedAt+"T12:00:00").toLocaleDateString("en-US",{month:"short",day:"numeric",year:days>300?"numeric":undefined});
+  const txt=days===0?"<b>Listed today</b>":days===1?"<b>1 day</b> on market":`<b>${days.toLocaleString()} days</b> on market`;
+  const longish=days>=365?` (${(days/365).toFixed(1).replace(/\.0$/,"")} yr)`:days>=60?` (${Math.round(days/30)} mo)`:"";
+  return `<div class="hc num">📅 ${txt}${longish}${days?`<span> · listed ${nice}</span>`:""}</div>`;
+}
 function checkedLabel(sn){
   if(sn.checkedAt){const d=new Date(sn.checkedAt);if(!isNaN(d))return d.toLocaleString("en-US",{timeZone:"America/New_York",month:"short",day:"numeric",hour:"numeric",minute:"2-digit"});}
   const a=String(sn.asOf||"").slice(0,10);if(!a)return "";const d=new Date(a+"T12:00:00");return isNaN(d)?a:d.toLocaleDateString("en-US",{month:"short",day:"numeric"});
