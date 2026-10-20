@@ -1,0 +1,25 @@
+name: Listing alerts
+# After each listings publish, email each person new listings that match their alert (set on the site's Users page).
+on:
+  push:
+    branches: [main]
+    paths: ["data/listings.enc.js"]
+  workflow_dispatch: {}
+permissions:
+  contents: read
+concurrency:
+  group: listing-alerts
+  cancel-in-progress: false
+jobs:
+  alerts:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm install --no-save --no-package-lock nodemailer@6.9.16
+      - run: node tools/listing-alerts.mjs
+        env:
+          FAMILY_CODE: ${{ secrets.FAMILY_CODE }}
+          GMAIL_APP_PASSWORD: ${{ secrets.GMAIL_APP_PASSWORD }}

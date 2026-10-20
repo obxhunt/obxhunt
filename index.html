@@ -90,7 +90,7 @@ details.fg>summary .sv{font-family:var(--f-ui);text-transform:none;letter-spacin
 .chip:disabled{opacity:.45;cursor:not-allowed}
 .row2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
 label.f{display:grid;gap:3px;font-size:12.5px;font-weight:600;color:var(--muted)}
-select,input[type=text],input[type=number],input[type=url],textarea{width:100%;box-sizing:border-box;border:1px solid var(--line);background:var(--panel);border-radius:8px;padding:7px 9px;font-size:14.5px}
+select,input[type=text],input[type=number],input[type=url],input[type=email],textarea{width:100%;box-sizing:border-box;border:1px solid var(--line);background:var(--panel);border-radius:8px;padding:7px 9px;font-size:14.5px}
 input[type=range]{width:100%;accent-color:var(--accent)}
 .rangeval{font-family:var(--f-cond);font-weight:700;font-size:16px}
 .hint{font-size:12.5px;color:var(--muted)}
@@ -329,6 +329,10 @@ table.matrix td.best{color:var(--accent);font-weight:700}
   table.matrix th,table.matrix td{padding:5px 6px}
 }
 .modal{grid-template-columns:minmax(0,1fr);grid-template-rows:minmax(0,1fr)}
+.pcard.alerts{display:grid;gap:12px;justify-items:stretch;text-align:left}
+.pcard.alerts .chips{margin-top:6px}
+.alfields{display:grid;gap:12px}
+#alertsBox:empty{display:none}
 </style>
 </head><body>
 <div id="lock" hidden><div class="box"><h1>OBX House Hunt</h1><p>This map is private. Open it with the family link Drew sent you.</p></div></div>
@@ -475,6 +479,7 @@ table.matrix td.best{color:var(--accent);font-weight:700}
         <div><h1>Who's browsing?</h1><p class="lede">Pick your name. Saves, notes, and loan scenarios go on your list until you switch to someone else. The choice lasts for this browser session.</p></div>
         <div class="pcard" id="familyLink" hidden style="max-width:520px"></div>
         <div class="people" id="peopleGrid"></div>
+        <div id="alertsBox"></div>
         <form id="otherForm" class="pcard" style="max-width:420px">
           <b>Someone else</b>
           <label class="f" for="otherName">Your name<input type="text" id="otherName" maxlength="40" placeholder="First name" required></label>
@@ -1273,12 +1278,79 @@ async function importShared(){
 
 /* ---------- users ---------- */
 function renderUsers(){
-  familyLinkBox();
+  familyLinkBox();renderAlerts();
   const g=$("#peopleGrid");g.innerHTML="";
   peopleList().forEach(p=>{const b=document.createElement("button");b.type="button";b.className="pcard";b.setAttribute("aria-pressed",S.user&&S.user.id===p.id?"true":"false");
     const n=Object.keys(savesOf(p.id)).length;
     b.innerHTML=`<span class="dot" style="background:${colorFor(p.name)}">${initial(p.name)}</span><b>${esc(p.name)}</b><small>${n} saved${S.user&&S.user.id===p.id?" · browsing now":""}</small>`;
     b.onclick=()=>setUser(p);g.appendChild(b);});
+}
+/* ---------- email alerts (per person) ---------- */
+const ALERT_DEFAULT={on:false,kinds:["house","condo"],towns:[],pmin:0,pmax:0,beds:0,baths:0,radius:0};
+const RADII=[0,3,5,10,15,20,30];
+function alertDoc(pid){const d=S.people.get(pid)||{};return {email:d.email||"",alerts:Object.assign({},ALERT_DEFAULT,d.alerts||{})};}
+function alertSummary(a){
+  const k=a.kinds.length&&a.kinds.length<3?a.kinds.map(x=>({house:"houses",condo:"condos",lot:"lots"})[x]).join(" & "):"all listings";
+  const parts=[k];
+  if(a.towns.length)parts.push("in "+a.towns.join(", "));
+  if(a.radius)parts.push(`within ${a.radius} mi of FRF`);
+  if(a.pmin&&a.pmax)parts.push(`${kmoney(a.pmin)}–${kmoney(a.pmax)}`);else if(a.pmax)parts.push("under "+kmoney(a.pmax));else if(a.pmin)parts.push(kmoney(a.pmin)+" and up");
+  if(a.beds)parts.push(a.beds+"+ bed");if(a.baths)parts.push(a.baths+"+ bath");
+  return parts.join(", ");
+}
+function renderAlerts(force){
+  const box=$("#alertsBox");if(!box)return;
+  if(!force&&(S.alertDirty||box.contains(document.activeElement)))return; // don't wipe an edit in progress
+  if(!S.db||S.localMode){box.innerHTML="";return;}
+  const ppl=peopleList();if(!S.alertPerson||!ppl.some(p=>p.id===S.alertPerson))S.alertPerson=(S.user&&S.user.id)||ppl[0].id;
+  const pid=S.alertPerson,who=ppl.find(p=>p.id===pid).name,{email,alerts:a}=alertDoc(pid);
+  const opt=(arr,val,lab)=>arr.map(v=>`<option value="${v}" ${+val===v?"selected":""}>${lab(v)}</option>`).join("");
+  box.innerHTML=`<div class="pcard alerts" style="max-width:620px">
+    <div><b style="font-size:17px">Email alerts</b><p class="hint" style="margin:2px 0 0">When the morning refresh finds a new listing that matches, it's emailed to just that person.</p></div>
+    <div class="chips" id="alPeople">${ppl.map(p=>`<button type="button" class="chip" data-pid="${esc(p.id)}" aria-pressed="${p.id===pid}">${esc(p.name)}${(S.people.get(p.id)||{}).alerts&&(S.people.get(p.id).alerts.on)?" ✉":""}</button>`).join("")}</div>
+    <label class="f" for="alEmail">${esc(who)}'s email<input type="email" id="alEmail" value="${esc(email)}" placeholder="name@example.com" autocomplete="off"></label>
+    <label class="check"><input type="checkbox" id="alOn" ${a.on?"checked":""}> Email ${esc(who)} new listings that match</label>
+    <div class="alfields">
+      <div class="f">Type<div class="chips" id="alKinds">${KINDS.map(([k,n])=>`<button type="button" class="chip" data-k="${k}" aria-pressed="${a.kinds.includes(k)}">${n}</button>`).join("")}</div></div>
+      <div class="f">Towns <span class="hint">(none picked = all towns)</span><div class="chips" id="alTowns">${TOWNS.map(t=>`<button type="button" class="chip" data-t="${esc(t.name)}" aria-pressed="${a.towns.includes(t.name)}">${esc(t.name)}</button>`).join("")}</div></div>
+      <div class="row2">
+        <label class="f" for="alPmin">Min price<select id="alPmin">${opt(PRICES,a.pmin,v=>v?kmoney(v):"No min")}</select></label>
+        <label class="f" for="alPmax">Max price<select id="alPmax">${opt(PRICES,a.pmax,v=>v?kmoney(v):"No max")}</select></label>
+        <label class="f" for="alBeds">Bedrooms<select id="alBeds">${opt([0,1,2,3,4,5],a.beds,v=>v?v+"+":"Any")}</select></label>
+        <label class="f" for="alBaths">Bathrooms<select id="alBaths">${opt([0,1,2,3,4],a.baths,v=>v?v+"+":"Any")}</select></label>
+        <label class="f" for="alRadius">Distance from FRF<select id="alRadius">${opt(RADII,a.radius,v=>v?"Within "+v+" mi":"Any distance")}</select></label>
+      </div>
+    </div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+      <button class="btn pri" type="button" id="alSave">Save ${esc(who)}'s alerts</button>
+      <button class="btn" type="button" id="alCopy">Use my current map filters</button>
+    </div>
+    <p class="hint" id="alStatus" style="margin:0">${a.on&&email?`Now: ${esc(alertSummary(a))} → ${esc(email)}`:a.on?"Add an email address to turn alerts on.":"Alerts are off."}</p>
+  </div>`;
+  const dirty=()=>{S.alertDirty=true;};
+  box.querySelectorAll("#alPeople .chip").forEach(b=>b.onclick=()=>{if(S.alertDirty&&!confirmLeave())return;S.alertDirty=false;S.alertPerson=b.dataset.pid;renderAlerts(true);});
+  box.querySelectorAll("#alKinds .chip,#alTowns .chip").forEach(b=>b.onclick=()=>{b.setAttribute("aria-pressed",b.getAttribute("aria-pressed")==="true"?"false":"true");dirty();});
+  box.querySelectorAll("input,select").forEach(el=>el.addEventListener("input",dirty));
+  $("#alCopy").onclick=()=>{const f=S.f;
+    box.querySelectorAll("#alKinds .chip").forEach(b=>b.setAttribute("aria-pressed",String(f.kinds.includes(b.dataset.k))));
+    box.querySelectorAll("#alTowns .chip").forEach(b=>b.setAttribute("aria-pressed",String(f.mode==="town"&&f.towns.includes(b.dataset.t))));
+    $("#alPmin").value=String(PRICES.includes(f.pmin)?f.pmin:0);$("#alPmax").value=String(PRICES.includes(f.pmax)?f.pmax:0);
+    $("#alBeds").value=String(Math.min(f.beds,5));$("#alBaths").value=String(Math.min(f.baths,4));
+    $("#alRadius").value=String(f.mode==="radius"?(RADII.filter(r=>r&&r>=f.radius)[0]||30):0);
+    dirty();toast("Copied the map filters. Tap Save to keep them.");};
+  $("#alSave").onclick=()=>saveAlerts(pid,who);
+}
+function confirmLeave(){return window.confirm?window.confirm("Discard unsaved alert changes?"):true;}
+async function saveAlerts(pid,who){
+  const box=$("#alertsBox");const email=$("#alEmail").value.trim();
+  if(email&&!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)){toast("That email address doesn't look right");return;}
+  const on=$("#alOn").checked;if(on&&!email){toast("Add an email address first");return;}
+  const alerts={on,kinds:[...box.querySelectorAll("#alKinds .chip[aria-pressed=true]")].map(b=>b.dataset.k),towns:[...box.querySelectorAll("#alTowns .chip[aria-pressed=true]")].map(b=>b.dataset.t),
+    pmin:+$("#alPmin").value,pmax:+$("#alPmax").value,beds:+$("#alBeds").value,baths:+$("#alBaths").value,radius:+$("#alRadius").value};
+  if(!alerts.kinds.length){toast("Pick at least one type");return;}
+  const cur=S.people.get(pid)||{};
+  const ok=await write(()=>S.db.doc("people/"+pid).set(Object.assign({},cur,{name:cur.name||who,email,alerts,updatedAt:new Date().toISOString(),updatedBy:S.user?S.user.name:""})),on?`Alerts on for ${who}`:`Saved ${who}'s settings`);
+  if(ok){S.alertDirty=false;renderAlerts(true);}
 }
 function familyLinkBox(){
   const host=$("#familyLink");if(!host)return;host.innerHTML="";
@@ -1288,7 +1360,7 @@ function familyLinkBox(){
   host.innerHTML=`<b>Family link</b><p class="hint" style="margin:0">This site is locked. Only this link opens it, so send it just to family. It works on any phone or computer.</p><div><button class="btn pri" type="button">Copy family link</button></div>`;
   host.querySelector("button").onclick=()=>{const done=()=>toast("Family link copied");try{navigator.clipboard.writeText(url).then(done,()=>{const t=document.createElement("textarea");t.value=url;t.rows=3;host.appendChild(t);t.select();});}catch(e){}};
 }
-function setUser(p){S.user={id:p.id,name:p.name};store.set("obx.user",S.user);S.listPerson=p.id;toast("Browsing as "+p.name);render();go("map");}
+function setUser(p){S.user={id:p.id,name:p.name};S.alertPerson=p.id;S.alertDirty=false;store.set("obx.user",S.user);S.listPerson=p.id;toast("Browsing as "+p.name);render();go("map");}
 function renderWho(){const u=S.user;$("#whoName").textContent=u?u.name:"Pick a user";const d=$("#whoDot");d.textContent=u?initial(u.name):"?";d.style.background=u?colorFor(u.name):"var(--muted)";}
 
 /* ---------- navigation ---------- */
