@@ -225,20 +225,22 @@ table.matrix td.best{color:var(--accent);font-weight:700}
 
 /* Phone: panel becomes a bottom sheet over the map */
 @media (max-width:899px){
-  #view-map{grid-template-columns:1fr}
+  #view-map{grid-template-columns:1fr;--sheet-h:46%}
+  #view-map.sheet-mini{--sheet-h:64px}
+  #view-map.sheet-full{--sheet-h:88%}
   #mapwrap{position:absolute;inset:0}
-  #panel{position:absolute;left:0;right:0;bottom:0;height:46%;border-right:0;border-top:1px solid var(--line);border-radius:16px 16px 0 0;box-shadow:0 -6px 24px rgba(0,0,0,.18);transition:height .25s ease;padding-bottom:env(safe-area-inset-bottom,0px)}
+  #panel{position:absolute;left:0;right:0;bottom:0;height:46%;border-right:0;border-top:1px solid var(--line);border-radius:16px 16px 0 0;box-shadow:0 -6px 24px rgba(0,0,0,.18);transition:height .28s cubic-bezier(.2,.8,.2,1);padding-bottom:env(safe-area-inset-bottom,0px);will-change:height}
   #panel.full{height:88%}
   #panel.mini{height:64px}
-  .sheet-handle{display:block;width:44px;height:5px;border-radius:3px;background:var(--line);margin:8px auto 0;border:0;padding:0}
+  .sheet-handle{display:block;position:relative;width:100%;height:20px;background:transparent;border:0;padding:0;cursor:grab;touch-action:none;flex:none}
+  .sheet-handle::before{content:"";position:absolute;left:50%;top:8px;width:44px;height:5px;margin-left:-22px;border-radius:3px;background:var(--muted);opacity:.55}
+  .panel-head{touch-action:none;cursor:grab;padding-top:4px}
+  #view-map.dragging,#view-map.dragging *{user-select:none;-webkit-user-select:none}
+  #view-map.dragging .mapbtns,#view-map.dragging .leaflet-bottomright{transition:none}
   .legend{display:none}
-  .mapbtns{top:auto;bottom:calc(46% + 12px);right:12px}
-  #panel.mini ~ .x{}
-  .leaflet-bottomright{bottom:46%}
-  #view-map.maponly .leaflet-bottomright, #view-map:has(#panel.mini) .leaflet-bottomright{bottom:64px}
-  #view-map:has(#panel.mini) .mapbtns{bottom:76px}
-  #view-map:has(#panel.full) .mapbtns{display:none}
-  #panel.full ~ .x{display:none}
+  .mapbtns{top:auto;bottom:calc(var(--sheet-h) + 12px);right:12px;transition:bottom .28s cubic-bezier(.2,.8,.2,1)}
+  .leaflet-bottomright{bottom:var(--sheet-h);transition:bottom .28s cubic-bezier(.2,.8,.2,1)}
+  #view-map.sheet-full .mapbtns{display:none}
   #drawer{width:100%;border-left:0}
   #chipbar{top:8px;right:10px}
 }
@@ -267,6 +269,8 @@ table.matrix td.best{color:var(--accent);font-weight:700}
 #map.on-sat .town-label{color:#fff;text-shadow:0 0 3px #000,0 0 6px #000}
 #map.on-sat .town-label.on{color:#ffd1ee}
 #map.on-sat .leaflet-container,#map.on-sat{background:#1c2a33}
+
+.photolink{font-size:12.5px;font-weight:600;color:var(--accent);text-decoration:none;white-space:nowrap;border:1px solid var(--line);border-radius:6px;padding:2px 6px}
 </style>
 </head><body>
 <div id="lock" hidden><div class="box"><h1>OBX House Hunt</h1><p>This map is private. Open it with the family link Drew sent you.</p></div></div>
@@ -655,7 +659,52 @@ function aerial(l,w,h,z){
   return `<div class="aerial" style="width:${w}px;height:${h}px;max-width:none" role="img" aria-label="Aerial photo of ${esc(l.address)}">${imgs}<span class="aerial-pin"></span></div>`;
 }
 function updateSatLink(){const a=$("#satBtn");if(!a||!map)return;const c=map.getCenter();a.href=`https://www.google.com/maps/@${c.lat.toFixed(5)},${c.lng.toFixed(5)},${Math.round(map.getZoom()*10)/10}z/data=!3m1!1e3`;}
-function setListHidden(h){S.listHidden=h;document.getElementById("view-map").classList.toggle("maponly",h);const p=$("#panel");if(innerWidth<900){p.classList.toggle("mini",h);p.classList.remove("full");}const b=$("#listBtn");b.textContent=h?"Show list":"Hide list";b.setAttribute("aria-pressed",h);setTimeout(()=>map&&map.invalidateSize(),260);}
+function setListHidden(h){
+  if(innerWidth<900){setSheet(h?"mini":"mid");return;}
+  S.listHidden=h;document.getElementById("view-map").classList.toggle("maponly",h);
+  const b=$("#listBtn");b.textContent=h?"Show list":"Hide list";b.setAttribute("aria-pressed",h);setTimeout(()=>map&&map.invalidateSize(),260);
+}
+/* Phone bottom sheet: three resting heights, dragged by the handle or the header */
+function setSheet(st){
+  const p=$("#panel"),v=$("#view-map");
+  p.classList.toggle("mini",st==="mini");p.classList.toggle("full",st==="full");
+  v.classList.remove("sheet-mini","sheet-full");if(st!=="mid")v.classList.add("sheet-"+st);
+  S.sheet=st;S.listHidden=st==="mini";
+  const b=$("#listBtn");if(b){b.textContent=st==="mini"?"Show list":"Hide list";b.setAttribute("aria-pressed",st==="mini");}
+  $("#sheetHandle").setAttribute("aria-label",st==="full"?"Shrink the list":"Expand the list");
+  setTimeout(()=>map&&map.invalidateSize(),280);
+}
+let sheetClickBlock=false;
+function initSheetDrag(){
+  const p=$("#panel"),v=$("#view-map");
+  const grabs=[$("#sheetHandle"),p.querySelector(".panel-head")];
+  let drag=false,moved=false,startY=0,startH=0,lastY=0,lastT=0,vel=0;
+  const down=e=>{
+    if(innerWidth>=900)return;
+    if(e.target.closest("a,input,select,textarea")||(e.target.closest("button")&&!e.target.closest(".sheet-handle")))return;
+    drag=true;moved=false;startY=lastY=e.clientY;lastT=performance.now();vel=0;startH=p.getBoundingClientRect().height;
+    p.style.transition="none";v.classList.add("dragging");
+    try{e.currentTarget.setPointerCapture(e.pointerId);}catch(_){}
+  };
+  const move=e=>{
+    if(!drag)return;const dy=e.clientY-startY;if(Math.abs(dy)>5)moved=true;if(!moved)return;
+    const h=Math.max(56,Math.min(v.clientHeight*0.92,startH-dy));
+    p.style.height=h+"px";v.style.setProperty("--sheet-h",h+"px");
+    const t=performance.now();vel=(e.clientY-lastY)/Math.max(1,t-lastT);lastY=e.clientY;lastT=t;e.preventDefault();
+  };
+  const up=()=>{
+    if(!drag)return;drag=false;p.style.transition="";v.classList.remove("dragging");
+    if(!moved){p.style.height="";v.style.removeProperty("--sheet-h");return;}
+    const h=p.getBoundingClientRect().height,H=v.clientHeight,pts={mini:64,mid:H*0.46,full:H*0.88};
+    let st;
+    if(vel>0.5)st=h>pts.mid+20?"mid":"mini";
+    else if(vel<-0.5)st=h<pts.mid-20?"mid":"full";
+    else st=Object.keys(pts).reduce((a,b)=>Math.abs(pts[b]-h)<Math.abs(pts[a]-h)?b:a);
+    p.style.height="";v.style.removeProperty("--sheet-h");setSheet(st);
+    sheetClickBlock=true;setTimeout(()=>sheetClickBlock=false,60);
+  };
+  grabs.forEach(g=>{if(!g)return;g.addEventListener("pointerdown",down);g.addEventListener("pointermove",move);g.addEventListener("pointerup",up);g.addEventListener("pointercancel",up);});
+}
 function restyle(){
   if(!map) return;
   landLayer.setStyle({color:css("--land-edge"),fillColor:css("--land")});
@@ -778,8 +827,10 @@ function renderList(){
       <span class="m num">${esc(l.area)} · ${esc(factLine(l))}</span>
       <span class="m num">~${l.commute} min to FRF · <span class="pill ${esc(l.status)}">${esc(l.status)}</span>${l.addedBy&&l.addedBy!=="Claude"?" · added by "+esc(l.addedBy):""}</span></div>
       <div class="side"><button class="heart" type="button" aria-pressed="${isMine(l.id)}" aria-label="Save to ${S.user?esc(S.user.name):"my"} list">${isMine(l.id)?"♥":"♡"}</button>
+      <a class="photolink" target="_blank" rel="noopener" href="${esc(linksFor(l)[1][1])}" aria-label="Listing photos for ${esc(l.address)} on Zillow">Photos ↗</a>
       <span class="savers">${sv.map(p=>`<span class="dot" title="Saved by ${esc(p.name)}" style="background:${colorFor(p.name)}">${initial(p.name)}</span>`).join("")}</span></div>`;
     li.querySelector(".heart").onclick=e=>{e.stopPropagation();toggleSave(l.id);};
+    li.querySelector(".photolink").onclick=e=>e.stopPropagation();
     li.onclick=()=>select(l.id,true);
     frag.appendChild(li);
   });
@@ -817,9 +868,9 @@ function select(id,pan){
   document.querySelectorAll(".item.sel").forEach(e=>e.classList.remove("sel"));
   const li=document.querySelector(`.item[data-id="${CSS.escape(id)}"]`);if(li){li.classList.add("sel");}
   if(pan&&map) map.panTo([l.lat,l.lng]);
-  if(innerWidth<900){$("#panel").classList.add("mini");$("#panel").classList.remove("full");}
+  if(innerWidth<900){if(S.sheet!=="mini")S.sheetBefore=S.sheet||"mid";setSheet("mini");}
 }
-function closeDrawer(){S.selected=null;$("#drawer").hidden=true;updateMarkers();if(!S.listHidden)$("#panel").classList.remove("mini");}
+function closeDrawer(){S.selected=null;$("#drawer").hidden=true;updateMarkers();if(innerWidth<900&&S.sheetBefore){setSheet(S.sheetBefore);S.sheetBefore=null;}}
 function renderDrawer(){
   const l=S.listings.get(S.selected);const d=$("#drawer");
   if(!l){d.hidden=true;return;}
@@ -1122,7 +1173,8 @@ function wire(){
   document.querySelectorAll("#baseSeg button").forEach(b=>b.onclick=()=>setBase(b.dataset.base));
   if(WEB){const sb=$("#satBtn");if(sb)sb.hidden=true;const bs=$("#baseSeg");if(bs)bs.hidden=false;}
   $("#schoolsBtn").onclick=e=>{S.schools=!S.schools;e.currentTarget.setAttribute("aria-pressed",S.schools);if(S.schools)schoolLayer.addTo(map);else map.removeLayer(schoolLayer);};
-  $("#sheetHandle").onclick=()=>{const p=$("#panel");if(p.classList.contains("mini")){setListHidden(false);}else p.classList.toggle("full");};
+  $("#sheetHandle").onclick=()=>{if(sheetClickBlock)return;setSheet(S.sheet==="mini"?"mid":S.sheet==="full"?"mid":"full");};
+  initSheetDrag();if(innerWidth<900)setSheet("mid");
   $("#addBtn").onclick=openAdd;$("#addForm").onsubmit=submitAdd;
   document.querySelectorAll("[data-close]").forEach(b=>b.onclick=()=>b.closest(".modal").hidden=true);
   document.querySelectorAll(".modal").forEach(m=>m.addEventListener("click",e=>{if(e.target===m)m.hidden=true;}));
