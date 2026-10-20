@@ -271,6 +271,9 @@ table.matrix td.best{color:var(--accent);font-weight:700}
 #map.on-sat .leaflet-container,#map.on-sat{background:#1c2a33}
 
 .photolink{font-size:12.5px;font-weight:600;color:var(--accent);text-decoration:none;white-space:nowrap;border:1px solid var(--line);border-radius:6px;padding:2px 6px}
+.thumbwrap,.heroaerial{position:relative}
+.svimg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:1}
+.heroaerial .cap{z-index:2}
 </style>
 </head><body>
 <div id="lock" hidden><div class="box"><h1>OBX House Hunt</h1><p>This map is private. Open it with the family link Drew sent you.</p></div></div>
@@ -648,6 +651,21 @@ function setBase(k){
   document.getElementById("map").classList.toggle("on-sat",k==="sat");
   document.querySelectorAll("#baseSeg button").forEach(b=>b.setAttribute("aria-pressed",b.dataset.base===k?"true":"false"));
 }
+/* family photo src: Claude-hosted blobs, or the private GitHub data repo */
+const PHOTO_URLS=new Map();
+function photoSrc(aid){
+  if(!(S.db&&S.db.github))return "/_blob/"+aid;
+  const u=PHOTO_URLS.get(aid);if(u&&u!=="pending")return u;
+  if(!u){PHOTO_URLS.set(aid,"pending");S.db.photoURL(aid).then(url=>{if(!url){PHOTO_URLS.delete(aid);return;}PHOTO_URLS.set(aid,url);document.querySelectorAll('img[data-ph="'+aid+'"]').forEach(i=>i.src=url);}).catch(()=>PHOTO_URLS.delete(aid));}
+  return "data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==";
+}
+/* Google Street View of the address, layered over the aerial so missing imagery falls back to it */
+function streetView(l,w,h){
+  if(!WEB||!window.__GSV_KEY)return "";
+  const loc=[String(l.address||"").replace(/\s+(unit|apt|#)\s*\S+$/i,""),l.town,"NC",l.zip||""].join(", ");
+  const src=`https://maps.googleapis.com/maps/api/streetview?size=${w}x${h}&location=${encodeURIComponent(loc)}&fov=80&source=outdoor&return_error_code=true&key=${encodeURIComponent(window.__GSV_KEY)}`;
+  return `<img class="svimg" alt="Street View of ${esc(l.address)}" loading="lazy" decoding="async" src="${esc(src)}" onerror="this.remove()">`;
+}
 function aerial(l,w,h,z){
   if(!WEB||l.lat==null) return "";
   z=z||18; const n=Math.pow(2,z), lr=l.lat*Math.PI/180;
@@ -824,7 +842,7 @@ function renderList(){
     const sv=saversOf(l.id);
     const ph=photosOf(l)[0];
     li.innerHTML=`<span class="stripe" style="background:${col}"></span>
-      <div class="main">${ph?`<img class="thumb" alt="" loading="lazy" src="/_blob/${esc(ph[0])}">`:(WEB?`<div class="thumbwrap">${aerial(l,420,110,18)}</div>`:"")}<span class="p num">${money(l.price)}</span><span class="a">${esc(l.address)}</span>
+      <div class="main">${ph?`<img class="thumb" alt="" loading="lazy" data-ph="${esc(ph[0])}" src="${esc(photoSrc(ph[0]))}">`:(WEB?`<div class="thumbwrap">${aerial(l,420,110,18)}${streetView(l,640,220)}</div>`:"")}<span class="p num">${money(l.price)}</span><span class="a">${esc(l.address)}</span>
       <span class="m num">${esc(l.area)} · ${esc(factLine(l))}</span>
       <span class="m num">~${l.commute} min to FRF · <span class="pill ${esc(l.status)}">${esc(l.status)}</span>${l.addedBy&&l.addedBy!=="Claude"?" · added by "+esc(l.addedBy):""}</span></div>
       <div class="side"><button class="heart" type="button" aria-pressed="${isMine(l.id)}" aria-label="Save to ${S.user?esc(S.user.name):"my"} list">${isMine(l.id)?"♥":"♡"}</button>
@@ -888,14 +906,14 @@ function renderDrawer(){
    </div><button class="x" type="button" id="dClose" aria-label="Close details">×</button></div>
    <div class="dbody">
      <div class="sec photos">
-       ${WEB?`<div class="heroaerial">${aerial(l,700,230,19)}<span class="cap">Aerial view · Esri World Imagery</span></div>`:""}
-       ${photosOf(l).length?`<div class="gallery">${photosOf(l).map(([aid,p])=>`<figure><img alt="Photo of ${esc(l.address)}" loading="lazy" src="/_blob/${esc(aid)}"><figcaption>${esc(p.by)} · ${esc(String(p.at).slice(0,10))}${S.user&&S.user.name===p.by?` <button type="button" class="linkbtn" data-rmphoto="${esc(aid)}">Remove</button>`:""}</figcaption></figure>`).join("")}</div>`:""}
+       ${WEB?`<div class="heroaerial">${aerial(l,700,230,19)}${streetView(l,640,300)}<span class="cap">${window.__GSV_KEY?"Street View © Google · aerial if no street imagery":"Aerial view · Esri World Imagery"}</span></div>`:""}
+       ${photosOf(l).length?`<div class="gallery">${photosOf(l).map(([aid,p])=>`<figure><img alt="Photo of ${esc(l.address)}" loading="lazy" data-ph="${esc(aid)}" src="${esc(photoSrc(aid))}"><figcaption>${esc(p.by)} · ${esc(String(p.at).slice(0,10))}${S.user&&S.user.name===p.by?` <button type="button" class="linkbtn" data-rmphoto="${esc(aid)}">Remove</button>`:""}</figcaption></figure>`).join("")}</div>`:""}
        <div class="photo-cta">
-         <a class="btn pri" target="_blank" rel="noopener" href="${esc(linksFor(l)[1][1])}">See listing photos on Zillow</a>
+         ${S.assets?`<label class="btn pri" for="dPhotoIn">Add your photo</label><input type="file" id="dPhotoIn" accept="image/*" multiple hidden>`:""}
+         <a class="btn${S.assets?"":" pri"}" target="_blank" rel="noopener" href="${esc(linksFor(l)[1][1])}">See listing photos on Zillow</a>
          <a class="btn" target="_blank" rel="noopener" href="https://www.google.com/maps/@${l.lat},${l.lng},19z/data=!3m1!1e3">Google satellite</a>
-         ${S.assets?`<label class="btn" for="dPhotoIn">Add your photo</label><input type="file" id="dPhotoIn" accept="image/*" multiple hidden>`:""}
        </div>
-       <p class="hint" style="margin:0">Interior and listing photos belong to the listing agent, so they open on Zillow.${S.assets?" Photos you take on a drive-by can be added here for the family.":""}</p>
+       <p class="hint" style="margin:0">Interior and listing photos belong to the listing agent, so they open on Zillow.${S.assets?" Photos you take on a drive-by are added here for the whole family.":""}</p>
      </div>
      <div class="actions">
        <button class="btn ${mine?"ink":"pri"}" type="button" id="dSave">${mine?"♥ Saved to "+esc(S.user.name)+"'s list":"♡ Save to "+(S.user?esc(S.user.name)+"'s":"my")+" list"}</button>
@@ -1271,7 +1289,26 @@ function makeGitHubDb(token){
   setInterval(()=>{if(document.visibilityState==="visible")poll();},30000);
   document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="visible")poll();});
   poll();
-  return {github:true,
+  async function upload(blob){
+    const id="p"+Date.now().toString(36)+Math.random().toString(36).slice(2,7);
+    const b64=await new Promise((res,rej)=>{const fr=new FileReader();fr.onload=()=>res(String(fr.result).split(",")[1]);fr.onerror=rej;fr.readAsDataURL(blob);});
+    let nb=noBranch;
+    for(let attempt=0;attempt<2;attempt++){
+      const body={message:`${(S.user&&S.user.name)||"Someone"} added a photo`,content:b64};if(!nb)body.branch="main";
+      const r=await fetch(API+"/contents/photos/"+id+".jpg",{method:"PUT",headers:Object.assign({"Content-Type":"application/json"},H),body:JSON.stringify(body)});
+      if(r.ok){emptyRepo=false;return {id};}
+      if(r.status===401||r.status===403)throw {code:"denied"};
+      if(r.status===413)throw {code:"too_large"};
+      if(!nb&&emptyRepo){nb=noBranch=true;continue;}
+      break;
+    }
+    throw {code:"unavailable"};
+  }
+  async function photoURL(aid){
+    const r=await fetch(API+"/contents/photos/"+encodeURIComponent(aid)+".jpg?ref=main",{headers:Object.assign({},H,{"Accept":"application/vnd.github.raw"})});
+    if(!r.ok)return null;return URL.createObjectURL(await r.blob());
+  }
+  return {github:true,upload,photoURL,
     collection(c){return {limit(){return this;},onSnapshot(n){const f=()=>{const docs=docsOf(c);n({docs,size:docs.length});};subs.push(f);if(firstDone)setTimeout(f,0);else if(c==="sets"){setTimeout(f,0);}return()=>{const i=subs.indexOf(f);if(i>=0)subs.splice(i,1);};}};},
     doc(p){const [c,id]=p.split("/");return {
       onSnapshot(n){const f=()=>{const path=pathOf(c,id);const v=path&&cache.get(path);n({exists:!!v,data:()=>v&&v.data});};subs.push(f);if(firstDone)setTimeout(f,0);return()=>{};},
@@ -1319,7 +1356,7 @@ async function boot(){
   const h=(location.hash||"").replace("#","");if(["lists","users"].includes(h))go(h);else if(!S.user)go("users");
   S.db=WEB?null:await getCap("db");
   if(S.db){getCap("assets").then(a=>{S.assets=a;});}
-  else if(WEB&&window.__DATA_TOKEN){S.db=makeGitHubDb(window.__DATA_TOKEN);S.shared=true;}
+  else if(WEB&&window.__DATA_TOKEN){S.db=makeGitHubDb(window.__DATA_TOKEN);S.shared=true;S.assets={upload:b=>S.db.upload(b)};}
   else{S.db=makeLocalDb();S.localMode=true;showLocalBanner();}
   subscribe();
   if(S.localMode) setTimeout(importShared,300);
@@ -1341,6 +1378,7 @@ boot();
     window.__SNAPSHOT=JSON.parse(new TextDecoder().decode(pt));
     window.__FAMILY_KEY=k;
     if(window.__TOKENC){try{var tp=await crypto.subtle.decrypt({name:"AES-GCM",iv:b64(__TOKENC.iv)},key,b64(__TOKENC.ct));window.__DATA_TOKEN=new TextDecoder().decode(tp);}catch(_){}}
+    if(window.__GSVENC){try{var gp=await crypto.subtle.decrypt({name:"AES-GCM",iv:b64(__GSVENC.iv)},key,b64(__GSVENC.ct));window.__GSV_KEY=new TextDecoder().decode(gp);}catch(_){}}
     history.replaceState(null,"",location.pathname+location.search+(rest.length?"#"+rest.join("&"):""));
     document.getElementById("app").hidden=false;
     window.__startApp();
