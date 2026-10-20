@@ -370,6 +370,9 @@ table.matrix td.best{color:var(--accent);font-weight:700}
 #keyPanel .kcount{background:rgba(0,0,0,.6);color:#fff;font-size:11px;font-weight:600;padding:2px 7px;border-radius:10px}
 #keyPanel .pill{font-size:10.5px}
 @media (max-width:899px){#keyPanel{top:60px;right:10px;max-height:calc(100% - var(--sheet-h) - 80px)}}
+.dhead .hf{display:flex;flex-wrap:wrap;align-items:baseline;gap:2px 7px;font-size:15px;margin-top:4px;color:var(--ink)}
+.dhead .hf b{font-weight:700}
+.dhead .hf i{font-style:normal;color:var(--muted)}
 </style>
 </head><body>
 <div id="lock" hidden><div class="box"><h1>OBX House Hunt</h1><p>This map is private. Open it with the family link Drew sent you.</p></div></div>
@@ -999,6 +1002,13 @@ function chipsOverlay(){
   if(f.familyAdded) add("Added by","Family",()=>{f.familyAdded=false;changed();});
   if(f.q) add("Search",f.q,()=>{f.q="";changed();});
 }
+function headFacts(l){
+  const it=(v,u)=>`<span><b>${v}</b> ${u}</span>`;const out=[];
+  if(l.kind!=="lot"){if(l.beds!=null)out.push(it(l.beds,l.beds===1?"bed":"beds"));if(l.baths!=null)out.push(it(l.baths,l.baths===1?"bath":"baths"));if(l.sqft)out.push(it(l.sqft.toLocaleString(),"sq ft"));}
+  if(l.acres)out.push(it(l.acres,l.acres===1?"acre":"acres"));
+  if(l.kind==="lot")out.push(`<span>Lot</span>`);else if(l.sqft&&l.price)out.push(`<span>$${Math.round(l.price/l.sqft).toLocaleString()}/sq ft</span>`);
+  return out.join('<i aria-hidden="true">·</i>')||esc(KINDNAME[l.kind]||"");
+}
 function factLine(l){
   if(l.kind==="lot") return [l.acres?l.acres+" ac":"","Lot"].filter(Boolean).join(" · ");
   return [l.beds!=null?l.beds+" bd":"",l.baths!=null?l.baths+" ba":"",l.sqft?l.sqft.toLocaleString()+" sf":""].filter(Boolean).join(" · ")||KINDNAME[l.kind];
@@ -1086,6 +1096,7 @@ function renderDrawer(){
    <div class="dhead"><div style="min-width:0">
       <div class="p num">${money(l.price)}</div>
       <div class="a">${esc(l.address)}</div>
+      <div class="hf num">${headFacts(l)}</div>
       <div class="m">${esc(l.area)}${l.area!==l.town?` (${esc(l.town)} mailing address)`:""}, NC ${esc(l.zip||"")} · <span class="pill ${esc(l.status)}">${esc(l.status)}</span></div>
    </div><button class="x" type="button" id="dClose" aria-label="Close details">×</button></div>
    <div class="dbody">
