@@ -284,6 +284,32 @@ table.matrix td.best{color:var(--accent);font-weight:700}
 .lthumb img,.gallery img{position:static!important}
 .heroaerial,.thumbwrap{overflow:hidden!important;contain:paint}
 .dhead{position:sticky;top:0;z-index:5;background:var(--panel)}
+/* photo carousel */
+.heroaerial{height:260px}
+.car{position:absolute;inset:0;z-index:1;outline:none}
+.ctrack{display:flex;height:100%;overflow-x:auto;overflow-y:hidden;scroll-snap-type:x mandatory;scrollbar-width:none;-webkit-overflow-scrolling:touch;overscroll-behavior-x:contain;touch-action:pan-x pan-y}
+.ctrack::-webkit-scrollbar{display:none}
+.cslide{flex:0 0 100%;height:100%;scroll-snap-align:center;scroll-snap-stop:always;background:#1b2430}
+.cslide img{width:100%;height:100%;object-fit:cover;display:block;user-select:none;-webkit-user-select:none;cursor:zoom-in}
+.ccount{position:absolute;top:8px;right:8px;z-index:3;background:rgba(0,0,0,.6);color:#fff;font-size:12px;font-weight:600;padding:3px 9px;border-radius:12px;pointer-events:none}
+.ccount:empty{display:none}
+.carr{position:absolute;top:50%;transform:translateY(-50%);z-index:3;width:36px;height:36px;border-radius:50%;border:0;background:rgba(255,255,255,.9);color:#111;font-size:24px;line-height:1;display:none;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 1px 4px rgba(0,0,0,.3)}
+.carr.prev{left:8px}.carr.next{right:8px}
+@media (hover:hover){.car:hover .carr{display:flex}}
+.heroaerial .cap{pointer-events:none}
+#lightbox{position:fixed;inset:0;z-index:5000;background:#000;display:flex;flex-direction:column;color:#fff}
+#lightbox .lbhead,#lightbox .lbfoot{display:flex;align-items:center;gap:10px;padding:10px 14px;font-size:14px;padding-top:max(10px,env(safe-area-inset-top))}
+#lightbox .lbfoot{font-size:12px;opacity:.85;padding-bottom:max(10px,env(safe-area-inset-bottom))}
+#lightbox .lbfoot a{margin-left:auto;color:#fff;font-weight:600}
+#lightbox .lbhead span{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#lightbox .lbx{width:40px;height:40px;border-radius:50%;border:0;background:rgba(255,255,255,.15);color:#fff;font-size:24px;flex:none}
+#lightbox .car{position:relative;flex:1;min-height:0}
+#lightbox .cslide{background:#000}
+#lightbox .cslide img{object-fit:contain;cursor:default}
+#lightbox .ccount{top:auto;bottom:10px;right:50%;transform:translateX(50%)}
+.car.mini .cslide img{cursor:pointer}
+.car.mini .carr{width:28px;height:28px;font-size:20px}
+.car.mini .ccount{top:6px;right:6px;font-size:11px;padding:2px 7px}
 </style>
 </head><body>
 <div id="lock" hidden><div class="box"><h1>OBX House Hunt</h1><p>This map is private. Open it with the family link Drew sent you.</p></div></div>
@@ -676,6 +702,46 @@ function listingPhoto(l,i,w){
   return `https://images-listings.coldwellbanker.com/${MLS_FEED[m.length]}/${m.match(/.{1,2}/g).join("/")}/_P/${m}_P${String(i).padStart(2,"0")}.jpg`;
 }
 function listingImg(l,i,w,cls){const u=WEB?listingPhoto(l,i,w):"";return u?`<img class="${cls||"svimg"}" alt="Listing photo of ${esc(l.address)}" loading="lazy" decoding="async" referrerpolicy="no-referrer" src="${esc(u)}" onerror="this.remove()">`:"";}
+/* Swipeable photo carousel: discovers how many listing photos exist by loading a couple ahead of where you are. */
+function initCarousel(el,l,o){
+  o=o||{};let ended=false,total=null,cur=0,n=0;
+  el.innerHTML=`<div class="ctrack"></div><span class="ccount" aria-live="polite"></span><button type="button" class="carr prev" aria-label="Previous photo">‹</button><button type="button" class="carr next" aria-label="Next photo">›</button>`;
+  const tr=el.querySelector(".ctrack"),cnt=el.querySelector(".ccount");
+  const label=()=>{cnt.textContent=n?`${cur+1} / ${total!=null?total:n+"+"}`:"";if(total!=null&&cur+1===total&&o.more)cnt.textContent+="";};
+  function add(){
+    if(ended)return;const i=n++;const sl=document.createElement("div");sl.className="cslide";
+    const im=document.createElement("img");im.alt=`Listing photo ${i+1} of ${l.address}`;im.decoding="async";if(o.lazy)im.loading="lazy";im.referrerPolicy="no-referrer";im.draggable=false;
+    im.onerror=()=>{if(ended&&i>=total)return;ended=true;total=i;[...tr.children].slice(i).forEach(x=>x.remove());n=i;if(!i&&o.onEmpty)o.onEmpty();label();};
+    im.src=listingPhoto(l,i);sl.appendChild(im);tr.appendChild(sl);
+  }
+  const ahead=o.ahead!=null?o.ahead:2;function fill(){while(!ended&&n<cur+1+ahead)add();label();}
+  const idx=()=>Math.round(tr.scrollLeft/Math.max(1,tr.clientWidth));
+  tr.addEventListener("scroll",()=>{const i=idx();if(i!==cur){cur=i;fill();}},{passive:true});
+  const go=d=>{tr.scrollBy({left:d*tr.clientWidth,behavior:"smooth"});};
+  el.querySelector(".prev").onclick=e=>{e.stopPropagation();go(-1);};
+  el.querySelector(".next").onclick=e=>{e.stopPropagation();go(1);};
+  // tap (not swipe) opens full screen
+  let sx=0,sy=0,moved=false;
+  tr.addEventListener("pointerdown",e=>{sx=e.clientX;sy=e.clientY;moved=false;});
+  tr.addEventListener("pointermove",e=>{if(Math.abs(e.clientX-sx)+Math.abs(e.clientY-sy)>8)moved=true;});
+  tr.addEventListener("click",()=>{if(!moved&&o.onTap)o.onTap(cur);});
+  cur=o.start||0;fill();
+  if(cur){requestAnimationFrame(()=>{tr.scrollLeft=cur*tr.clientWidth;});}
+  el.addEventListener("keydown",e=>{if(e.key==="ArrowRight")go(1);if(e.key==="ArrowLeft")go(-1);});
+  return {go};
+}
+function openLightbox(l,start){
+  let lb=document.getElementById("lightbox");if(lb)lb.remove();
+  lb=document.createElement("div");lb.id="lightbox";lb.setAttribute("role","dialog");lb.setAttribute("aria-label","Photos of "+l.address);
+  lb.innerHTML=`<div class="lbhead"><span>${esc(l.address)} · ${money(l.price)}</span><button type="button" class="lbx" aria-label="Close photos">×</button></div><div class="car lb" tabindex="0"></div><div class="lbfoot"><span>Listing photos · courtesy of the listing broker</span><a target="_blank" rel="noopener" href="${esc(linksFor(l)[1][1])}">Zillow ↗</a></div>`;
+  document.body.appendChild(lb);
+  const close=fromBack=>{if(!document.getElementById("lightbox"))return;lb.remove();window.removeEventListener("popstate",onPop);document.removeEventListener("keydown",onKey);if(fromBack!==true&&history.state&&history.state.obxPhotos){try{history.back();}catch(e){}}};
+  const onPop=()=>close(true);const onKey=e=>{if(e.key==="Escape"){e.stopPropagation();close();}};
+  try{history.pushState({obxPhotos:1},"");}catch(e){}
+  window.addEventListener("popstate",onPop);document.addEventListener("keydown",onKey,true);
+  lb.querySelector(".lbx").onclick=()=>close();
+  const c=lb.querySelector(".car");initCarousel(c,l,{start:start||0,onEmpty:()=>close()});c.focus();
+}
 /* Google Street View of the address, layered over the aerial so missing imagery falls back to it */
 function streetView(l,w,h){
   if(!WEB||!window.__GSV_KEY)return "";
@@ -859,12 +925,13 @@ function renderList(){
     const sv=saversOf(l.id);
     const ph=photosOf(l)[0];
     li.innerHTML=`<span class="stripe" style="background:${col}"></span>
-      <div class="main">${ph?`<img class="thumb" alt="" loading="lazy" data-ph="${esc(ph[0])}" src="${esc(photoSrc(ph[0]))}">`:(WEB?`<div class="thumbwrap">${aerial(l,420,110,18)}${streetView(l,640,220)}${listingImg(l,0,640)}</div>`:"")}<span class="p num">${money(l.price)}</span><span class="a">${esc(l.address)}</span>
+      <div class="main">${ph?`<img class="thumb" alt="" loading="lazy" data-ph="${esc(ph[0])}" src="${esc(photoSrc(ph[0]))}">`:(WEB?`<div class="thumbwrap">${aerial(l,420,110,18)}${streetView(l,640,220)}${listingPhoto(l,0)?`<div class="car mini"></div>`:""}</div>`:"")}<span class="p num">${money(l.price)}</span><span class="a">${esc(l.address)}</span>
       <span class="m num">${esc(l.area)} · ${esc(factLine(l))}</span>
       <span class="m num">~${l.commute} min to FRF · <span class="pill ${esc(l.status)}">${esc(l.status)}</span>${l.addedBy&&l.addedBy!=="Claude"?" · added by "+esc(l.addedBy):""}</span></div>
       <div class="side"><button class="heart" type="button" aria-pressed="${isMine(l.id)}" aria-label="Save to ${S.user?esc(S.user.name):"my"} list">${isMine(l.id)?"♥":"♡"}</button>
       <a class="photolink" target="_blank" rel="noopener" href="${esc(linksFor(l)[1][1])}" aria-label="Listing photos for ${esc(l.address)} on Zillow">Photos ↗</a>
       <span class="savers">${sv.map(p=>`<span class="dot" title="Saved by ${esc(p.name)}" style="background:${colorFor(p.name)}">${initial(p.name)}</span>`).join("")}</span></div>`;
+    {const c=li.querySelector(".car.mini");if(c)initCarousel(c,l,{ahead:1,lazy:true,onEmpty:()=>c.remove()});}
     li.querySelector(".heart").onclick=e=>{e.stopPropagation();toggleSave(l.id);};
     li.querySelector(".photolink").onclick=e=>e.stopPropagation();
     li.onclick=()=>select(l.id,true);
@@ -908,7 +975,7 @@ function select(id,pan){
   // phone back button / swipe-back closes the listing instead of leaving the site
   if(!(history.state&&history.state.obxDrawer)){try{history.pushState({obxDrawer:1},"");}catch(e){}}
 }
-window.addEventListener("popstate",()=>{if(S.selected&&!$("#drawer").hidden)closeDrawer(true);});
+window.addEventListener("popstate",()=>{if(history.state&&(history.state.obxDrawer||history.state.obxPhotos))return;if(S.selected&&!$("#drawer").hidden)closeDrawer(true);});
 function closeDrawer(fromBack){if(fromBack!==true&&history.state&&history.state.obxDrawer){try{history.back();}catch(e){}}S.selected=null;$("#drawer").hidden=true;updateMarkers();if(innerWidth<900&&S.sheetBefore){setSheet(S.sheetBefore);S.sheetBefore=null;}}
 function renderDrawer(){
   const l=S.listings.get(S.selected);const d=$("#drawer");
@@ -926,8 +993,8 @@ function renderDrawer(){
    </div><button class="x" type="button" id="dClose" aria-label="Close details">×</button></div>
    <div class="dbody">
      <div class="sec photos">
-       ${WEB?`<div class="heroaerial" id="dHero">${aerial(l,700,230,19)}${streetView(l,640,300)}${listingImg(l,0,1000)}<span class="cap">${listingPhoto(l,0,1)?"Listing photo · courtesy of the listing broker":"Aerial view · Esri World Imagery"}</span></div>
-         ${listingPhoto(l,0,1)?`<div class="lstrip">${[1,2,3,4,5,6].map(i=>`<button type="button" class="lthumb" data-i="${i}" aria-label="Show listing photo ${i+1}">${listingImg(l,i,320,"lt")}</button>`).join("")}<a class="lmore" target="_blank" rel="noopener" href="${esc(linksFor(l)[1][1])}">All photos ↗</a></div>`:""}`:""}
+       ${WEB?`<div class="heroaerial" id="dHero">${aerial(l,700,260,19)}${streetView(l,640,300)}${listingPhoto(l,0)?`<div class="car" id="dCar"></div>`:""}<span class="cap">${listingPhoto(l,0)?"Listing photos · courtesy of the listing broker":"Aerial view · Esri World Imagery"}</span></div>`:""}
+
        ${photosOf(l).length?`<div class="gallery">${photosOf(l).map(([aid,p])=>`<figure><img alt="Photo of ${esc(l.address)}" loading="lazy" data-ph="${esc(aid)}" src="${esc(photoSrc(aid))}"><figcaption>${esc(p.by)} · ${esc(String(p.at).slice(0,10))}${S.user&&S.user.name===p.by?` <button type="button" class="linkbtn" data-rmphoto="${esc(aid)}">Remove</button>`:""}</figcaption></figure>`).join("")}</div>`:""}
        <div class="photo-cta">
          ${S.assets?`<label class="btn pri" for="dPhotoIn">Add your photo</label><input type="file" id="dPhotoIn" accept="image/*" multiple hidden>`:""}
@@ -973,8 +1040,8 @@ function renderDrawer(){
   $("#dClose").onclick=()=>closeDrawer();
   const pin=$("#dPhotoIn");if(pin)pin.onchange=e=>{const fs=[...e.target.files];e.target.value="";if(fs.length)addPhotos(l.id,fs);};
   d.querySelectorAll("[data-rmphoto]").forEach(b=>b.onclick=()=>removePhoto(l.id,b.dataset.rmphoto));
-  d.querySelectorAll(".lthumb").forEach(b=>{const im=b.querySelector("img");if(!im){b.remove();return;}im.addEventListener("error",()=>b.remove());
-    b.onclick=()=>{const hero=$("#dHero");if(!hero)return;let h=hero.querySelector("img.svimg[referrerpolicy]");if(!h){hero.insertAdjacentHTML("beforeend",listingImg(l,0,1000));h=hero.querySelector("img.svimg[referrerpolicy]");}h.src=listingPhoto(l,+b.dataset.i,1000);d.querySelectorAll(".lthumb").forEach(x=>x.setAttribute("aria-pressed",x===b?"true":"false"));};});
+  const car=$("#dCar");if(car)initCarousel(car,l,{start:0,onTap:i=>openLightbox(l,i),onEmpty:()=>{car.remove();const c=d.querySelector("#dHero .cap");if(c)c.textContent="Aerial view · Esri World Imagery";}});
+
   $("#dSave").onclick=()=>toggleSave(l.id);
   $("#dLoan").onclick=()=>openLoan(l.id);
   if($("#dSaveNote")) $("#dSaveNote").onclick=()=>saveMyNote(l.id,$("#dMyNote").value);
