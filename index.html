@@ -744,14 +744,21 @@ const markers=new Map();
 function initMap(){
   map=L.map("map",{zoomControl:false,attributionControl:true,minZoom:8,maxZoom:18,zoomSnap:0.5,preferCanvas:true,maxBounds:[[35.70,-76.25],[36.45,-75.30]]}).setView([36.06,-75.73],10.5);
   map.on("moveend zoomend",updateSatLink);updateSatLink();
-  map.attributionControl.setPrefix(false).addAttribution("Coastline: geo-maps (Natural Earth/OSM) · Pins: US Census geocoder");
+  map.attributionControl.setPrefix(false).addAttribution(WEB?"Listings: Outer Banks MLS via Coldwell Banker":"Coastline: geo-maps (Natural Earth/OSM) · Pins: US Census geocoder");
   if(WEB){
     const esri=(svc)=>`https://server.arcgisonline.com/ArcGIS/rest/services/${svc}/MapServer/tile/{z}/{y}/{x}`;
     BASE={
       sat:L.layerGroup([L.tileLayer(esri("World_Imagery"),{maxNativeZoom:19,maxZoom:20,attribution:"Imagery © Esri, Maxar, Earthstar Geographics"}),
                         L.tileLayer(esri("Reference/World_Transportation"),{maxNativeZoom:19,maxZoom:20,opacity:.7}),
                         L.tileLayer(esri("Reference/World_Boundaries_and_Places"),{maxNativeZoom:19,maxZoom:20})]),
-      streets:L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png",{maxNativeZoom:19,maxZoom:20,attribution:"© OpenStreetMap contributors"})
+      // Esri tiles throughout: OpenStreetMap's own servers refuse pages that don't send a referrer (this site doesn't).
+      streets:L.tileLayer(esri("World_Street_Map"),{maxNativeZoom:19,maxZoom:20,attribution:"Map © Esri, HERE, Garmin, USGS"}),
+      // Chart: Esri's ocean basemap (depths, channels) when zoomed out; it has no detail past zoom 13,
+      // so closer in it hands over to Esri's light gray street canvas.
+      chart:L.layerGroup([L.tileLayer(esri("Ocean/World_Ocean_Base"),{maxNativeZoom:13,maxZoom:13.49,attribution:"Ocean basemap © Esri, GEBCO, NOAA, Garmin"}),
+                          L.tileLayer(esri("Ocean/World_Ocean_Reference"),{maxNativeZoom:13,maxZoom:13.49}),
+                          L.tileLayer(esri("Canvas/World_Light_Gray_Base"),{minZoom:13.5,maxNativeZoom:16,maxZoom:20,attribution:"Map © Esri, HERE, Garmin"}),
+                          L.tileLayer(esri("Canvas/World_Light_Gray_Reference"),{minZoom:13.5,maxNativeZoom:16,maxZoom:20})])
     };
     map.setMaxZoom(20);
   }
@@ -774,10 +781,10 @@ let BASE=null, baseNow="chart";
 function setBase(k){
   if(!WEB) return; baseNow=k; store.set("obx.base",k);
   for(const key in BASE){ if(map.hasLayer(BASE[key])) map.removeLayer(BASE[key]); }
-  const chart=k==="chart";
-  [landLayer,roadLayer].forEach(L1=>{ if(chart){ if(!map.hasLayer(L1)) L1.addTo(map); } else if(map.hasLayer(L1)) map.removeLayer(L1); });
-  document.querySelectorAll(".water-label").forEach(e=>e.style.display=chart?"":"none");
-  if(!chart){ BASE[k].addTo(map); if(BASE[k].bringToBack) BASE[k].bringToBack(); }
+  // On the website every style is a tile map; the drawn coastline is only for the offline version.
+  [landLayer,roadLayer].forEach(L1=>{ if(map.hasLayer(L1)) map.removeLayer(L1); });
+  document.querySelectorAll(".water-label").forEach(e=>e.style.display="none");
+  BASE[k].addTo(map); if(BASE[k].bringToBack) BASE[k].bringToBack();
   document.getElementById("map").classList.toggle("on-sat",k==="sat");
   document.querySelectorAll("#baseSeg button").forEach(b=>b.setAttribute("aria-pressed",b.dataset.base===k?"true":"false"));
 }
