@@ -1,8 +1,8 @@
 name: Weekly Top Picks email
+# Started every Sunday at 8am Eastern by cron-job.org (GitHub's own scheduler proved unreliable,
+# and having both would risk sending the email twice). Can also be started by hand.
 on:
-  schedule:
-    - cron: "52 11 * * 0"   # Sundays, about 7:52am Eastern (6:52 in winter)
-  workflow_dispatch: {}      # "Run workflow" button for a test send
+  workflow_dispatch: {}
 permissions:
   contents: read
 jobs:
