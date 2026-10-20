@@ -668,7 +668,7 @@ function photoSrc(aid){
 const MLS_FEED={6:"NC_OBAR",8:"VA_REIN",9:"NC_CCAR"};
 function listingPhoto(l,i,w){
   const m=String(l.mls||"").trim();if(!/^\d+$/.test(m)||!MLS_FEED[m.length])return "";
-  return `https://images-listings.coldwellbanker.com/${MLS_FEED[m.length]}/${m.match(/.{1,2}/g).join("/")}/_P/${m}_P${String(i).padStart(2,"0")}.jpg?width=${w}`;
+  return `https://images-listings.coldwellbanker.com/${MLS_FEED[m.length]}/${m.match(/.{1,2}/g).join("/")}/_P/${m}_P${String(i).padStart(2,"0")}.jpg`;
 }
 function listingImg(l,i,w,cls){const u=WEB?listingPhoto(l,i,w):"";return u?`<img class="${cls||"svimg"}" alt="Listing photo of ${esc(l.address)}" loading="lazy" decoding="async" referrerpolicy="no-referrer" src="${esc(u)}" onerror="this.remove()">`:"";}
 /* Google Street View of the address, layered over the aerial so missing imagery falls back to it */
@@ -919,7 +919,7 @@ function renderDrawer(){
    <div class="dbody">
      <div class="sec photos">
        ${WEB?`<div class="heroaerial" id="dHero">${aerial(l,700,230,19)}${streetView(l,640,300)}${listingImg(l,0,1000)}<span class="cap">${listingPhoto(l,0,1)?"Listing photo · courtesy of the listing broker":"Aerial view · Esri World Imagery"}</span></div>
-         ${listingPhoto(l,0,1)?`<div class="lstrip">${[1,2,3,4,5,6].map(i=>`<button type="button" class="lthumb" data-i="${i}" aria-label="Show listing photo ${i+1}">${listingImg(l,i,320,"")}</button>`).join("")}<a class="lmore" target="_blank" rel="noopener" href="${esc(linksFor(l)[1][1])}">All photos ↗</a></div>`:""}`:""}
+         ${listingPhoto(l,0,1)?`<div class="lstrip">${[1,2,3,4,5,6].map(i=>`<button type="button" class="lthumb" data-i="${i}" aria-label="Show listing photo ${i+1}">${listingImg(l,i,320,"lt")}</button>`).join("")}<a class="lmore" target="_blank" rel="noopener" href="${esc(linksFor(l)[1][1])}">All photos ↗</a></div>`:""}`:""}
        ${photosOf(l).length?`<div class="gallery">${photosOf(l).map(([aid,p])=>`<figure><img alt="Photo of ${esc(l.address)}" loading="lazy" data-ph="${esc(aid)}" src="${esc(photoSrc(aid))}"><figcaption>${esc(p.by)} · ${esc(String(p.at).slice(0,10))}${S.user&&S.user.name===p.by?` <button type="button" class="linkbtn" data-rmphoto="${esc(aid)}">Remove</button>`:""}</figcaption></figure>`).join("")}</div>`:""}
        <div class="photo-cta">
          ${S.assets?`<label class="btn pri" for="dPhotoIn">Add your photo</label><input type="file" id="dPhotoIn" accept="image/*" multiple hidden>`:""}
