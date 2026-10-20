@@ -279,6 +279,11 @@ table.matrix td.best{color:var(--accent);font-weight:700}
 .lthumb[aria-pressed="true"]{border-color:var(--accent)}
 .lthumb img{width:100%;height:100%;object-fit:cover;display:block}
 .lmore{flex:none;display:flex;align-items:center;padding:0 10px;font-size:13px;font-weight:600;white-space:nowrap;color:var(--accent)}
+/* keep photos boxed in, and the close button always on top */
+.svimg{position:absolute!important}
+.lthumb img,.gallery img{position:static!important}
+.heroaerial,.thumbwrap{overflow:hidden!important;contain:paint}
+.dhead{position:sticky;top:0;z-index:5;background:var(--panel)}
 </style>
 </head><body>
 <div id="lock" hidden><div class="box"><h1>OBX House Hunt</h1><p>This map is private. Open it with the family link Drew sent you.</p></div></div>
@@ -900,8 +905,11 @@ function select(id,pan){
   const li=document.querySelector(`.item[data-id="${CSS.escape(id)}"]`);if(li){li.classList.add("sel");}
   if(pan&&map) map.panTo([l.lat,l.lng]);
   if(innerWidth<900){if(S.sheet!=="mini")S.sheetBefore=S.sheet||"mid";setSheet("mini");}
+  // phone back button / swipe-back closes the listing instead of leaving the site
+  if(!(history.state&&history.state.obxDrawer)){try{history.pushState({obxDrawer:1},"");}catch(e){}}
 }
-function closeDrawer(){S.selected=null;$("#drawer").hidden=true;updateMarkers();if(innerWidth<900&&S.sheetBefore){setSheet(S.sheetBefore);S.sheetBefore=null;}}
+window.addEventListener("popstate",()=>{if(S.selected&&!$("#drawer").hidden)closeDrawer(true);});
+function closeDrawer(fromBack){if(fromBack!==true&&history.state&&history.state.obxDrawer){try{history.back();}catch(e){}}S.selected=null;$("#drawer").hidden=true;updateMarkers();if(innerWidth<900&&S.sheetBefore){setSheet(S.sheetBefore);S.sheetBefore=null;}}
 function renderDrawer(){
   const l=S.listings.get(S.selected);const d=$("#drawer");
   if(!l){d.hidden=true;return;}
@@ -962,7 +970,7 @@ function renderDrawer(){
      <div class="sec"><h3>Family notes</h3><div class="notes">${notes.length?notes.map(([k,n])=>`<div class="note">${esc(n.text)}<small>${esc(n.by)} · ${esc(String(n.at).slice(0,16).replace("T"," "))}</small></div>`).join(""):`<p class="hint" style="margin:0">No notes yet.</p>`}</div>
        <form id="dNoteForm" style="display:grid;gap:6px;margin-top:8px"><textarea id="dNote" rows="2" placeholder="Drove by, needs a roof, great street…" required></textarea><div><button class="btn sm" type="submit">Add note as ${S.user?esc(S.user.name):"…"}</button></div></form></div>
    </div>`;
-  $("#dClose").onclick=closeDrawer;
+  $("#dClose").onclick=()=>closeDrawer();
   const pin=$("#dPhotoIn");if(pin)pin.onchange=e=>{const fs=[...e.target.files];e.target.value="";if(fs.length)addPhotos(l.id,fs);};
   d.querySelectorAll("[data-rmphoto]").forEach(b=>b.onclick=()=>removePhoto(l.id,b.dataset.rmphoto));
   d.querySelectorAll(".lthumb").forEach(b=>{const im=b.querySelector("img");if(!im){b.remove();return;}im.addEventListener("error",()=>b.remove());
