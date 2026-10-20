@@ -274,6 +274,11 @@ table.matrix td.best{color:var(--accent);font-weight:700}
 .thumbwrap,.heroaerial{position:relative}
 .svimg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:1}
 .heroaerial .cap{z-index:2}
+.lstrip{display:flex;gap:6px;overflow-x:auto;padding:6px 0 2px;scrollbar-width:thin;align-items:stretch}
+.lthumb{flex:none;width:96px;height:64px;padding:0;border:2px solid transparent;border-radius:6px;overflow:hidden;background:var(--panel-2);cursor:pointer}
+.lthumb[aria-pressed="true"]{border-color:var(--accent)}
+.lthumb img{width:100%;height:100%;object-fit:cover;display:block}
+.lmore{flex:none;display:flex;align-items:center;padding:0 10px;font-size:13px;font-weight:600;white-space:nowrap;color:var(--accent)}
 </style>
 </head><body>
 <div id="lock" hidden><div class="box"><h1>OBX House Hunt</h1><p>This map is private. Open it with the family link Drew sent you.</p></div></div>
@@ -659,6 +664,13 @@ function photoSrc(aid){
   if(!u){PHOTO_URLS.set(aid,"pending");S.db.photoURL(aid).then(url=>{if(!url){PHOTO_URLS.delete(aid);return;}PHOTO_URLS.set(aid,url);document.querySelectorAll('img[data-ph="'+aid+'"]').forEach(i=>i.src=url);}).catch(()=>PHOTO_URLS.delete(aid));}
   return "data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==";
 }
+/* Listing photos, shown straight from the listing feed's image server (nothing is copied here). */
+const MLS_FEED={6:"NC_OBAR",8:"VA_REIN",9:"NC_CCAR"};
+function listingPhoto(l,i,w){
+  const m=String(l.mls||"").trim();if(!/^\d+$/.test(m)||!MLS_FEED[m.length])return "";
+  return `https://images-listings.coldwellbanker.com/${MLS_FEED[m.length]}/${m.match(/.{1,2}/g).join("/")}/_P/${m}_P${String(i).padStart(2,"0")}.jpg?width=${w}`;
+}
+function listingImg(l,i,w,cls){const u=WEB?listingPhoto(l,i,w):"";return u?`<img class="${cls||"svimg"}" alt="Listing photo of ${esc(l.address)}" loading="lazy" decoding="async" referrerpolicy="no-referrer" src="${esc(u)}" onerror="this.remove()">`:"";}
 /* Google Street View of the address, layered over the aerial so missing imagery falls back to it */
 function streetView(l,w,h){
   if(!WEB||!window.__GSV_KEY)return "";
@@ -842,7 +854,7 @@ function renderList(){
     const sv=saversOf(l.id);
     const ph=photosOf(l)[0];
     li.innerHTML=`<span class="stripe" style="background:${col}"></span>
-      <div class="main">${ph?`<img class="thumb" alt="" loading="lazy" data-ph="${esc(ph[0])}" src="${esc(photoSrc(ph[0]))}">`:(WEB?`<div class="thumbwrap">${aerial(l,420,110,18)}${streetView(l,640,220)}</div>`:"")}<span class="p num">${money(l.price)}</span><span class="a">${esc(l.address)}</span>
+      <div class="main">${ph?`<img class="thumb" alt="" loading="lazy" data-ph="${esc(ph[0])}" src="${esc(photoSrc(ph[0]))}">`:(WEB?`<div class="thumbwrap">${aerial(l,420,110,18)}${streetView(l,640,220)}${listingImg(l,0,640)}</div>`:"")}<span class="p num">${money(l.price)}</span><span class="a">${esc(l.address)}</span>
       <span class="m num">${esc(l.area)} · ${esc(factLine(l))}</span>
       <span class="m num">~${l.commute} min to FRF · <span class="pill ${esc(l.status)}">${esc(l.status)}</span>${l.addedBy&&l.addedBy!=="Claude"?" · added by "+esc(l.addedBy):""}</span></div>
       <div class="side"><button class="heart" type="button" aria-pressed="${isMine(l.id)}" aria-label="Save to ${S.user?esc(S.user.name):"my"} list">${isMine(l.id)?"♥":"♡"}</button>
@@ -906,14 +918,15 @@ function renderDrawer(){
    </div><button class="x" type="button" id="dClose" aria-label="Close details">×</button></div>
    <div class="dbody">
      <div class="sec photos">
-       ${WEB?`<div class="heroaerial">${aerial(l,700,230,19)}${streetView(l,640,300)}<span class="cap">${window.__GSV_KEY?"Street View © Google · aerial if no street imagery":"Aerial view · Esri World Imagery"}</span></div>`:""}
+       ${WEB?`<div class="heroaerial" id="dHero">${aerial(l,700,230,19)}${streetView(l,640,300)}${listingImg(l,0,1000)}<span class="cap">${listingPhoto(l,0,1)?"Listing photo · courtesy of the listing broker":"Aerial view · Esri World Imagery"}</span></div>
+         ${listingPhoto(l,0,1)?`<div class="lstrip">${[1,2,3,4,5,6].map(i=>`<button type="button" class="lthumb" data-i="${i}" aria-label="Show listing photo ${i+1}">${listingImg(l,i,320,"")}</button>`).join("")}<a class="lmore" target="_blank" rel="noopener" href="${esc(linksFor(l)[1][1])}">All photos ↗</a></div>`:""}`:""}
        ${photosOf(l).length?`<div class="gallery">${photosOf(l).map(([aid,p])=>`<figure><img alt="Photo of ${esc(l.address)}" loading="lazy" data-ph="${esc(aid)}" src="${esc(photoSrc(aid))}"><figcaption>${esc(p.by)} · ${esc(String(p.at).slice(0,10))}${S.user&&S.user.name===p.by?` <button type="button" class="linkbtn" data-rmphoto="${esc(aid)}">Remove</button>`:""}</figcaption></figure>`).join("")}</div>`:""}
        <div class="photo-cta">
          ${S.assets?`<label class="btn pri" for="dPhotoIn">Add your photo</label><input type="file" id="dPhotoIn" accept="image/*" multiple hidden>`:""}
          <a class="btn${S.assets?"":" pri"}" target="_blank" rel="noopener" href="${esc(linksFor(l)[1][1])}">See listing photos on Zillow</a>
          <a class="btn" target="_blank" rel="noopener" href="https://www.google.com/maps/@${l.lat},${l.lng},19z/data=!3m1!1e3">Google satellite</a>
        </div>
-       <p class="hint" style="margin:0">Interior and listing photos belong to the listing agent, so they open on Zillow.${S.assets?" Photos you take on a drive-by are added here for the whole family.":""}</p>
+       <p class="hint" style="margin:0">Listing photos load from the listing feed; tap “All photos” for the full set.${S.assets?" Photos you take on a drive-by are added here for the whole family.":""}</p>
      </div>
      <div class="actions">
        <button class="btn ${mine?"ink":"pri"}" type="button" id="dSave">${mine?"♥ Saved to "+esc(S.user.name)+"'s list":"♡ Save to "+(S.user?esc(S.user.name)+"'s":"my")+" list"}</button>
@@ -952,6 +965,8 @@ function renderDrawer(){
   $("#dClose").onclick=closeDrawer;
   const pin=$("#dPhotoIn");if(pin)pin.onchange=e=>{const fs=[...e.target.files];e.target.value="";if(fs.length)addPhotos(l.id,fs);};
   d.querySelectorAll("[data-rmphoto]").forEach(b=>b.onclick=()=>removePhoto(l.id,b.dataset.rmphoto));
+  d.querySelectorAll(".lthumb").forEach(b=>{const im=b.querySelector("img");if(!im){b.remove();return;}im.addEventListener("error",()=>b.remove());
+    b.onclick=()=>{const hero=$("#dHero");if(!hero)return;let h=hero.querySelector("img.svimg[referrerpolicy]");if(!h){hero.insertAdjacentHTML("beforeend",listingImg(l,0,1000));h=hero.querySelector("img.svimg[referrerpolicy]");}h.src=listingPhoto(l,+b.dataset.i,1000);d.querySelectorAll(".lthumb").forEach(x=>x.setAttribute("aria-pressed",x===b?"true":"false"));};});
   $("#dSave").onclick=()=>toggleSave(l.id);
   $("#dLoan").onclick=()=>openLoan(l.id);
   if($("#dSaveNote")) $("#dSaveNote").onclick=()=>saveMyNote(l.id,$("#dMyNote").value);
