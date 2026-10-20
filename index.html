@@ -1,0 +1,1207 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow,noarchive">
+<meta name="referrer" content="no-referrer">
+<title>OBX House Hunt</title>
+<meta name="theme-color" content="#18263a">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&family=Barlow+Condensed:wght@500;600;700&family=Spectral:ital@1&display=swap">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css">
+<style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);box-sizing:border-box}body{margin:0}img{max-width:100%}[hidden]{display:none!important}
+#lock{position:fixed;inset:0;display:grid;place-items:center;padding:24px;text-align:center}
+#lock .box{max-width:420px;display:grid;gap:10px}
+#lock h1{margin:0;font-family:var(--f-cond);text-transform:uppercase;letter-spacing:.03em}
+/* Layout: map-first chart table. Filter/list panel on the left (bottom sheet on phones), detail drawer on the right. */
+:root{
+  --bg:#f3f1ea; --panel:#fbfaf6; --panel-2:#f1eee5; --ink:#18263a; --muted:#5a6878; --line:#dcd8cc;
+  --water:#d9e7ee; --water-2:#cadde7; --land:#f2e8cc; --land-edge:#b8a67a; --road:#c08a5a; --road-major:#9c6a3d;
+  --accent:#b3157c; --accent-ink:#ffffff; --nav:#1d4a73; --house:#1d4a73; --condo:#0d7766; --lot:#a8700f;
+  --good:#2e7d4f; --warn:#a86b00; --bad:#b23a3a; --shadow:0 6px 24px rgba(24,38,58,.14);
+  --f-ui:"Barlow",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --f-cond:"Barlow Condensed","Arial Narrow",system-ui,sans-serif;
+  --f-chart:"Spectral",Georgia,"Times New Roman",serif;
+  --r:10px;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0b141d; --panel:#111c27; --panel-2:#16232f; --ink:#e4eaf0; --muted:#97a6b4; --line:#253443;
+  --water:#0e1f2c; --water-2:#132836; --land:#25303c; --land-edge:#4a5a6b; --road:#8a6a4c; --road-major:#b08860;
+  --accent:#ee6cbf; --accent-ink:#1a0d16; --nav:#8cb9e6; --house:#8cb9e6; --condo:#4fc6ad; --lot:#e2b259;
+  --good:#6cc890; --warn:#e2b259; --bad:#f08080; --shadow:0 8px 28px rgba(0,0,0,.45); color-scheme:dark }}
+:root[data-theme="dark"]{
+  --bg:#0b141d; --panel:#111c27; --panel-2:#16232f; --ink:#e4eaf0; --muted:#97a6b4; --line:#253443;
+  --water:#0e1f2c; --water-2:#132836; --land:#25303c; --land-edge:#4a5a6b; --road:#8a6a4c; --road-major:#b08860;
+  --accent:#ee6cbf; --accent-ink:#1a0d16; --nav:#8cb9e6; --house:#8cb9e6; --condo:#4fc6ad; --lot:#e2b259;
+  --good:#6cc890; --warn:#e2b259; --bad:#f08080; --shadow:0 8px 28px rgba(0,0,0,.45); color-scheme:dark }
+
+html,body{height:100%}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-ui);font-size:15px;line-height:1.4}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--panel)}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.num{font-variant-numeric:tabular-nums}
+
+#app{height:100%;display:grid;grid-template-rows:auto 1fr;min-height:0}
+.bar{display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding-block:8px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));background:var(--panel);border-bottom:1px solid var(--line);position:relative;z-index:6}
+.brand{display:flex;align-items:baseline;gap:8px;min-width:0}
+.brand b{font-family:var(--f-cond);font-weight:700;font-size:21px;letter-spacing:.02em;text-transform:uppercase}
+.brand span{font-family:var(--f-chart);font-style:italic;color:var(--muted);font-size:14px;white-space:nowrap}
+.tabs{display:flex;gap:2px;background:var(--panel-2);border:1px solid var(--line);border-radius:999px;padding:3px;margin-left:auto}
+.tabs button{border:0;background:transparent;padding:5px 14px;border-radius:999px;font-family:var(--f-cond);font-weight:600;font-size:15px;letter-spacing:.04em;text-transform:uppercase;color:var(--muted)}
+.tabs button[aria-selected="true"]{background:var(--ink);color:var(--panel)}
+.who{display:flex;align-items:center;gap:8px;border:1px solid var(--line);background:var(--panel);border-radius:999px;padding:3px 12px 3px 3px;font-weight:600}
+.dot{width:26px;height:26px;border-radius:50%;display:inline-grid;place-items:center;font-family:var(--f-cond);font-weight:700;font-size:13px;color:#fff;flex:none}
+@media (max-width:640px){.brand span{display:none}.tabs{order:3;width:100%;margin-left:0;justify-content:space-between}.tabs button{flex:1}.who{margin-left:auto}}
+
+main{position:relative;min-height:0;overflow:hidden}
+.view{position:absolute;inset:0;min-height:0}
+.view[hidden]{display:none!important}
+
+/* MAP VIEW */
+#view-map{display:grid;grid-template-columns:390px 1fr;min-height:0;transition:grid-template-columns .25s ease}
+#view-map.maponly{grid-template-columns:0 1fr}
+#view-map.maponly #panel{overflow:hidden;border-right:0}
+#panel{background:var(--panel);border-right:1px solid var(--line);display:flex;flex-direction:column;min-height:0;z-index:4}
+#mapwrap{position:relative;min-width:0;min-height:0;isolation:isolate;z-index:0}
+#map{position:absolute;inset:0;background:var(--water)}
+.leaflet-container{background:var(--water);font-family:var(--f-ui)}
+.panel-head{display:flex;align-items:center;gap:8px;padding:10px 16px;border-bottom:1px solid var(--line)}
+.panel-head h2{margin:0;font-family:var(--f-cond);font-size:18px;font-weight:700;letter-spacing:.03em;text-transform:uppercase}
+.count{font-family:var(--f-cond);font-weight:600;color:var(--muted)}
+.sheet-handle{display:none}
+.scroll{overflow:auto;min-height:0;flex:1}
+.filters{padding:4px 16px 12px;border-bottom:1px solid var(--line)}
+details.fg{border-bottom:1px dashed var(--line);padding:6px 0}
+details.fg:last-child{border-bottom:0}
+details.fg>summary{list-style:none;cursor:pointer;display:flex;align-items:center;justify-content:space-between;font-family:var(--f-cond);font-weight:700;font-size:14px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);padding:4px 0}
+details.fg>summary::-webkit-details-marker{display:none}
+details.fg>summary::after{content:"+";font-size:18px;line-height:1}
+details.fg[open]>summary::after{content:"–"}
+details.fg>summary .sv{font-family:var(--f-ui);text-transform:none;letter-spacing:0;font-weight:600;color:var(--accent);font-size:13px;margin-left:auto;margin-right:8px;max-width:58%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.fbody{display:grid;gap:8px;padding:6px 0 4px}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:8px;overflow:hidden}
+.seg button{border:0;background:var(--panel);padding:6px 12px;font-weight:600;font-size:14px}
+.seg button+button{border-left:1px solid var(--line)}
+.seg button[aria-pressed="true"]{background:var(--ink);color:var(--panel)}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{border:1px solid var(--line);background:var(--panel);border-radius:999px;padding:4px 11px;font-size:13.5px;font-weight:500;line-height:1.3}
+.chip[aria-pressed="true"]{background:var(--ink);color:var(--panel);border-color:var(--ink)}
+.chip:disabled{opacity:.45;cursor:not-allowed}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+label.f{display:grid;gap:3px;font-size:12.5px;font-weight:600;color:var(--muted)}
+select,input[type=text],input[type=number],input[type=url],textarea{width:100%;box-sizing:border-box;border:1px solid var(--line);background:var(--panel);border-radius:8px;padding:7px 9px;font-size:14.5px}
+input[type=range]{width:100%;accent-color:var(--accent)}
+.rangeval{font-family:var(--f-cond);font-weight:700;font-size:16px}
+.hint{font-size:12.5px;color:var(--muted)}
+.check{display:flex;align-items:center;gap:8px;font-size:14px}
+.check input{accent-color:var(--accent);width:16px;height:16px}
+.btn{border:1px solid var(--line);background:var(--panel);border-radius:8px;padding:7px 12px;font-weight:600;font-size:14px;display:inline-flex;align-items:center;gap:6px;text-decoration:none;color:inherit}
+.btn.pri{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.btn.ink{background:var(--ink);border-color:var(--ink);color:var(--panel)}
+.btn.sm{padding:4px 9px;font-size:13px}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.listhead{display:flex;align-items:center;gap:8px;padding:10px 16px 6px;position:sticky;top:0;background:var(--panel);z-index:1;border-bottom:1px solid var(--line)}
+.listhead select{width:auto;padding:5px 8px;font-size:13.5px}
+.listhead .count{margin-right:auto}
+.list{list-style:none;margin:0;padding:0}
+.item{display:grid;grid-template-columns:6px 1fr auto;gap:10px;padding:10px 16px 10px 0;border-bottom:1px solid var(--line);cursor:pointer}
+.item:hover,.item.sel{background:var(--panel-2)}
+.item .stripe{border-radius:0 3px 3px 0}
+.item .p{font-family:var(--f-cond);font-weight:700;font-size:19px;letter-spacing:.01em}
+.item .a{font-weight:600;font-size:14.5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.item .m{font-size:13px;color:var(--muted)}
+.item .main{min-width:0;display:grid;gap:1px}
+.item .side{display:grid;justify-items:end;align-content:start;gap:6px}
+.heart{border:0;background:transparent;font-size:20px;line-height:1;padding:2px;color:var(--muted)}
+.heart[aria-pressed="true"]{color:var(--accent)}
+.pill{display:inline-block;font-family:var(--f-cond);font-weight:700;font-size:12px;letter-spacing:.06em;text-transform:uppercase;border-radius:4px;padding:1px 6px;border:1px solid currentColor}
+.pill.Active{color:var(--good)} .pill.Pending,.pill.Contingent{color:var(--warn)} .pill.Unverified{color:var(--muted)} .pill.Sold,.pill.Gone{color:var(--bad)}
+.savers{display:flex;gap:2px}
+.savers .dot{width:18px;height:18px;font-size:10px}
+.more{padding:12px 16px}
+.empty{padding:24px 16px;color:var(--muted)}
+
+/* Map overlays */
+#chipbar{position:absolute;top:10px;left:10px;right:150px;z-index:500;display:flex;flex-wrap:wrap;gap:6px;pointer-events:none}
+#chipbar .fchip{pointer-events:auto;display:inline-flex;align-items:center;gap:6px;background:var(--panel);border:1px solid var(--line);box-shadow:var(--shadow);border-radius:999px;padding:4px 6px 4px 11px;font-size:13px;font-weight:600}
+#chipbar .fchip b{font-family:var(--f-cond);font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);font-size:12px}
+#chipbar .fchip button{border:0;background:var(--panel-2);border-radius:50%;width:20px;height:20px;line-height:18px;padding:0;font-size:14px}
+#chipbar .fchip.lead{background:var(--ink);color:var(--panel);border-color:var(--ink)}
+#chipbar .fchip.lead b{color:var(--panel);opacity:.75}
+.mapbtns{position:absolute;right:calc(10px + env(safe-area-inset-right,0px));top:calc(54px);z-index:500;display:grid;gap:6px;justify-items:end}
+.leaflet-bottomright .leaflet-control-zoom{margin-bottom:calc(24px + env(safe-area-inset-bottom,0px));margin-right:calc(10px + env(safe-area-inset-right,0px))}
+.leaflet-control-zoom a{width:40px!important;height:40px!important;line-height:40px!important;font-size:22px!important}
+.mapbtns .btn{box-shadow:var(--shadow);justify-content:center}
+.legend{position:absolute;left:10px;bottom:calc(22px + env(safe-area-inset-bottom,0px));z-index:500;background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:6px 10px;font-size:12.5px;display:flex;gap:10px;box-shadow:var(--shadow);flex-wrap:wrap;max-width:calc(100% - 140px)}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:4px;vertical-align:-1px}
+.legend i.lot{background:transparent;border:2px solid var(--lot);width:7px;height:7px}
+.town-label{font-family:var(--f-cond);font-weight:700;font-size:13px;letter-spacing:.09em;text-transform:uppercase;color:var(--ink);white-space:nowrap;text-shadow:0 0 3px var(--land),0 0 3px var(--land),0 0 6px var(--land);cursor:pointer;transform:translate(-50%,-50%);display:inline-block}
+.town-label.on{color:var(--accent)}
+.town-label.dim{opacity:.4}
+.water-label{font-family:var(--f-chart);font-style:italic;font-size:14px;color:var(--muted);white-space:nowrap;transform:translate(-50%,-50%);display:inline-block;letter-spacing:.05em;pointer-events:none}
+.frf-pin{display:grid;justify-items:center;transform:translate(-50%,-100%)}
+.frf-pin b{background:var(--accent);color:var(--accent-ink);font-family:var(--f-cond);font-weight:700;letter-spacing:.06em;font-size:12px;padding:1px 6px;border-radius:4px;white-space:nowrap}
+.frf-pin i{width:2px;height:10px;background:var(--accent)}
+.school-pin{width:18px;height:18px;border-radius:4px;background:var(--panel);border:1.5px solid var(--ink);display:grid;place-items:center;font-family:var(--f-cond);font-weight:700;font-size:11px;color:var(--ink);transform:translate(-50%,-50%)}
+.leaflet-tooltip{background:var(--panel);color:var(--ink);border:1px solid var(--line);box-shadow:var(--shadow);font-family:var(--f-ui);font-size:13px;border-radius:6px}
+.leaflet-tooltip-top:before{border-top-color:var(--line)}
+.leaflet-control-zoom a{background:var(--panel)!important;color:var(--ink)!important;border-color:var(--line)!important}
+.leaflet-control-attribution{background:transparent!important;color:var(--muted)!important;font-size:10px!important}
+.leaflet-control-attribution a{color:var(--muted)!important}
+
+/* Drawer */
+#drawer{position:absolute;top:0;right:0;bottom:0;width:440px;max-width:100%;background:var(--panel);border-left:1px solid var(--line);box-shadow:var(--shadow);z-index:900;display:flex;flex-direction:column;min-height:0}
+#drawer[hidden]{display:none!important}
+.dhead{display:flex;align-items:flex-start;gap:10px;padding:14px 16px 10px;border-bottom:1px solid var(--line)}
+.dhead .p{font-family:var(--f-cond);font-weight:700;font-size:30px;line-height:1}
+.dhead .a{font-weight:600;font-size:16px;margin-top:4px}
+.dhead .m{color:var(--muted);font-size:13.5px}
+.dhead .x{margin-left:auto;border:1px solid var(--line);background:var(--panel);border-radius:8px;width:34px;height:34px;font-size:18px;flex:none}
+.dbody{padding:12px 16px 24px;overflow:auto;display:grid;gap:16px;min-height:0;flex:1}
+.facts{display:grid;grid-template-columns:repeat(3,1fr);gap:0;border:1px solid var(--line);border-radius:var(--r);overflow:hidden}
+.facts div{padding:8px 10px;border-right:1px solid var(--line);border-bottom:1px solid var(--line);min-width:0}
+.facts div:nth-child(3n){border-right:0}
+.facts dt{font-family:var(--f-cond);font-weight:600;font-size:11.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.facts dd{margin:0;font-weight:600;font-size:15px;overflow-wrap:anywhere}
+.sec h3{margin:0 0 6px;font-family:var(--f-cond);font-weight:700;font-size:14px;letter-spacing:.09em;text-transform:uppercase;color:var(--muted)}
+.kv{display:grid;grid-template-columns:auto 1fr;gap:4px 12px;font-size:14px}
+.kv span:nth-child(odd){color:var(--muted)}
+.links{display:flex;flex-wrap:wrap;gap:6px}
+.actions{display:flex;flex-wrap:wrap;gap:8px}
+.notes{display:grid;gap:8px}
+.note{border-left:3px solid var(--line);padding:2px 0 2px 10px;font-size:14px}
+.note small{color:var(--muted);display:block}
+.approx{font-size:12.5px;color:var(--warn)}
+
+/* Lists + Users views */
+.page{overflow:auto;height:100%;padding-block:16px 40px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));box-sizing:border-box}
+.wrap{max-width:1100px;margin:0 auto;display:grid;gap:18px}
+.page h1{margin:0;font-family:var(--f-cond);font-weight:700;font-size:28px;letter-spacing:.02em;text-transform:uppercase;text-wrap:balance}
+.page .lede{margin:0;color:var(--muted);max-width:65ch}
+.people{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:12px}
+.pcard{border:1px solid var(--line);background:var(--panel);border-radius:var(--r);padding:14px;display:grid;gap:8px;text-align:left}
+.pcard .dot{width:40px;height:40px;font-size:18px}
+.pcard b{font-size:17px}
+.pcard small{color:var(--muted)}
+.pcard[aria-pressed="true"]{border-color:var(--accent);box-shadow:0 0 0 2px var(--accent) inset}
+.ptabs{display:flex;flex-wrap:wrap;gap:6px}
+.group h2{font-family:var(--f-cond);font-weight:700;font-size:18px;letter-spacing:.05em;text-transform:uppercase;margin:6px 0 8px;display:flex;align-items:baseline;gap:8px}
+.group h2 small{font-family:var(--f-ui);font-weight:500;text-transform:none;letter-spacing:0;color:var(--muted);font-size:13px}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px}
+.scard{border:1px solid var(--line);background:var(--panel);border-radius:var(--r);padding:12px 14px;display:grid;gap:6px;min-width:0}
+.scard .p{font-family:var(--f-cond);font-weight:700;font-size:22px}
+.scard .a{font-weight:600}
+.scard .m{color:var(--muted);font-size:13.5px}
+.scard .chg{font-size:13px;font-weight:600}
+.scard .loan{font-size:13.5px;background:var(--panel-2);border-radius:8px;padding:6px 8px}
+.scard .row{display:flex;gap:6px;flex-wrap:wrap}
+
+/* Modals */
+.modal{position:fixed;inset:0;z-index:2000;background:rgba(10,18,28,.45);display:grid;place-items:center;padding:16px}
+.modal[hidden]{display:none!important}
+.dialog{background:var(--panel);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow);width:min(760px,100%);max-height:calc(100% - 20px);display:flex;flex-direction:column;min-height:0}
+.dialog header{display:flex;align-items:center;gap:10px;padding:14px 16px;border-bottom:1px solid var(--line)}
+.dialog header h2{margin:0;font-family:var(--f-cond);font-weight:700;font-size:20px;letter-spacing:.03em;text-transform:uppercase}
+.dialog header .x{margin-left:auto}
+.dialog .dbody{padding:14px 16px}
+.loan-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media (max-width:640px){.loan-grid{grid-template-columns:1fr}}
+.bigpay{font-family:var(--f-cond);font-weight:700;font-size:40px;line-height:1}
+.breakdown{display:grid;grid-template-columns:1fr auto;gap:3px 12px;font-size:14px}
+.breakdown span:nth-child(even){text-align:right;font-variant-numeric:tabular-nums}
+.breakdown .tot{border-top:1px solid var(--line);padding-top:4px;font-weight:700}
+.bar-stack{display:flex;height:12px;border-radius:6px;overflow:hidden;background:var(--panel-2)}
+.bar-stack i{display:block;height:100%}
+.matrix-wrap{overflow-x:auto}
+table.matrix{border-collapse:collapse;width:100%;font-size:13.5px;font-variant-numeric:tabular-nums}
+table.matrix th,table.matrix td{border-bottom:1px solid var(--line);padding:6px 8px;text-align:right;white-space:nowrap}
+table.matrix th:first-child,table.matrix td:first-child{text-align:left}
+table.matrix thead th{font-family:var(--f-cond);font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);font-size:12.5px}
+table.matrix td.na{color:var(--muted)}
+table.matrix td.best{color:var(--accent);font-weight:700}
+.banner{position:absolute;left:50%;transform:translateX(-50%);top:56px;z-index:950;background:var(--panel);border:1px solid var(--line);box-shadow:var(--shadow);border-radius:10px;padding:10px 14px;font-size:14px;max-width:min(560px,calc(100% - 32px))}
+#toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);z-index:3000;background:var(--ink);color:var(--panel);padding:9px 16px;border-radius:999px;font-weight:600;font-size:14px;box-shadow:var(--shadow);max-width:calc(100% - 32px)}
+
+/* Phone: panel becomes a bottom sheet over the map */
+@media (max-width:899px){
+  #view-map{grid-template-columns:1fr}
+  #mapwrap{position:absolute;inset:0}
+  #panel{position:absolute;left:0;right:0;bottom:0;height:46%;border-right:0;border-top:1px solid var(--line);border-radius:16px 16px 0 0;box-shadow:0 -6px 24px rgba(0,0,0,.18);transition:height .25s ease;padding-bottom:env(safe-area-inset-bottom,0px)}
+  #panel.full{height:88%}
+  #panel.mini{height:64px}
+  .sheet-handle{display:block;width:44px;height:5px;border-radius:3px;background:var(--line);margin:8px auto 0;border:0;padding:0}
+  .legend{display:none}
+  .mapbtns{top:auto;bottom:calc(46% + 12px);right:12px}
+  #panel.mini ~ .x{}
+  .leaflet-bottomright{bottom:46%}
+  #view-map.maponly .leaflet-bottomright, #view-map:has(#panel.mini) .leaflet-bottomright{bottom:64px}
+  #view-map:has(#panel.mini) .mapbtns{bottom:76px}
+  #view-map:has(#panel.full) .mapbtns{display:none}
+  #panel.full ~ .x{display:none}
+  #drawer{width:100%;border-left:0}
+  #chipbar{top:8px;right:10px}
+}
+@media (prefers-reduced-motion: reduce){*{transition:none!important;animation:none!important}}
+
+.thumb{width:100%;height:120px;object-fit:cover;border-radius:8px;margin-bottom:4px;background:var(--panel-2)}
+.gallery{display:grid;grid-auto-flow:column;grid-auto-columns:85%;gap:8px;overflow-x:auto;scroll-snap-type:x mandatory;padding-bottom:4px}
+.gallery figure{margin:0;scroll-snap-align:start}
+.gallery img{width:100%;height:220px;object-fit:cover;border-radius:10px;display:block;background:var(--panel-2)}
+.gallery figcaption{font-size:12.5px;color:var(--muted);margin-top:3px}
+.photo-cta{display:flex;flex-wrap:wrap;gap:8px}
+.photo-cta label.btn{cursor:pointer}
+.linkbtn{border:0;background:none;color:var(--accent);padding:0;font-size:12.5px;text-decoration:underline}
+.photos{display:grid;gap:8px}
+
+.basemap{box-shadow:var(--shadow)}
+.basemap button{padding:6px 10px;font-size:13px}
+.aerial{position:relative;overflow:hidden;border-radius:8px;background:var(--panel-2);max-width:100%}
+.aerial img{position:absolute;width:256px;height:256px;max-width:none}
+.aerial-pin{position:absolute;left:50%;top:50%;width:14px;height:14px;margin:-7px 0 0 -7px;border-radius:50%;border:2.5px solid #fff;box-shadow:0 0 0 2px var(--accent)}
+.thumbwrap{display:flex;justify-content:center;overflow:hidden;height:110px;border-radius:8px;margin-bottom:4px}
+.thumbwrap .aerial{flex:none;border-radius:0}
+.heroaerial{position:relative;display:flex;justify-content:center;overflow:hidden;height:230px;border-radius:10px}
+.heroaerial .aerial{flex:none;border-radius:0}
+.heroaerial .cap{position:absolute;right:8px;bottom:6px;font-size:11px;color:#fff;text-shadow:0 1px 2px #000}
+#map.on-sat .town-label{color:#fff;text-shadow:0 0 3px #000,0 0 6px #000}
+#map.on-sat .town-label.on{color:#ffd1ee}
+#map.on-sat .leaflet-container,#map.on-sat{background:#1c2a33}
+</style>
+</head><body>
+<div id="lock" hidden><div class="box"><h1>OBX House Hunt</h1><p>This map is private. Open it with the family link Drew sent you.</p></div></div>
+<div id="app" hidden>
+  <header class="bar">
+    <div class="brand"><b>OBX House Hunt</b><span>Manteo to Grandy, measured from the FRF pier</span></div>
+    <nav class="tabs" role="tablist" aria-label="Views">
+      <button role="tab" id="tab-map" aria-selected="true" data-view="map">Map</button>
+      <button role="tab" id="tab-lists" aria-selected="false" data-view="lists">Lists</button>
+      <button role="tab" id="tab-users" aria-selected="false" data-view="users">Users</button>
+    </nav>
+    <button class="who" id="whoBtn" type="button" title="Change who is browsing"><span class="dot" id="whoDot">?</span><span id="whoName">Pick a user</span></button>
+  </header>
+  <main>
+    <section class="view" id="view-map">
+      <aside id="panel" aria-label="Filters and results">
+        <button class="sheet-handle" id="sheetHandle" type="button" aria-label="Expand or collapse the list"></button>
+        <div class="panel-head">
+          <h2>Find a place</h2>
+          <span class="count num" id="countTop"></span>
+          <button class="btn sm" id="addBtn" type="button" style="margin-left:auto">+ Add listing</button>
+        </div>
+        <div class="scroll" id="panelScroll">
+          <div class="filters" id="filters">
+            <details class="fg" open>
+              <summary>Where <span class="sv" id="sv-where"></span></summary>
+              <div class="fbody">
+                <div class="seg" role="group" aria-label="Location mode">
+                  <button type="button" id="modeTown" aria-pressed="true">By town</button>
+                  <button type="button" id="modeRadius" aria-pressed="false">Radius from FRF</button>
+                </div>
+                <div id="townBox">
+                  <div class="chips" id="townChips"></div>
+                  <p class="hint" style="margin:6px 0 0">Towns follow each listing's town or city. Colington is split out from Kill Devil Hills because it sits outside the town limits. Tap town names on the map too.</p>
+                </div>
+                <div id="radiusBox" hidden>
+                  <label class="f" for="radius">Within <span class="rangeval num" id="radiusVal">10 mi</span> of the FRF pier</label>
+                  <input type="range" id="radius" min="1" max="35" step="1" value="10">
+                  <p class="hint" style="margin:0">Radius ignores the town picks and searches every listing. Each result still shows its town.</p>
+                </div>
+              </div>
+            </details>
+            <details class="fg" open>
+              <summary>Type &amp; price <span class="sv" id="sv-type"></span></summary>
+              <div class="fbody">
+                <div class="chips" id="kindChips"></div>
+                <div class="row2">
+                  <label class="f" for="pmin">Min price<select id="pmin"></select></label>
+                  <label class="f" for="pmax">Max price<select id="pmax"></select></label>
+                </div>
+                <div class="chips" id="priceQuick"></div>
+              </div>
+            </details>
+            <details class="fg">
+              <summary>Size <span class="sv" id="sv-size"></span></summary>
+              <div class="fbody">
+                <div class="row2">
+                  <label class="f" for="beds">Bedrooms<select id="beds"><option value="0">Any</option><option value="1">1+</option><option value="2">2+</option><option value="3">3+</option><option value="4">4+</option><option value="5">5+</option></select></label>
+                  <label class="f" for="baths">Bathrooms<select id="baths"><option value="0">Any</option><option value="1">1+</option><option value="2">2+</option><option value="3">3+</option><option value="4">4+</option></select></label>
+                  <label class="f" for="sqft">Min sq ft<select id="sqft"><option value="0">Any</option><option value="800">800+</option><option value="1000">1,000+</option><option value="1200">1,200+</option><option value="1500">1,500+</option><option value="2000">2,000+</option><option value="2500">2,500+</option><option value="3000">3,000+</option></select></label>
+                  <label class="f" for="acres">Min lot<select id="acres"><option value="0">Any</option><option value="0.25">¼ acre+</option><option value="0.5">½ acre+</option><option value="1">1 acre+</option><option value="2">2 acres+</option></select></label>
+                </div>
+              </div>
+            </details>
+            <details class="fg">
+              <summary>Commute &amp; schools <span class="sv" id="sv-comm"></span></summary>
+              <div class="fbody">
+                <label class="f" for="commute">Drive to FRF, off-season: <span class="rangeval num" id="commuteVal">Any</span></label>
+                <input type="range" id="commute" min="5" max="60" step="5" value="60">
+                <label class="f" for="elem">Nearest elementary school: <span class="rangeval num" id="elemVal">Any</span></label>
+                <input type="range" id="elem" min="1" max="15" step="1" value="15">
+                <label class="f" for="high">Nearest high school: <span class="rangeval num" id="highVal">Any</span></label>
+                <input type="range" id="high" min="1" max="25" step="1" value="25">
+                <p class="hint" style="margin:0">Drive times come from a road model of NC‑12, US‑158 and the bridges. Summer Saturdays can double them. School distance is straight-line to the nearest campus; check Dare or Currituck school zoning for the assigned school.</p>
+              </div>
+            </details>
+            <details class="fg">
+              <summary>Amenities <span class="sv" id="sv-amen"></span></summary>
+              <div class="fbody">
+                <div class="chips" id="tagChips"></div>
+                <p class="hint" style="margin:0">Amenities get tagged as family members mark them on a listing and as the daily refresh reads listing details. Untagged listings drop out when an amenity is selected.</p>
+              </div>
+            </details>
+            <details class="fg">
+              <summary>Status &amp; lists <span class="sv" id="sv-status"></span></summary>
+              <div class="fbody">
+                <div class="chips" id="statusChips"></div>
+                <label class="check"><input type="checkbox" id="favOnly"> Only my saved listings</label>
+                <label class="check"><input type="checkbox" id="savedAny"> Saved by anyone in the family</label>
+                <label class="check"><input type="checkbox" id="familyAdded"> Added by family</label>
+                <label class="f" for="q">Search address, street or MLS #<input type="text" id="q" placeholder="e.g. Harbour View or 134206"></label>
+              </div>
+            </details>
+            <div style="display:flex;gap:8px;padding-top:8px"><button class="btn sm" id="resetBtn" type="button">Clear all filters</button></div>
+          </div>
+          <div class="listhead">
+            <span class="count num" id="countList"></span>
+            <label for="sort" class="hint">Sort</label>
+            <select id="sort">
+              <option value="price-asc">Price, low to high</option>
+              <option value="price-desc">Price, high to low</option>
+              <option value="commute">Shortest drive to FRF</option>
+              <option value="ppsf">Price per sq ft</option>
+              <option value="newest">Newest added</option>
+              <option value="beds">Most bedrooms</option>
+            </select>
+          </div>
+          <ul class="list" id="list"></ul>
+          <div class="more" id="moreBox" hidden><button class="btn" id="moreBtn" type="button">Show more</button></div>
+        </div>
+      </aside>
+      <div id="mapwrap">
+        <div id="map" role="application" aria-label="Map of listings"></div>
+        <div id="chipbar" aria-live="polite"></div>
+        <div class="legend" aria-hidden="true">
+          <span><i style="background:var(--house)"></i>House</span>
+          <span><i style="background:var(--condo)"></i>Condo / townhome</span>
+          <span><i class="lot"></i>Lot</span>
+          <span><i style="background:transparent;border:2px solid var(--accent);width:7px;height:7px"></i>Saved by you</span>
+        </div>
+        <div class="mapbtns">
+          <div class="seg basemap" id="baseSeg" role="group" aria-label="Map style" hidden><button type="button" data-base="sat" aria-pressed="true">Satellite</button><button type="button" data-base="streets" aria-pressed="false">Streets</button><button type="button" data-base="chart" aria-pressed="false">Chart</button></div>
+          <button class="btn sm" id="listBtn" type="button" aria-pressed="false">Hide list</button>
+          <a class="btn sm" id="satBtn" target="_blank" rel="noopener" href="https://www.google.com/maps/@36.06,-75.73,11z/data=!3m1!1e3">Satellite ↗</a>
+          <button class="btn sm" id="schoolsBtn" type="button" aria-pressed="false">Schools</button>
+          <button class="btn sm" id="fitBtn" type="button">Fit results</button>
+        </div>
+      </div>
+      <aside id="drawer" hidden aria-label="Listing details"></aside>
+    </section>
+
+    <section class="view" id="view-lists" hidden>
+      <div class="page"><div class="wrap">
+        <div><h1>Saved lists</h1><p class="lede">Everything each person has saved, with the details captured when they saved it and any loan scenario they ran.</p></div>
+        <div class="ptabs" id="listPeople"></div>
+        <div id="shareBox" style="display:grid;gap:8px;justify-items:start"></div>
+        <div id="listBody"></div>
+      </div></div>
+    </section>
+
+    <section class="view" id="view-users" hidden>
+      <div class="page"><div class="wrap">
+        <div><h1>Who's browsing?</h1><p class="lede">Pick your name. Saves, notes, and loan scenarios go on your list until you switch to someone else. The choice lasts for this browser session.</p></div>
+        <div class="pcard" id="familyLink" hidden style="max-width:520px"></div>
+        <div class="people" id="peopleGrid"></div>
+        <form id="otherForm" class="pcard" style="max-width:420px">
+          <b>Someone else</b>
+          <label class="f" for="otherName">Your name<input type="text" id="otherName" maxlength="40" placeholder="First name" required></label>
+          <div><button class="btn pri" type="submit">Add and use this name</button></div>
+        </form>
+      </div></div>
+    </section>
+  </main>
+</div>
+
+<div class="modal" id="loanModal" hidden>
+  <div class="dialog" role="dialog" aria-modal="true" aria-labelledby="loanTitle">
+    <header><h2 id="loanTitle">Monthly payment</h2><button class="btn sm x" type="button" data-close>Close</button></header>
+    <div class="dbody" id="loanBody"></div>
+  </div>
+</div>
+
+<div class="modal" id="addModal" hidden>
+  <div class="dialog" role="dialog" aria-modal="true" aria-labelledby="addTitle" style="width:min(560px,100%)">
+    <header><h2 id="addTitle">Add a listing</h2><button class="btn sm x" type="button" data-close>Close</button></header>
+    <form class="dbody" id="addForm" style="display:grid;gap:10px">
+      <label class="f" for="a-address">Street address (include unit #)<input type="text" id="a-address" required placeholder="123 Example Dr"></label>
+      <div class="row2">
+        <label class="f" for="a-town">Town<select id="a-town" required></select></label>
+        <label class="f" for="a-kind">Type<select id="a-kind"><option value="house">House</option><option value="condo">Condo / townhome</option><option value="lot">Lot / land</option></select></label>
+        <label class="f" for="a-price">Price ($)<input type="number" id="a-price" min="0" step="1000" required></label>
+        <label class="f" for="a-status">Status<select id="a-status"><option>Active</option><option>Pending</option><option>Unverified</option></select></label>
+        <label class="f" for="a-beds">Beds<input type="number" id="a-beds" min="0" step="1"></label>
+        <label class="f" for="a-baths">Baths<input type="number" id="a-baths" min="0" step="0.5"></label>
+        <label class="f" for="a-sqft">Sq ft<input type="number" id="a-sqft" min="0" step="10"></label>
+        <label class="f" for="a-acres">Lot acres<input type="number" id="a-acres" min="0" step="0.01"></label>
+      </div>
+      <label class="f" for="a-mls">MLS # (optional)<input type="text" id="a-mls"></label>
+      <label class="f" for="a-url">Link to the listing<input type="url" id="a-url" placeholder="https://"></label>
+      <label class="f" for="a-note">Note for the family<textarea id="a-note" rows="2"></textarea></label>
+      <p class="hint" style="margin:0">The pin starts at the town center and moves to the exact address on the next daily refresh.</p>
+      <div><button class="btn pri" type="submit">Add listing</button></div>
+    </form>
+  </div>
+</div>
+<div id="toast" hidden role="status"></div>
+
+<script>window.__WEB=true;window.__LAND={"type":"MultiPolygon","coordinates":[[[[-75.9307,35.9266],[-75.9179,35.9203],[-75.9261,35.9159],[-75.9239,35.9074],[-75.9223,35.9132],[-75.9171,35.9144],[-75.9036,35.9085],[-75.9039,35.8945],[-75.9003,35.8924],[-75.9049,35.8843],[-75.8968,35.8893],[-75.8924,35.8836],[-75.8889,35.8843],[-75.8903,35.8905],[-75.8838,35.8912],[-75.8769,35.8851],[-75.8792,35.8819],[-75.8764,35.8794],[-75.875,35.8835],[-75.8648,35.8789],[-75.8638,35.8655],[-75.8604,35.8665],[-75.8602,35.8763],[-75.8674,35.8839],[-75.8551,35.8941],[-75.853,35.8936],[-75.8511,35.89],[-75.8537,35.8959],[-75.8618,35.893],[-75.8652,35.895],[-75.8648,35.8902],[-75.8717,35.8862],[-75.8827,35.8963],[-75.8932,35.8948],[-75.8943,35.9124],[-75.9021,35.9195],[-75.9097,35.92],[-75.9109,35.9242],[-75.908,35.9323],[-75.8955,35.9359],[-75.8795,35.9268],[-75.862,35.9232],[-75.86,35.919],[-75.8567,35.9261],[-75.8486,35.9272],[-75.845,35.9235],[-75.8346,35.9263],[-75.8312,35.9197],[-75.8262,35.9247],[-75.8102,35.9218],[-75.8152,35.9283],[-75.8465,35.943],[-75.8653,35.9402],[-75.8737,35.944],[-75.8637,35.9432],[-75.8559,35.9467],[-75.857,35.9542],[-75.849,35.9627],[-75.8546,35.9706],[-75.8524,35.9735],[-75.861,35.9731],[-75.862,35.9765],[-75.8583,35.9767],[-75.8095,35.9585],[-75.8051,35.9539],[-75.8144,35.9468],[-75.8121,35.9415],[-75.8155,35.9401],[-75.8094,35.9393],[-75.8112,35.9457],[-75.8071,35.944],[-75.809,35.9424],[-75.8057,35.9424],[-75.8056,35.9461],[-75.7832,35.9337],[-75.7825,35.9191],[-75.7785,35.9141],[-75.7679,35.9122],[-75.773,35.9088],[-75.768,35.9087],[-75.772,35.9058],[-75.7691,35.9062],[-75.7642,35.8911],[-75.7623,35.8901],[-75.7637,35.8891],[-75.7617,35.8898],[-75.7488,35.8831],[-75.7541,35.8759],[-75.7481,35.862],[-75.7555,35.855],[-75.7507,35.8565],[-75.7498,35.8505],[-75.7527,35.8529],[-75.7568,35.852],[-75.7595,35.8504],[-75.7621,35.8472],[-75.7619,35.8443],[-75.7641,35.8438],[-75.7654,35.8459],[-75.7661,35.8457],[-75.7724,35.8417],[-75.7747,35.8372],[-75.7765,35.837],[-75.7776,35.8353],[-75.7768,35.834],[-75.7774,35.8355],[-75.7746,35.837],[-75.7721,35.8418],[-75.7657,35.8457],[-75.7641,35.8436],[-75.7619,35.8441],[-75.7618,35.8471],[-75.7594,35.8501],[-75.7529,35.8526],[-75.7345,35.8371],[-75.7345,35.83],[-75.9812,35.83],[-75.9755,35.8385],[-75.9877,35.8624],[-75.9803,35.8695],[-75.9847,35.8882],[-75.9811,35.8948],[-75.9693,35.8971],[-75.9529,35.9097],[-75.9475,35.9191],[-75.9307,35.9266]],[[-75.8057,35.9226],[-75.7995,35.9246],[-75.8057,35.9299],[-75.8105,35.9246],[-75.8057,35.9246],[-75.8057,35.9226]],[[-75.8496,35.8697],[-75.8477,35.8712],[-75.8496,35.8712],[-75.8496,35.8697]],[[-75.9814,35.8847],[-75.9761,35.8891],[-75.9814,35.8891],[-75.9814,35.8847]],[[-75.8936,35.8465],[-75.8936,35.8534],[-75.9023,35.8534],[-75.8936,35.8465]],[[-75.7617,35.8534],[-75.7651,35.8534],[-75.7617,35.8507],[-75.7584,35.8534],[-75.754,35.8534],[-75.7607,35.8589],[-75.7559,35.8712],[-75.7617,35.8756],[-75.7666,35.8712],[-75.7617,35.8712],[-75.7617,35.8534]]],[[[-76.02,35.9340],[-76.0128,35.9245],[-76.0198,35.9145],[-76.02,35.9144],[-76.02,35.9340]]],[[[-76.02,35.9524],[-76.014,35.9573],[-76.017,35.946],[-76.02,35.9470],[-76.02,35.9524]]],[[[-75.9067,35.943],[-75.9197,35.9356],[-75.9478,35.9596],[-75.9229,35.9704],[-75.897,35.9763],[-75.897,35.9687],[-75.8936,35.9687],[-75.8936,35.9602],[-75.8827,35.9602],[-75.8932,35.9687],[-75.8815,35.9689],[-75.8787,35.9712],[-75.8816,35.9753],[-75.8764,35.9731],[-75.8704,35.9781],[-75.8653,35.9729],[-75.8734,35.9703],[-75.8725,35.9676],[-75.8684,35.9692],[-75.8694,35.9603],[-75.8964,35.953],[-75.9044,35.9548],[-75.9019,35.9539],[-75.9067,35.943]]],[[[-76.02,35.9602],[-76.02,35.9653],[-76.0193,35.9649],[-76.016,35.9602],[-76.02,35.9602]]],[[[-75.8719,36.279],[-75.8775,36.28],[-75.8671,36.2735],[-75.8757,36.2707],[-75.8769,36.2647],[-75.8711,36.2601],[-75.8706,36.2648],[-75.8611,36.264],[-75.8732,36.2543],[-75.8682,36.2452],[-75.8639,36.2456],[-75.8656,36.2374],[-75.8612,36.2319],[-75.866,36.2284],[-75.8623,36.2291],[-75.8519,36.2191],[-75.8547,36.2183],[-75.8496,36.2156],[-75.8496,36.2129],[-75.8528,36.2082],[-75.8496,36.2107],[-75.8459,36.2005],[-75.8409,36.201],[-75.84,36.1966],[-75.8468,36.1918],[-75.8429,36.1924],[-75.8398,36.1882],[-75.8426,36.1831],[-75.84,36.1769],[-75.8286,36.1662],[-75.8325,36.1646],[-75.8251,36.1636],[-75.8252,36.1656],[-75.8216,36.1634],[-75.821,36.16],[-75.8259,36.1596],[-75.8276,36.1602],[-75.8296,36.1556],[-75.8224,36.1546],[-75.8262,36.1479],[-75.8077,36.1315],[-75.8106,36.129],[-75.8142,36.1336],[-75.8114,36.1225],[-75.8045,36.1201],[-75.8057,36.1201],[-75.8057,36.1133],[-75.7986,36.1181],[-75.8031,36.0991],[-75.7894,36.079],[-75.7964,36.0746],[-75.794,36.0718],[-75.8448,36.1001],[-75.8496,36.1081],[-75.8507,36.1076],[-75.8681,36.1284],[-75.8639,36.1379],[-75.8646,36.1556],[-75.8684,36.1734],[-75.8716,36.1734],[-75.8716,36.1794],[-75.9086,36.2088],[-75.9117,36.2177],[-75.9093,36.2266],[-75.9238,36.2443],[-75.9375,36.2557],[-75.9595,36.2565],[-75.9736,36.2443],[-75.9538,36.2443],[-75.9488,36.2266],[-75.9479,36.2088],[-75.9595,36.1955],[-75.9595,36.1911],[-75.9508,36.1911],[-75.9375,36.1812],[-75.9155,36.1707],[-75.9141,36.1646],[-75.9326,36.1651],[-76.0099,36.1851],[-76.0141,36.1823],[-76.019,36.1911],[-76.02,36.1922],[-76.02,36.31],[-76.0046,36.31],[-76.0034,36.3073],[-75.9595,36.3043],[-75.9595,36.31],[-75.8926,36.31],[-75.8834,36.2859],[-75.8698,36.2837],[-75.8719,36.279]],[[-75.825,36.16],[-75.8251,36.1636],[-75.8251,36.1636],[-75.825,36.16]],[[-75.9375,36.2989],[-75.94,36.2974],[-75.9472,36.2797],[-75.9515,36.2797],[-75.938,36.2689],[-75.9595,36.2681],[-75.9814,36.2643],[-75.9814,36.262],[-75.9375,36.262],[-75.9375,36.2797],[-75.9321,36.2797],[-75.9375,36.2841],[-75.9375,36.2989]],[[-75.9766,36.2974],[-75.9595,36.2836],[-75.9595,36.2974],[-75.9766,36.2974]],[[-75.9895,36.2974],[-75.9814,36.291],[-75.9814,36.2974],[-75.9895,36.2974]],[[-75.8522,36.1379],[-75.8367,36.1379],[-75.8496,36.1426],[-75.8522,36.1379]],[[-75.9814,36.2158],[-75.9884,36.2088],[-75.9814,36.2024],[-75.9717,36.2088],[-75.9651,36.2233],[-75.9814,36.2158]],[[-75.9155,36.2487],[-75.9155,36.2443],[-75.9101,36.2443],[-75.9155,36.2487]]],[[[-75.8379,36.2088],[-75.829,36.1897],[-75.843,36.2072],[-75.8421,36.2088],[-75.8379,36.2088]]],[[[-75.8722,36.2646],[-75.8714,36.261],[-75.8763,36.2645],[-75.8738,36.2705],[-75.8714,36.268],[-75.8683,36.2678],[-75.8735,36.2708],[-75.865,36.2725],[-75.8644,36.2789],[-75.862,36.2662],[-75.8644,36.2661],[-75.8647,36.2688],[-75.8661,36.267],[-75.8646,36.266],[-75.8722,36.2646]]],[[[-75.8369,36.2741],[-75.8378,36.2715],[-75.8423,36.2747],[-75.8425,36.2795],[-75.8307,36.2777],[-75.8369,36.2741]]],[[[-75.8615,36.2777],[-75.8583,36.2762],[-75.8622,36.2758],[-75.8625,36.2792],[-75.8694,36.282],[-75.8651,36.2867],[-75.8588,36.2835],[-75.8615,36.2777]]],[[[-75.8436,36.2893],[-75.8418,36.2927],[-75.8313,36.2867],[-75.8424,36.2886],[-75.8421,36.2859],[-75.8436,36.2893]]],[[[-75.8421,36.3012],[-75.8458,36.3063],[-75.8415,36.3067],[-75.8299,36.3003],[-75.8321,36.2986],[-75.8379,36.2973],[-75.8408,36.3002],[-75.8374,36.303],[-75.8422,36.3051],[-75.8421,36.3012]]],[[[-75.6309,35.8643],[-75.6325,35.8696],[-75.6364,35.8667],[-75.6402,35.87],[-75.6356,35.8762],[-75.6381,35.8713],[-75.6354,35.8709],[-75.6319,35.883],[-75.6284,35.8825],[-75.6312,35.8874],[-75.624,35.8753],[-75.6244,35.873],[-75.6232,35.8728],[-75.6209,35.8674],[-75.6237,35.8672],[-75.6138,35.8513],[-75.6309,35.8643]]],[[[-75.6676,35.9254],[-75.6592,35.9193],[-75.6636,35.9115],[-75.6698,35.9114],[-75.669,35.9011],[-75.6598,35.8998],[-75.6593,35.8969],[-75.6574,35.8986],[-75.6613,35.9031],[-75.65,35.9036],[-75.649,35.9068],[-75.6435,35.9068],[-75.6344,35.8907],[-75.6375,35.8859],[-75.6331,35.8876],[-75.6306,35.8838],[-75.6334,35.8845],[-75.6396,35.8744],[-75.6416,35.8791],[-75.645,35.8801],[-75.6402,35.8744],[-75.6418,35.8675],[-75.6372,35.8578],[-75.6198,35.8472],[-75.6166,35.8405],[-75.6223,35.8454],[-75.6247,35.8434],[-75.6171,35.8396],[-75.6164,35.83],[-75.6504,35.83],[-75.648,35.8338],[-75.6532,35.831],[-75.6557,35.8334],[-75.6521,35.8387],[-75.6559,35.8366],[-75.6587,35.8433],[-75.6635,35.8502],[-75.6585,35.8586],[-75.6598,35.8689],[-75.6635,35.8674],[-75.6633,35.8742],[-75.672,35.883],[-75.6817,35.8841],[-75.6827,35.8889],[-75.6762,35.8844],[-75.6787,35.8873],[-75.6756,35.8882],[-75.6794,35.8884],[-75.6794,35.8872],[-75.6805,35.8934],[-75.6834,35.8941],[-75.682,35.8913],[-75.6845,35.8909],[-75.6968,35.9016],[-75.6969,35.9102],[-75.7026,35.916],[-75.7229,35.9253],[-75.7277,35.9345],[-75.7237,35.934],[-75.7277,35.9348],[-75.7186,35.9393],[-75.6999,35.9377],[-75.6676,35.9254]],[[-75.6438,35.8891],[-75.6519,35.8955],[-75.6519,35.8891],[-75.6438,35.8891]],[[-75.67,35.9068],[-75.6738,35.91],[-75.6738,35.9068],[-75.67,35.9068]],[[-75.6519,35.8534],[-75.6562,35.8534],[-75.6519,35.8499],[-75.6519,35.8534]],[[-75.6475,35.8712],[-75.6519,35.8747],[-75.6519,35.8712],[-75.6475,35.8712]]],[[[-75.6103,35.8841],[-75.6067,35.8849],[-75.6103,35.885],[-75.6082,35.8898],[-75.6012,35.8891],[-75.6047,35.8846],[-75.6103,35.8841]]],[[[-75.7002,36.0259],[-75.7006,36.0324],[-75.6962,36.031],[-75.6976,36.0257],[-75.6962,36.0259],[-75.6957,36.0207],[-75.698,36.0204],[-75.7016,36.0152],[-75.7035,36.0151],[-75.7016,36.0163],[-75.6999,36.0213],[-75.7011,36.0193],[-75.7117,36.0245],[-75.6988,36.0256],[-75.7002,36.0259]]],[[[-75.7013,36.0334],[-75.7058,36.0405],[-75.7,36.0386],[-75.6994,36.0364],[-75.7013,36.0334]]],[[[-75.6617,36.0262],[-75.5829,35.887],[-75.5556,35.83],[-75.5684,35.83],[-75.5766,35.8351],[-75.5795,35.8393],[-75.5767,35.842],[-75.5796,35.84],[-75.5785,35.8431],[-75.5845,35.8472],[-75.5899,35.8461],[-75.5894,35.8504],[-75.594,35.8526],[-75.5913,35.854],[-75.5953,35.8543],[-75.5956,35.8657],[-75.5979,35.8642],[-75.5999,35.8754],[-75.6021,35.874],[-75.5982,35.8882],[-75.6038,35.8959],[-75.5985,35.8955],[-75.6033,35.9001],[-75.6016,35.9034],[-75.6158,35.8983],[-75.6186,35.8939],[-75.6222,35.8964],[-75.6215,35.9003],[-75.6169,35.8985],[-75.6105,35.9012],[-75.6125,35.9055],[-75.6079,35.9027],[-75.609,35.9068],[-75.6078,35.9073],[-75.6057,35.9037],[-75.5997,35.9081],[-75.6211,35.9336],[-75.6256,35.9419],[-75.622,35.9381],[-75.6247,35.9425],[-75.6219,35.9403],[-75.6214,35.9439],[-75.6196,35.9408],[-75.6213,35.9441],[-75.626,35.9422],[-75.6468,35.9668],[-75.6685,35.9729],[-75.6676,35.978],[-75.6626,35.9783],[-75.6734,35.9879],[-75.6716,35.9922],[-75.6671,35.9958],[-75.6738,35.9958],[-75.6738,35.9913],[-75.6767,35.9902],[-75.6743,35.9965],[-75.6792,35.999],[-75.6783,36.0021],[-75.682,35.9956],[-75.6863,36.0064],[-75.6899,36.0066],[-75.6878,35.9982],[-75.6946,36.0002],[-75.6971,35.9941],[-75.711,36.0034],[-75.7167,36.0037],[-75.7178,36.0082],[-75.7285,36.005],[-75.7277,36.0222],[-75.7235,36.0239],[-75.7105,36.021],[-75.7084,36.0116],[-75.7015,36.0089],[-75.7017,36.0139],[-75.6961,36.0162],[-75.6919,36.0245],[-75.6884,36.0153],[-75.6806,36.0142],[-75.6805,36.0181],[-75.6916,36.0506],[-75.6997,36.0616],[-75.7028,36.0622],[-75.7007,36.0596],[-75.7067,36.0529],[-75.719,36.0464],[-75.7234,36.0475],[-75.7206,36.0507],[-75.7244,36.0479],[-75.7211,36.0548],[-75.726,36.0468],[-75.7309,36.0496],[-75.7309,36.0462],[-75.7369,36.0478],[-75.7349,36.0457],[-75.7263,36.0454],[-75.7327,36.0407],[-75.7379,36.0417],[-75.7407,36.0846],[-75.7343,36.0846],[-75.7397,36.0885],[-75.7411,36.0873],[-75.7482,36.1125],[-75.7397,36.1024],[-75.7397,36.1314],[-75.7449,36.1322],[-75.7447,36.1387],[-75.7572,36.1666],[-75.7573,36.1812],[-75.7738,36.2277],[-75.7783,36.234],[-75.7787,36.2291],[-75.7877,36.2285],[-75.7853,36.2349],[-75.7928,36.2309],[-75.7872,36.2346],[-75.7903,36.2346],[-75.7881,36.2386],[-75.785,36.2356],[-75.7818,36.2441],[-75.7907,36.2523],[-75.7916,36.259],[-75.794,36.2604],[-75.7943,36.2573],[-75.7996,36.261],[-75.7973,36.266],[-75.7995,36.2632],[-75.8035,36.2672],[-75.8018,36.2766],[-75.8067,36.2907],[-75.8116,36.2952],[-75.8149,36.3031],[-75.8126,36.2951],[-75.8174,36.2921],[-75.8173,36.2923],[-75.8206,36.2922],[-75.8182,36.3023],[-75.8207,36.3007],[-75.8162,36.3056],[-75.8190,36.31],[-75.8102,36.31],[-75.8057,36.3064],[-75.8057,36.31],[-75.8019,36.31],[-75.7857,36.2623],[-75.7175,36.1132],[-75.6617,36.0262]],[[-75.8173,36.2924],[-75.8172,36.2924],[-75.8173,36.2923],[-75.8173,36.2924]],[[-75.8164,36.2956],[-75.8172,36.2963],[-75.8172,36.2924],[-75.8164,36.2956]],[[-75.7217,36.0491],[-75.7178,36.0491],[-75.7178,36.0522],[-75.7217,36.0491]],[[-75.6813,36.0136],[-75.6738,36.0048],[-75.6738,36.0174],[-75.6813,36.0136]],[[-75.6985,36.0136],[-75.6958,36.0136],[-75.6958,36.0157],[-75.6985,36.0136]],[[-75.7178,36.0717],[-75.7254,36.0669],[-75.7178,36.0592],[-75.7178,36.0669],[-75.7126,36.0669],[-75.7178,36.0717]],[[-75.7178,36.1024],[-75.7178,36.1078],[-75.7245,36.1024],[-75.7178,36.1024]],[[-75.5859,35.8891],[-75.5915,35.8891],[-75.5859,35.8847],[-75.5859,35.8891]]],[[[-75.7935,36.2411],[-75.7932,36.237],[-75.7949,36.2473],[-75.791,36.2432],[-75.7935,36.2411]]],[[[-75.7969,36.25],[-75.8041,36.2479],[-75.7991,36.2539],[-75.8013,36.2595],[-75.7922,36.2546],[-75.7969,36.25]]],[[[-75.8212,36.2706],[-75.8173,36.2676],[-75.8263,36.2601],[-75.8222,36.265],[-75.8212,36.2706]]],[[[-75.8311,36.2974],[-75.8276,36.2974],[-75.8273,36.2995],[-75.8276,36.3021],[-75.8292,36.3008],[-75.8335,36.3037],[-75.8246,36.303],[-75.8276,36.3028],[-75.8256,36.3011],[-75.8271,36.2968],[-75.8272,36.2989],[-75.8282,36.2939],[-75.833,36.2948],[-75.8311,36.2974]]],[[[-75.8372,36.31],[-75.8308,36.31],[-75.8314,36.3084],[-75.8372,36.3096],[-75.8372,36.31]]],[[[-75.8222,36.31],[-75.821,36.3093],[-75.8257,36.3089],[-75.8263,36.31],[-75.8222,36.31]]]]};window.__ROADS={"nc12_duck":{"speed":30,"land":"bar","pts":[[36.2045,-75.7655],[36.1971,-75.763],[36.1886,-75.7597],[36.1826,-75.7552],[36.1746,-75.7563],[36.1696,-75.7556],[36.164,-75.753],[36.156,-75.7475],[36.148,-75.744],[36.1412,-75.7375],[36.133,-75.733],[36.122,-75.7265],[36.112,-75.721],[36.1023,-75.7146]]},"beach_rd":{"speed":35,"land":"bar","pts":[[36.1023,-75.7146],[36.09,-75.702],[36.078,-75.695],[36.0696,-75.6923],[36.0646,-75.689],[36.056,-75.683],[36.0468,-75.6772],[36.0396,-75.6727],[36.0322,-75.6681],[36.0259,-75.6643],[36.0219,-75.662],[36.016,-75.6586],[36.0101,-75.6549],[36.0019,-75.65],[35.9962,-75.6467],[35.9898,-75.6427],[35.978,-75.6365],[35.9671,-75.6297],[35.9486,-75.6193],[35.9327,-75.6102],[35.9232,-75.6049],[35.9129,-75.5993],[35.9044,-75.5976]]},"us158_bypass":{"speed":45,"land":"bar","pts":[[36.1023,-75.7146],[36.095,-75.711],[36.085,-75.7065],[36.076,-75.702],[36.066,-75.6955],[36.056,-75.689],[36.045,-75.6815],[36.0387,-75.6759],[36.03,-75.672],[36.02,-75.669],[36.0115,-75.6655],[36.0,-75.6585],[35.988,-75.65],[35.976,-75.641],[35.96,-75.6305],[35.9425,-75.6178],[35.926,-75.6085],[35.9085,-75.601]]},"us158_bridge":{"speed":50,"land":"bar","pts":[[36.1023,-75.7146],[36.099,-75.726],[36.0965,-75.738],[36.0865,-75.7677],[36.0815,-75.796]]},"caratoke":{"speed":55,"land":"main","pts":[[36.0815,-75.796],[36.088,-75.804],[36.095,-75.8115],[36.104,-75.818],[36.115,-75.825],[36.128,-75.833],[36.1416,-75.843],[36.16,-75.854],[36.1836,-75.8643],[36.201,-75.87],[36.22,-75.878],[36.2447,-75.8842],[36.265,-75.89],[36.295,-75.9]]},"colington_rd":{"speed":35,"land":"bar","pts":[[36.0115,-75.6655],[36.013,-75.68],[36.0138,-75.694],[36.0125,-75.703],[36.011,-75.708],[36.006,-75.71],[36.0,-75.706],[35.9979,-75.7022]]},"colington_harbour":{"speed":25,"land":"bar","pts":[[36.011,-75.708],[36.013,-75.715],[36.01,-75.72],[36.0075,-75.72]]},"us64_causeway":{"speed":45,"land":"bar","pts":[[35.9085,-75.601],[35.9044,-75.5976]]},"causeway":{"speed":45,"land":"roa","pts":[[35.9044,-75.5976],[35.899,-75.615],[35.8952,-75.6372],[35.8963,-75.6425],[35.901,-75.656],[35.908,-75.668],[35.9182,-75.6777],[35.924,-75.69],[35.925,-75.703],[35.923,-75.72]]},"ooi_rd":{"speed":40,"land":"bar","pts":[[35.9044,-75.5976],[35.885,-75.5855],[35.87,-75.577],[35.8605,-75.5716],[35.852,-75.5667]]},"ss_dogwood":{"speed":30,"land":"bar","pts":[[36.099,-75.726],[36.108,-75.737],[36.118,-75.74],[36.13,-75.74],[36.1412,-75.7375]]},"kh_rd":{"speed":30,"land":"bar","pts":[[36.076,-75.702],[36.07,-75.715],[36.064,-75.73],[36.06,-75.739]]}};</script>
+<script src="data/listings.enc.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"></script>
+<script>window.__startApp=function(){(function(){
+"use strict";
+/* ---------- constants ---------- */
+const FRF = {lat:36.18297, lng:-75.74802};
+const TOWNS = [
+  {name:"Duck", land:"bar", c:[36.170,-75.752], county:"Dare", tax:0.0058},
+  {name:"Southern Shores", land:"bar", c:[36.127,-75.735], county:"Dare", tax:0.0062},
+  {name:"Kitty Hawk", land:"bar", c:[36.072,-75.712], county:"Dare", tax:0.0063},
+  {name:"Kill Devil Hills", land:"bar", c:[36.031,-75.672], county:"Dare", tax:0.0069},
+  {name:"Colington", land:"bar", c:[36.012,-75.712], county:"Dare", tax:0.0049},
+  {name:"Nags Head", land:"bar", c:[35.948,-75.622], county:"Dare", tax:0.0070},
+  {name:"Manteo", land:"roa", c:[35.912,-75.675], county:"Dare", tax:0.0086},
+  {name:"Point Harbor", land:"main", c:[36.083,-75.800], county:"Currituck", tax:0.0046},
+  {name:"Harbinger", land:"main", c:[36.100,-75.816], county:"Currituck", tax:0.0046},
+  {name:"Powells Point", land:"main", c:[36.122,-75.838], county:"Currituck", tax:0.0046},
+  {name:"Jarvisburg", land:"main", c:[36.184,-75.866], county:"Currituck", tax:0.0046},
+  {name:"Grandy", land:"main", c:[36.238,-75.876], county:"Currituck", tax:0.0046}
+];
+const TOWN = Object.fromEntries(TOWNS.map(t=>[t.name,t]));
+const SCHOOLS = [
+  {n:"Kitty Hawk Elementary", t:"elem", lat:36.0977, lng:-75.7327},
+  {n:"First Flight Elementary", t:"elem", lat:36.0068, lng:-75.6645},
+  {n:"Nags Head Elementary", t:"elem", lat:35.9761, lng:-75.6387},
+  {n:"Manteo Elementary", t:"elem", lat:35.9113, lng:-75.6750},
+  {n:"Jarvisburg Elementary", t:"elem", lat:36.2008, lng:-75.8578},
+  {n:"W.T. Griggs Elementary", t:"elem", lat:36.2796, lng:-75.8922},
+  {n:"First Flight Middle", t:"mid", lat:36.0052, lng:-75.6677},
+  {n:"Manteo Middle", t:"mid", lat:35.9203, lng:-75.6809},
+  {n:"Currituck County Middle", t:"mid", lat:36.3711, lng:-75.9681},
+  {n:"First Flight High", t:"high", lat:36.0091, lng:-75.6662},
+  {n:"Manteo High", t:"high", lat:35.9164, lng:-75.6741},
+  {n:"Currituck County High", t:"high", lat:36.3732, lng:-75.9696}
+];
+const WATER = [["Atlantic Ocean",36.06,-75.565],["Currituck Sound",36.165,-75.795],["Albemarle Sound",35.985,-75.92],["Croatan Sound",35.875,-75.735],["Roanoke Sound",35.873,-75.615],["Kitty Hawk Bay",36.043,-75.722]];
+const TAGS = [["beachroad","Beach Road"],["oceanfront","Oceanfront"],["oceanview","Ocean view"],["soundfront","Soundfront"],["canal","Canal / boat access"],["pool","Pool"],["garage","Garage"],["elevator","Elevator"],["fenced","Fenced yard"],["floodx","Flood zone X"],["furnished","Furnished"],["rental","Rental history"],["singlelevel","Single level"],["newbuild","New construction"]];
+const TAGNAME = Object.fromEntries(TAGS);
+const KINDS = [["house","Houses"],["condo","Condos & townhomes"],["lot","Lots"]];
+const KINDNAME = {house:"House", condo:"Condo / townhome", lot:"Lot"};
+const STATUSES = ["Active","Pending","Unverified","Sold","Gone"];
+const PRICES = [0,100000,150000,200000,250000,300000,350000,400000,450000,500000,550000,600000,700000,800000,900000,1000000,1250000,1500000,2000000,3000000];
+const DEFAULT_PEOPLE = ["Karen","Scott","Hanna","Drew"];
+const PALETTE = ["#1d4a73","#b3157c","#0d7766","#a8700f","#6b4bb3","#2e7d4f","#b23a3a","#3d6e8f","#8a5a2b","#4f6b2a"];
+const RATES = {asOf:"Oct 19, 2026", conv30:7.457, conv15:6.824, fha30:7.24, va30:7.198, usda30:7.24};
+const ROADS = window.__ROADS, LAND = window.__LAND, WEB = !!window.__WEB;
+const LANDOF = Object.fromEntries(TOWNS.map(t=>[t.name,t.land]));
+
+/* ---------- helpers ---------- */
+const $ = s=>document.querySelector(s);
+const esc = s=>String(s==null?"":s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const money = n=> n==null||isNaN(n) ? "—" : "$"+Math.round(n).toLocaleString("en-US");
+const kmoney = n=> n>=1e6 ? "$"+(n/1e6).toFixed(n%1e6?2:0).replace(/\.?0+$/,"")+"M" : "$"+Math.round(n/1000)+"k";
+const slug = s=>String(s).toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"").slice(0,120);
+const hav = (a,b)=>{const R=3958.8,t=Math.PI/180,dl=(b.lat-a.lat)*t,dg=(b.lng-a.lng)*t;const x=Math.sin(dl/2)**2+Math.cos(a.lat*t)*Math.cos(b.lat*t)*Math.sin(dg/2)**2;return 2*R*Math.asin(Math.sqrt(x));};
+const store = {get(k,d){try{const v=sessionStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}}, set(k,v){try{sessionStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
+function colorFor(name){let h=0;for(const c of name)h=(h*31+c.charCodeAt(0))>>>0;return PALETTE[h%PALETTE.length];}
+function initial(name){return (name||"?").trim().charAt(0).toUpperCase();}
+function css(v){return getComputedStyle(document.documentElement).getPropertyValue(v).trim();}
+let toastT; function toast(msg){const t=$("#toast");t.textContent=msg;t.hidden=false;clearTimeout(toastT);toastT=setTimeout(()=>t.hidden=true,2600);}
+
+/* ---------- commute model ---------- */
+const G = (function(){
+  const V=[],E=[],key=new Map();
+  const vid=(lat,lng,land)=>{const k=lat.toFixed(4)+","+lng.toFixed(4);if(key.has(k))return key.get(k);const i=V.length;V.push({lat,lng,land});E.push([]);key.set(k,i);return i;};
+  for(const name in ROADS){const r=ROADS[name];let prev=null;
+    for(let j=0;j<r.pts.length;j++){const la=r.pts[j][0],lo=r.pts[j][1];
+      const landOf=lng=>(name==="causeway"&&lng>-75.638)?"bar":r.land;
+      if(prev===null){prev=vid(la,lo,landOf(lo));continue;}
+      const pa=r.pts[j-1][0],po=r.pts[j-1][1];const d=hav({lat:pa,lng:po},{lat:la,lng:lo});const n=Math.max(1,Math.ceil(d/0.4));
+      for(let s=1;s<=n;s++){const f=s/n,lat=pa+(la-pa)*f,lng=po+(lo-po)*f;const cur=vid(lat,lng,landOf(lng));const w=(d/n)/r.speed*60;E[prev].push([cur,w]);E[cur].push([prev,w]);prev=cur;}
+    }}
+  const f=V.length;V.push({lat:FRF.lat,lng:FRF.lng,land:"bar"});E.push([]);
+  let best=-1,bd=1e9;V.forEach((v,i)=>{if(i===f)return;const d=hav(v,FRF);if(d<bd){bd=d;best=i;}});
+  const w=bd*1.3/20*60;E[f].push([best,w]);E[best].push([f,w]);
+  const T=new Array(V.length).fill(Infinity),done=new Array(V.length).fill(false);T[f]=0;
+  for(;;){let u=-1,m=Infinity;for(let i=0;i<V.length;i++)if(!done[i]&&T[i]<m){m=T[i];u=i;}if(u<0)break;done[u]=true;for(const [v,ww] of E[u])if(T[u]+ww<T[v])T[v]=T[u]+ww;}
+  return {V,T};
+})();
+function commuteMin(l){const land=LANDOF[l.area]||"bar";let m=Infinity;for(let i=0;i<G.V.length;i++){const v=G.V[i];if(v.land!==land)continue;const t=G.T[i]+hav(l,v)*1.35/25*60;if(t<m)m=t;}return Math.round(m+2);}
+function nearestSchool(l,type){let best=null,bd=Infinity;for(const s of SCHOOLS){if(s.t!==type)continue;const d=hav(l,s);if(d<bd){bd=d;best=s;}}return {s:best,d:bd};}
+
+/* ---------- state ---------- */
+const S = {
+  db:null, dbReady:false, canWrite:true,
+  listings:new Map(), people:new Map(), saves:new Map(), notes:new Map(), meta:null,
+  user: store.get("obx.user", null), view:"map", selected:null, shown:120,
+  f: Object.assign(defaultFilters(), store.get("obx.filters", {})),
+  listPerson:null, schools:false
+};
+function defaultFilters(){return {mode:"town", towns:[], radius:10, kinds:["house","condo","lot"], pmin:0, pmax:0, beds:0, baths:0, sqft:0, acres:0, commute:60, elem:15, high:25, tags:[], statuses:["Active","Pending","Unverified"], favOnly:false, savedAny:false, familyAdded:false, q:"", sort:"price-asc"};}
+function saveFilters(){store.set("obx.filters",S.f);}
+
+function peopleList(){
+  const m=new Map(DEFAULT_PEOPLE.map(n=>[slug(n),{id:slug(n),name:n}]));
+  for(const [id,p] of S.people) if(!m.has(id)) m.set(id,{id,name:p.name||id});
+  return [...m.values()];
+}
+function savesOf(pid){const d=S.saves.get(pid);return (d&&d.items)||{};}
+function saversOf(lid){const out=[];for(const p of peopleList()){if(savesOf(p.id)[lid])out.push(p);}return out;}
+function isMine(lid){return S.user&&!!savesOf(S.user.id)[lid];}
+
+function derive(l){
+  if(l._d) return l;
+  l._d=true;
+  l.frfMi = hav(l,FRF);
+  l.commute = commuteMin(l);
+  l.elem = nearestSchool(l,"elem"); l.mid = nearestSchool(l,"mid"); l.high = nearestSchool(l,"high");
+  l.ppsf = (l.price&&l.sqft)? l.price/l.sqft : null;
+  return l;
+}
+
+/* ---------- filtering ---------- */
+function passes(l){
+  const f=S.f;
+  if(!f.statuses.includes(l.status||"Active")) return false;
+  if(!f.kinds.includes(l.kind)) return false;
+  if(f.mode==="radius"){ if(l.frfMi>f.radius) return false; }
+  else if(f.towns.length && !f.towns.includes(l.area)) return false;
+  if(f.pmin && l.price<f.pmin) return false;
+  if(f.pmax && l.price>f.pmax) return false;
+  if(f.beds && !(l.beds>=f.beds)) return false;
+  if(f.baths && !(l.baths>=f.baths)) return false;
+  if(f.sqft && !(l.sqft>=f.sqft)) return false;
+  if(f.acres && !(l.acres>=f.acres)) return false;
+  if(f.commute<60 && l.commute>f.commute) return false;
+  if(f.elem<15 && l.elem.d>f.elem) return false;
+  if(f.high<25 && l.high.d>f.high) return false;
+  if(f.tags.length){const t=l.tags||{};for(const k of f.tags) if(!t[k]) return false;}
+  if(f.favOnly && !isMine(l.id)) return false;
+  if(f.savedAny && !saversOf(l.id).length) return false;
+  if(f.familyAdded && (l.addedBy||"Claude")==="Claude") return false;
+  if(f.q){const q=f.q.toLowerCase();if(!((l.address||"").toLowerCase().includes(q)||(l.area||"").toLowerCase().includes(q)||String(l.mls||"").includes(q)))return false;}
+  return true;
+}
+function sorted(arr){
+  const s=S.f.sort, A=arr.slice();
+  const cmp={ "price-asc":(a,b)=>a.price-b.price, "price-desc":(a,b)=>b.price-a.price, "commute":(a,b)=>a.commute-b.commute||a.price-b.price,
+    "ppsf":(a,b)=>(a.ppsf??1e9)-(b.ppsf??1e9), "newest":(a,b)=>String(b.addedAt||"").localeCompare(String(a.addedAt||""))||a.price-b.price, "beds":(a,b)=>(b.beds||0)-(a.beds||0)||a.price-b.price }[s];
+  return A.sort(cmp);
+}
+let RESULTS=[];
+function compute(){RESULTS=sorted([...S.listings.values()].map(derive).filter(passes));}
+
+/* ---------- map ---------- */
+let map, markerLayer, landLayer, roadLayer, townLayer, radiusLayer, schoolLayer, frfMarker;
+const markers=new Map();
+function initMap(){
+  map=L.map("map",{zoomControl:false,attributionControl:true,minZoom:8,maxZoom:18,zoomSnap:0.5,preferCanvas:true,maxBounds:[[35.70,-76.25],[36.45,-75.30]]}).setView([36.06,-75.73],10.5);
+  L.control.zoom({position:"bottomright"}).addTo(map);
+  map.on("moveend zoomend",updateSatLink);updateSatLink();
+  map.attributionControl.setPrefix(false).addAttribution("Coastline: geo-maps (Natural Earth/OSM) · Pins: US Census geocoder");
+  if(WEB){
+    const esri=(svc)=>`https://server.arcgisonline.com/ArcGIS/rest/services/${svc}/MapServer/tile/{z}/{y}/{x}`;
+    BASE={
+      sat:L.layerGroup([L.tileLayer(esri("World_Imagery"),{maxNativeZoom:19,maxZoom:20,attribution:"Imagery © Esri, Maxar, Earthstar Geographics"}),
+                        L.tileLayer(esri("Reference/World_Transportation"),{maxNativeZoom:19,maxZoom:20,opacity:.7}),
+                        L.tileLayer(esri("Reference/World_Boundaries_and_Places"),{maxNativeZoom:19,maxZoom:20})]),
+      streets:L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png",{maxNativeZoom:19,maxZoom:20,attribution:"© OpenStreetMap contributors"})
+    };
+    map.setMaxZoom(20);
+  }
+  landLayer=L.geoJSON(LAND,{interactive:false,style:()=>({color:css("--land-edge"),weight:1,fillColor:css("--land"),fillOpacity:1})}).addTo(map);
+  roadLayer=L.layerGroup().addTo(map);
+  for(const k in ROADS){const r=ROADS[k];const major=r.speed>=45;L.polyline(r.pts,{interactive:false,color:css(major?"--road-major":"--road"),weight:major?2.4:1.6,opacity:.9,dashArray:k==="us158_bridge"||k==="causeway"?null:null}).addTo(roadLayer);}
+  WATER.forEach(([n,la,lo])=>L.marker([la,lo],{interactive:false,icon:L.divIcon({className:"",html:`<span class="water-label">${n}</span>`,iconSize:[0,0]})}).addTo(map));
+  townLayer=L.layerGroup().addTo(map);
+  TOWNS.forEach(t=>{const m=L.marker(t.c,{icon:L.divIcon({className:"",html:`<span class="town-label" data-town="${esc(t.name)}">${esc(t.name)}</span>`,iconSize:[0,0]}),keyboard:false,zIndexOffset:-100});m.on("click",()=>toggleTown(t.name));m.addTo(townLayer);});
+  schoolLayer=L.layerGroup();
+  SCHOOLS.forEach(s=>L.marker([s.lat,s.lng],{icon:L.divIcon({className:"",html:`<span class="school-pin">${s.t==="elem"?"E":s.t==="mid"?"M":"H"}</span>`,iconSize:[0,0]})}).bindTooltip(s.n,{direction:"top"}).addTo(schoolLayer));
+  frfMarker=L.marker([FRF.lat,FRF.lng],{icon:L.divIcon({className:"",html:`<span class="frf-pin"><b>FRF PIER</b><i></i></span>`,iconSize:[0,0]}),zIndexOffset:1000}).bindTooltip("USACE Field Research Facility, Duck",{direction:"top"}).addTo(map);
+  radiusLayer=L.layerGroup().addTo(map);
+  markerLayer=L.layerGroup().addTo(map);
+  if(WEB) setBase(store.get("obx.base","sat"));
+  const mo=new MutationObserver(restyle);mo.observe(document.documentElement,{attributes:true,attributeFilter:["data-theme"]});
+  try{matchMedia("(prefers-color-scheme: dark)").addEventListener("change",restyle);}catch(e){}
+}
+let BASE=null, baseNow="chart";
+function setBase(k){
+  if(!WEB) return; baseNow=k; store.set("obx.base",k);
+  for(const key in BASE){ if(map.hasLayer(BASE[key])) map.removeLayer(BASE[key]); }
+  const chart=k==="chart";
+  [landLayer,roadLayer].forEach(L1=>{ if(chart){ if(!map.hasLayer(L1)) L1.addTo(map); } else if(map.hasLayer(L1)) map.removeLayer(L1); });
+  document.querySelectorAll(".water-label").forEach(e=>e.style.display=chart?"":"none");
+  if(!chart){ BASE[k].addTo(map); if(BASE[k].bringToBack) BASE[k].bringToBack(); }
+  document.getElementById("map").classList.toggle("on-sat",k==="sat");
+  document.querySelectorAll("#baseSeg button").forEach(b=>b.setAttribute("aria-pressed",b.dataset.base===k?"true":"false"));
+}
+function aerial(l,w,h,z){
+  if(!WEB||l.lat==null) return "";
+  z=z||18; const n=Math.pow(2,z), lr=l.lat*Math.PI/180;
+  const px=(l.lng+180)/360*n*256, py=(1-Math.log(Math.tan(lr)+1/Math.cos(lr))/Math.PI)/2*n*256;
+  const x0=px-w/2, y0=py-h/2, tx0=Math.floor(x0/256), ty0=Math.floor(y0/256), tx1=Math.floor((x0+w)/256), ty1=Math.floor((y0+h)/256);
+  let imgs="";
+  for(let tx=tx0;tx<=tx1;tx++)for(let ty=ty0;ty<=ty1;ty++){
+    imgs+=`<img alt="" loading="lazy" decoding="async" src="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/${z}/${ty}/${tx}" style="left:${Math.round(tx*256-x0)}px;top:${Math.round(ty*256-y0)}px">`;
+  }
+  return `<div class="aerial" style="width:${w}px;height:${h}px;max-width:none" role="img" aria-label="Aerial photo of ${esc(l.address)}">${imgs}<span class="aerial-pin"></span></div>`;
+}
+function updateSatLink(){const a=$("#satBtn");if(!a||!map)return;const c=map.getCenter();a.href=`https://www.google.com/maps/@${c.lat.toFixed(5)},${c.lng.toFixed(5)},${Math.round(map.getZoom()*10)/10}z/data=!3m1!1e3`;}
+function setListHidden(h){S.listHidden=h;document.getElementById("view-map").classList.toggle("maponly",h);const p=$("#panel");if(innerWidth<900){p.classList.toggle("mini",h);p.classList.remove("full");}const b=$("#listBtn");b.textContent=h?"Show list":"Hide list";b.setAttribute("aria-pressed",h);setTimeout(()=>map&&map.invalidateSize(),260);}
+function restyle(){
+  if(!map) return;
+  landLayer.setStyle({color:css("--land-edge"),fillColor:css("--land")});
+  roadLayer.eachLayer(p=>{const maj=p.options.weight>2;p.setStyle({color:css(maj?"--road-major":"--road")});});
+  drawRadius(); updateMarkers(true);
+}
+function markerStyle(l){
+  const col=css(l.kind==="house"?"--house":l.kind==="condo"?"--condo":"--lot");
+  const mine=isMine(l.id), sel=S.selected===l.id, pend=l.status!=="Active";
+  const lot=l.kind==="lot";
+  return {radius: sel?10:mine?8:6, color: sel||mine?css("--accent"):(lot?col:css("--panel")), weight: sel?3:mine?2.6:(lot?2.2:1.4),
+    fillColor: col, fillOpacity: lot?0.15:(pend?0.45:0.95), dashArray: l.geo==="approx"?"2 3":null};
+}
+function updateMarkers(force){
+  const want=new Set(RESULTS.map(l=>l.id));
+  for(const [id,m] of markers){ if(!want.has(id)||!S.listings.has(id)){markerLayer.removeLayer(m);markers.delete(id);} }
+  for(const l of RESULTS){
+    let m=markers.get(l.id);
+    if(!m){m=L.circleMarker([l.lat,l.lng],markerStyle(l));m.on("click",()=>select(l.id,false));
+      m.bindTooltip(()=>{const x=S.listings.get(l.id)||l;return `<b>${money(x.price)}</b> · ${esc(x.address)}<br>${esc(x.area)} · ${factLine(x)}`;},{direction:"top",offset:[0,-6]});
+      markerLayer.addLayer(m);markers.set(l.id,m);}
+    else { m.setLatLng([l.lat,l.lng]); m.setStyle(markerStyle(l)); m.setRadius(markerStyle(l).radius); }
+    if(S.selected===l.id||isMine(l.id)) m.bringToFront();
+  }
+  document.querySelectorAll(".town-label").forEach(el=>{const t=el.dataset.town;const on=S.f.mode==="town"&&S.f.towns.includes(t);el.classList.toggle("on",on);el.classList.toggle("dim",S.f.mode==="radius"||(S.f.towns.length>0&&!on));});
+}
+function drawRadius(){
+  radiusLayer.clearLayers();
+  if(S.f.mode==="radius") L.circle([FRF.lat,FRF.lng],{radius:S.f.radius*1609.34,color:css("--accent"),weight:2,dashArray:"6 6",fillColor:css("--accent"),fillOpacity:.05,interactive:false}).addTo(radiusLayer);
+}
+function fitResults(){
+  const pts=RESULTS.map(l=>[l.lat,l.lng]);
+  if(S.f.mode==="radius"){map.fitBounds(L.latLng(FRF.lat,FRF.lng).toBounds(S.f.radius*1609.34*2),{padding:[30,30]});return;}
+  if(!pts.length) return; pts.push([FRF.lat,FRF.lng]);
+  map.fitBounds(pts,{padding:[40,40],maxZoom:14});
+}
+
+/* ---------- panel controls ---------- */
+function chipBtn(label,pressed,on,disabled){const b=document.createElement("button");b.type="button";b.className="chip";b.textContent=label;b.setAttribute("aria-pressed",pressed?"true":"false");if(disabled)b.disabled=true;b.onclick=on;return b;}
+function buildControls(){
+  const f=S.f;
+  $("#modeTown").setAttribute("aria-pressed",f.mode==="town");$("#modeRadius").setAttribute("aria-pressed",f.mode==="radius");
+  $("#townBox").hidden=false; $("#radiusBox").hidden=f.mode!=="radius";
+  const tc=$("#townChips");tc.innerHTML="";
+  tc.appendChild(chipBtn("All towns",!f.towns.length,()=>{f.towns=[];changed();},f.mode==="radius"));
+  TOWNS.forEach(t=>tc.appendChild(chipBtn(t.name,f.towns.includes(t.name),()=>toggleTown(t.name),f.mode==="radius")));
+  $("#radius").value=f.radius;$("#radiusVal").textContent=f.radius+" mi";
+  const kc=$("#kindChips");kc.innerHTML="";
+  KINDS.forEach(([k,n])=>kc.appendChild(chipBtn(n,f.kinds.includes(k),()=>{f.kinds=f.kinds.includes(k)?f.kinds.filter(x=>x!==k):[...f.kinds,k];if(!f.kinds.length)f.kinds=[k];changed();})));
+  const pm=$("#pmin"),px=$("#pmax");
+  if(!pm.options.length){PRICES.forEach(p=>{pm.add(new Option(p?kmoney(p):"No min",p));px.add(new Option(p?kmoney(p):"No max",p));});}
+  pm.value=f.pmin;px.value=f.pmax;
+  const pq=$("#priceQuick");pq.innerHTML="";
+  [["Under $400k",0,400000],["Under $500k",0,500000],["$500k–$800k",500000,800000],["$800k+",800000,0]].forEach(([n,a,b])=>pq.appendChild(chipBtn(n,f.pmin===a&&f.pmax===b,()=>{if(f.pmin===a&&f.pmax===b){f.pmin=0;f.pmax=0;}else{f.pmin=a;f.pmax=b;}changed();})));
+  $("#beds").value=f.beds;$("#baths").value=f.baths;$("#sqft").value=f.sqft;$("#acres").value=f.acres;
+  $("#commute").value=f.commute;$("#commuteVal").textContent=f.commute>=60?"Any":"≤ "+f.commute+" min";
+  $("#elem").value=f.elem;$("#elemVal").textContent=f.elem>=15?"Any":"≤ "+f.elem+" mi";
+  $("#high").value=f.high;$("#highVal").textContent=f.high>=25?"Any":"≤ "+f.high+" mi";
+  const tg=$("#tagChips");tg.innerHTML="";
+  TAGS.forEach(([k,n])=>tg.appendChild(chipBtn(n,f.tags.includes(k),()=>{f.tags=f.tags.includes(k)?f.tags.filter(x=>x!==k):[...f.tags,k];changed();})));
+  const sc=$("#statusChips");sc.innerHTML="";
+  STATUSES.forEach(s=>sc.appendChild(chipBtn(s,f.statuses.includes(s),()=>{f.statuses=f.statuses.includes(s)?f.statuses.filter(x=>x!==s):[...f.statuses,s];if(!f.statuses.length)f.statuses=[s];changed();})));
+  $("#favOnly").checked=f.favOnly;$("#savedAny").checked=f.savedAny;$("#familyAdded").checked=f.familyAdded;
+  if(document.activeElement!==$("#q")) $("#q").value=f.q;
+  $("#sort").value=f.sort;
+  // summaries
+  $("#sv-where").textContent = f.mode==="radius" ? `${f.radius} mi of FRF` : (f.towns.length? f.towns.join(", ") : "All towns");
+  const kinds = f.kinds.length===3?"All types":f.kinds.map(k=>KINDNAME[k]).join(", ");
+  const pr = (f.pmin||f.pmax)? ` · ${f.pmin?kmoney(f.pmin):"$0"}–${f.pmax?kmoney(f.pmax):"any"}` : "";
+  $("#sv-type").textContent = kinds+pr;
+  const sz=[f.beds?f.beds+"+ bd":"",f.baths?f.baths+"+ ba":"",f.sqft?f.sqft.toLocaleString()+"+ sf":"",f.acres?f.acres+"+ ac":""].filter(Boolean).join(" · ");
+  $("#sv-size").textContent=sz;
+  $("#sv-comm").textContent=[f.commute<60?"≤"+f.commute+" min":"",f.elem<15?"elem ≤"+f.elem+" mi":"",f.high<25?"high ≤"+f.high+" mi":""].filter(Boolean).join(" · ");
+  $("#sv-amen").textContent=f.tags.map(t=>TAGNAME[t]).join(", ");
+  const st=STATUSES.filter(s=>f.statuses.includes(s));
+  $("#sv-status").textContent=[st.length===3&&st.join()==="Active,Pending,Unverified"?"":st.join(", "),f.favOnly?"mine":"",f.savedAny?"saved":"",f.familyAdded?"family-added":""].filter(Boolean).join(" · ");
+}
+function toggleTown(t){const f=S.f;if(f.mode==="radius"){f.mode="town";f.towns=[t];}else f.towns=f.towns.includes(t)?f.towns.filter(x=>x!==t):[...f.towns,t];changed(true);}
+function chipsOverlay(){
+  const f=S.f,bar=$("#chipbar");bar.innerHTML="";
+  const add=(label,val,clear,lead)=>{const d=document.createElement("span");d.className="fchip"+(lead?" lead":"");d.innerHTML=`<b>${esc(label)}</b> ${esc(val)}`;if(clear){const b=document.createElement("button");b.type="button";b.setAttribute("aria-label","Remove "+label+" filter");b.textContent="×";b.onclick=clear;d.appendChild(b);}bar.appendChild(d);};
+  add("Showing",`${RESULTS.length} of ${S.listings.size}`,null,true);
+  if(f.mode==="radius") add("Radius",`${f.radius} mi of FRF`,()=>{f.mode="town";changed(true);});
+  else if(f.towns.length) f.towns.forEach(t=>add("Town",t,()=>{f.towns=f.towns.filter(x=>x!==t);changed(true);}));
+  if(f.kinds.length<3) add("Type",f.kinds.map(k=>KINDNAME[k]).join(", "),()=>{f.kinds=["house","condo","lot"];changed();});
+  if(f.pmin||f.pmax) add("Price",`${f.pmin?kmoney(f.pmin):"$0"}–${f.pmax?kmoney(f.pmax):"any"}`,()=>{f.pmin=0;f.pmax=0;changed();});
+  if(f.beds) add("Beds",f.beds+"+",()=>{f.beds=0;changed();});
+  if(f.baths) add("Baths",f.baths+"+",()=>{f.baths=0;changed();});
+  if(f.sqft) add("Size",f.sqft.toLocaleString()+"+ sq ft",()=>{f.sqft=0;changed();});
+  if(f.acres) add("Lot",f.acres+"+ ac",()=>{f.acres=0;changed();});
+  if(f.commute<60) add("Drive",`≤ ${f.commute} min`,()=>{f.commute=60;changed();});
+  if(f.elem<15) add("Elem school",`≤ ${f.elem} mi`,()=>{f.elem=15;changed();});
+  if(f.high<25) add("High school",`≤ ${f.high} mi`,()=>{f.high=25;changed();});
+  f.tags.forEach(t=>add("Has",TAGNAME[t],()=>{f.tags=f.tags.filter(x=>x!==t);changed();}));
+  const defSt=["Active","Pending","Unverified"];if(f.statuses.slice().sort().join()!==defSt.slice().sort().join()) add("Status",f.statuses.join(", "),()=>{f.statuses=defSt;changed();});
+  if(f.favOnly) add("List",(S.user?S.user.name:"My")+"'s saves",()=>{f.favOnly=false;changed();});
+  if(f.savedAny) add("List","Saved by family",()=>{f.savedAny=false;changed();});
+  if(f.familyAdded) add("Added by","Family",()=>{f.familyAdded=false;changed();});
+  if(f.q) add("Search",f.q,()=>{f.q="";changed();});
+}
+function factLine(l){
+  if(l.kind==="lot") return [l.acres?l.acres+" ac":"","Lot"].filter(Boolean).join(" · ");
+  return [l.beds!=null?l.beds+" bd":"",l.baths!=null?l.baths+" ba":"",l.sqft?l.sqft.toLocaleString()+" sf":""].filter(Boolean).join(" · ")||KINDNAME[l.kind];
+}
+function renderList(){
+  const ul=$("#list");ul.innerHTML="";
+  const n=RESULTS.length;
+  $("#countTop").textContent=S.dbReady?`${n} match${n===1?"":"es"}`:"";
+  $("#countList").textContent=S.dbReady?`${n} of ${S.listings.size} listings`:"Loading listings…";
+  if(S.dbReady&&!n){ul.innerHTML=`<li class="empty">No listings match. Remove a filter on the map to widen the search.</li>`;}
+  if(!S.dbReady){ul.innerHTML=`<li class="empty">Loading listings…</li>`;}
+  const frag=document.createDocumentFragment();
+  RESULTS.slice(0,S.shown).forEach(l=>{
+    const li=document.createElement("li");li.className="item"+(S.selected===l.id?" sel":"");li.dataset.id=l.id;
+    const col=l.kind==="house"?"var(--house)":l.kind==="condo"?"var(--condo)":"var(--lot)";
+    const sv=saversOf(l.id);
+    const ph=photosOf(l)[0];
+    li.innerHTML=`<span class="stripe" style="background:${col}"></span>
+      <div class="main">${ph?`<img class="thumb" alt="" loading="lazy" src="/_blob/${esc(ph[0])}">`:(WEB?`<div class="thumbwrap">${aerial(l,420,110,18)}</div>`:"")}<span class="p num">${money(l.price)}</span><span class="a">${esc(l.address)}</span>
+      <span class="m num">${esc(l.area)} · ${esc(factLine(l))}</span>
+      <span class="m num">~${l.commute} min to FRF · <span class="pill ${esc(l.status)}">${esc(l.status)}</span>${l.addedBy&&l.addedBy!=="Claude"?" · added by "+esc(l.addedBy):""}</span></div>
+      <div class="side"><button class="heart" type="button" aria-pressed="${isMine(l.id)}" aria-label="Save to ${S.user?esc(S.user.name):"my"} list">${isMine(l.id)?"♥":"♡"}</button>
+      <span class="savers">${sv.map(p=>`<span class="dot" title="Saved by ${esc(p.name)}" style="background:${colorFor(p.name)}">${initial(p.name)}</span>`).join("")}</span></div>`;
+    li.querySelector(".heart").onclick=e=>{e.stopPropagation();toggleSave(l.id);};
+    li.onclick=()=>select(l.id,true);
+    frag.appendChild(li);
+  });
+  ul.appendChild(frag);
+  $("#moreBox").hidden=RESULTS.length<=S.shown;
+}
+function changed(refit){saveFilters();S.shown=120;render();if(refit)fitResults();}
+function render(){
+  compute(); buildControls(); chipsOverlay(); renderList();
+  if(map){updateMarkers();drawRadius();}
+  if(S.selected) renderDrawer();
+  if(S.view==="lists") renderLists();
+  if(S.view==="users") renderUsers();
+  renderWho();
+}
+
+/* ---------- drawer ---------- */
+function linksFor(l){
+  const full=`${l.address}, ${l.town}, NC ${l.zip||""}`.trim();
+  const q=encodeURIComponent(full);
+  const z=(l.address.replace(/\s+Unit\s+/i," UNIT ").replace(/#/g,"")+" "+l.town+" NC "+(l.zip||"")).replace(/[^A-Za-z0-9 ]/g,"").trim().replace(/\s+/g,"-");
+  const out=[["Navigate",`https://www.google.com/maps/dir/?api=1&destination=${q}`],
+    ["Zillow photos",`https://www.zillow.com/homes/${z}_rb/`],
+    ["Redfin",`https://www.google.com/search?q=${encodeURIComponent(full+" site:redfin.com")}`],
+    ["Realtor.com",`https://www.google.com/search?q=${encodeURIComponent(full+" site:realtor.com")}`],
+    ["Google",`https://www.google.com/search?q=${encodeURIComponent(full+" for sale")}`]];
+  if(l.mls) out.push(["MLS # "+l.mls,`https://www.google.com/search?q=${encodeURIComponent("MLS "+l.mls+" "+l.town+" NC")}`]);
+  if(l.lat) out.push(["Street View",`https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=${l.lat},${l.lng}`]);
+  if(l.source&&l.source.url) out.push(["Source: "+(l.source.name||"listing"),l.source.url]);
+  return out;
+}
+function select(id,pan){
+  S.selected=id;const l=S.listings.get(id);if(!l)return;
+  renderDrawer();updateMarkers();
+  document.querySelectorAll(".item.sel").forEach(e=>e.classList.remove("sel"));
+  const li=document.querySelector(`.item[data-id="${CSS.escape(id)}"]`);if(li){li.classList.add("sel");}
+  if(pan&&map) map.panTo([l.lat,l.lng]);
+  if(innerWidth<900){$("#panel").classList.add("mini");$("#panel").classList.remove("full");}
+}
+function closeDrawer(){S.selected=null;$("#drawer").hidden=true;updateMarkers();if(!S.listHidden)$("#panel").classList.remove("mini");}
+function renderDrawer(){
+  const l=S.listings.get(S.selected);const d=$("#drawer");
+  if(!l){d.hidden=true;return;}
+  derive(l);d.hidden=false;
+  const mine=savesOf(S.user?S.user.id:"")[l.id];
+  const sv=saversOf(l.id);
+  const notes=Object.entries((S.notes.get(l.id)||{}).entries||{}).sort((a,b)=>String(a[1].at).localeCompare(String(b[1].at)));
+  const fact=(k,v)=>`<div><dt>${k}</dt><dd class="num">${v==null||v===""?"—":v}</dd></div>`;
+  d.innerHTML=`
+   <div class="dhead"><div style="min-width:0">
+      <div class="p num">${money(l.price)}</div>
+      <div class="a">${esc(l.address)}</div>
+      <div class="m">${esc(l.area)}${l.area!==l.town?` (${esc(l.town)} mailing address)`:""}, NC ${esc(l.zip||"")} · <span class="pill ${esc(l.status)}">${esc(l.status)}</span></div>
+   </div><button class="x" type="button" id="dClose" aria-label="Close details">×</button></div>
+   <div class="dbody">
+     <div class="sec photos">
+       ${WEB?`<div class="heroaerial">${aerial(l,700,230,19)}<span class="cap">Aerial view · Esri World Imagery</span></div>`:""}
+       ${photosOf(l).length?`<div class="gallery">${photosOf(l).map(([aid,p])=>`<figure><img alt="Photo of ${esc(l.address)}" loading="lazy" src="/_blob/${esc(aid)}"><figcaption>${esc(p.by)} · ${esc(String(p.at).slice(0,10))}${S.user&&S.user.name===p.by?` <button type="button" class="linkbtn" data-rmphoto="${esc(aid)}">Remove</button>`:""}</figcaption></figure>`).join("")}</div>`:""}
+       <div class="photo-cta">
+         <a class="btn pri" target="_blank" rel="noopener" href="${esc(linksFor(l)[1][1])}">See listing photos on Zillow</a>
+         <a class="btn" target="_blank" rel="noopener" href="https://www.google.com/maps/@${l.lat},${l.lng},19z/data=!3m1!1e3">Google satellite</a>
+         ${S.assets?`<label class="btn" for="dPhotoIn">Add your photo</label><input type="file" id="dPhotoIn" accept="image/*" multiple hidden>`:""}
+       </div>
+       <p class="hint" style="margin:0">Interior and listing photos belong to the listing agent, so they open on Zillow.${S.assets?" Photos you take on a drive-by can be added here for the family.":""}</p>
+     </div>
+     <div class="actions">
+       <button class="btn ${mine?"ink":"pri"}" type="button" id="dSave">${mine?"♥ Saved to "+esc(S.user.name)+"'s list":"♡ Save to "+(S.user?esc(S.user.name)+"'s":"my")+" list"}</button>
+       <button class="btn" type="button" id="dLoan">Loan calculator</button>
+       <a class="btn" target="_blank" rel="noopener" href="${linksFor(l)[0][1]}">Navigate</a>
+     </div>
+     ${mine?`<div class="sec"><h3>${esc(S.user.name)}'s note</h3><textarea id="dMyNote" rows="2" placeholder="Why you like it, questions to ask…">${esc(mine.note||"")}</textarea><div style="margin-top:6px"><button class="btn sm" type="button" id="dSaveNote">Save note</button></div>${mine.loan?`<p class="hint">Saved loan: ${esc(loanSummary(mine.loan))}</p>`:""}</div>`:""}
+     <dl class="facts">
+       ${fact("Type",esc(l.subtype||KINDNAME[l.kind]))}${fact("Beds",l.beds)}${fact("Baths",l.baths)}
+       ${fact("Sq ft",l.sqft?l.sqft.toLocaleString():null)}${fact("Lot",l.acres?l.acres+" ac":null)}${fact("$ / sq ft",l.ppsf?"$"+Math.round(l.ppsf):null)}
+       ${fact("Drive to FRF","~"+l.commute+" min")}${fact("Straight to FRF",l.frfMi.toFixed(1)+" mi")}${fact("MLS #",esc(l.mls||""))}
+     </dl>
+     <div class="sec"><h3>Schools nearby</h3><div class="kv num">
+       <span>Elementary</span><span>${esc(l.elem.s.n)} · ${l.elem.d.toFixed(1)} mi</span>
+       <span>Middle</span><span>${esc(l.mid.s.n)} · ${l.mid.d.toFixed(1)} mi</span>
+       <span>High</span><span>${esc(l.high.s.n)} · ${l.high.d.toFixed(1)} mi</span></div>
+       <p class="hint" style="margin:6px 0 0">Nearest campus by distance. ${TOWN[l.area]?esc(TOWN[l.area].county):""} County Schools sets the assigned school.</p></div>
+     <div class="sec"><h3>Listing record</h3><div class="kv num">
+       <span>County</span><span>${TOWN[l.area]?esc(TOWN[l.area].county):"—"}</span>
+       <span>Added</span><span>${esc(l.addedAt||"—")} by ${esc(l.addedBy||"Claude")}</span>
+       <span>Last confirmed</span><span>${esc(l.seenAt||"—")}</span>
+       ${l.prevPrice?`<span>Previous price</span><span>${money(l.prevPrice)}</span>`:""}
+       <span>Source</span><span>${l.source&&l.source.url?`<a href="${esc(l.source.url)}" target="_blank" rel="noopener">${esc(l.source.name||"Link")}</a>`:"—"}</span>
+       <span>Map pin</span><span>${l.geo==="approx"?'<span class="approx">Approximate. The exact pin is filled in by the next refresh.</span>':"Exact address match"}</span>
+       ${l.statusBy?`<span>Status set by</span><span>${esc(l.statusBy)} on ${esc(l.statusAt||"")}</span>`:""}
+     </div></div>
+     <div class="sec"><h3>Photos &amp; listing pages</h3><div class="links">${linksFor(l).map(([n,u])=>`<a class="btn sm" target="_blank" rel="noopener" href="${esc(u)}">${esc(n)}</a>`).join("")}</div>
+       <p class="hint" style="margin:6px 0 0">Listing photos are hosted by the listing sites, so they open there.</p></div>
+     <div class="sec"><h3>Amenities</h3><div class="chips" id="dTags">${TAGS.map(([k,n])=>`<button type="button" class="chip" data-tag="${k}" aria-pressed="${!!(l.tags||{})[k]}">${esc(n)}</button>`).join("")}</div>
+       <p class="hint" style="margin:6px 0 0">Tap to tag what you've confirmed. Tags help everyone filter.</p></div>
+     <div class="sec"><h3>Status</h3><div style="display:flex;gap:8px;align-items:center"><select id="dStatus" style="width:auto">${STATUSES.map(s=>`<option ${s===l.status?"selected":""}>${s}</option>`).join("")}</select><span class="hint">Update it if you hear it's under contract or sold.</span></div></div>
+     <div class="sec"><h3>Saved by</h3>${sv.length?sv.map(p=>{const it=savesOf(p.id)[l.id];return `<div class="note"><b>${esc(p.name)}</b>${it.note?": "+esc(it.note):""}<small>${esc((it.savedAt||"").slice(0,10))}${it.loan?" · "+esc(loanSummary(it.loan)):""}</small></div>`;}).join(""):`<p class="hint" style="margin:0">Nobody has saved this one yet.</p>`}</div>
+     <div class="sec"><h3>Family notes</h3><div class="notes">${notes.length?notes.map(([k,n])=>`<div class="note">${esc(n.text)}<small>${esc(n.by)} · ${esc(String(n.at).slice(0,16).replace("T"," "))}</small></div>`).join(""):`<p class="hint" style="margin:0">No notes yet.</p>`}</div>
+       <form id="dNoteForm" style="display:grid;gap:6px;margin-top:8px"><textarea id="dNote" rows="2" placeholder="Drove by, needs a roof, great street…" required></textarea><div><button class="btn sm" type="submit">Add note as ${S.user?esc(S.user.name):"…"}</button></div></form></div>
+   </div>`;
+  $("#dClose").onclick=closeDrawer;
+  const pin=$("#dPhotoIn");if(pin)pin.onchange=e=>{const fs=[...e.target.files];e.target.value="";if(fs.length)addPhotos(l.id,fs);};
+  d.querySelectorAll("[data-rmphoto]").forEach(b=>b.onclick=()=>removePhoto(l.id,b.dataset.rmphoto));
+  $("#dSave").onclick=()=>toggleSave(l.id);
+  $("#dLoan").onclick=()=>openLoan(l.id);
+  if($("#dSaveNote")) $("#dSaveNote").onclick=()=>saveMyNote(l.id,$("#dMyNote").value);
+  d.querySelectorAll("#dTags .chip").forEach(b=>b.onclick=()=>setTag(l.id,b.dataset.tag,b.getAttribute("aria-pressed")!=="true"));
+  $("#dStatus").onchange=e=>setStatus(l.id,e.target.value);
+  $("#dNoteForm").onsubmit=e=>{e.preventDefault();addNote(l.id,$("#dNote").value);};
+}
+
+/* ---------- photos ---------- */
+function photosOf(l){return Object.entries((l&&l.photos)||{}).filter(([k,v])=>v&&!v.removed).sort((a,b)=>String(a[1].at).localeCompare(String(b[1].at)));}
+async function prepImage(file){
+  try{const url=URL.createObjectURL(file);const img=await new Promise((res,rej)=>{const i=new Image();i.onload=()=>res(i);i.onerror=rej;i.src=url;});
+    const max=1600,sc=Math.min(1,max/Math.max(img.naturalWidth,img.naturalHeight));const c=document.createElement("canvas");c.width=Math.round(img.naturalWidth*sc);c.height=Math.round(img.naturalHeight*sc);
+    c.getContext("2d").drawImage(img,0,0,c.width,c.height);URL.revokeObjectURL(url);return await new Promise(r=>c.toBlob(b=>r(b||file),"image/jpeg",0.85));}
+  catch(e){return file;}
+}
+async function addPhotos(id,files){
+  if(!needUser())return;
+  if(!S.assets){toast("Photo uploads aren't available in this view");return;}
+  let n=0;
+  for(const f of files){
+    if(!/^image\//.test(f.type)&&!/\.(jpe?g|png|webp|heic)$/i.test(f.name)){toast(f.name+" isn't an image");continue;}
+    toast("Uploading photo…");
+    try{const blob=await prepImage(f);const r=await S.assets.upload(blob,{type:blob.type||"image/jpeg"});
+      const ok=await write(()=>patchListing(id,{photos:{[r.id]:{by:S.user.name,at:new Date().toISOString()}}}));if(ok)n++;}
+    catch(e){toast(e&&e.code==="unsupported_type"?"That photo format isn't supported. Try a JPEG or PNG.":e&&e.code==="too_large"?"That photo is too large.":"Couldn't upload the photo.");}
+  }
+  if(n)toast(n===1?"Photo added":n+" photos added");
+}
+async function removePhoto(id,aid){if(!needUser())return;await write(()=>patchListing(id,{photos:{[aid]:{removed:true,by:S.user.name,at:new Date().toISOString()}}}),"Photo removed");}
+
+/* ---------- writes ---------- */
+function needUser(){if(S.user)return true;toast("Pick who you are first");go("users");return false;}
+async function write(fn,okMsg){
+  if(!S.db){toast("Saving isn't available right now");return false;}
+  try{await fn();if(okMsg)toast(okMsg);return true;}
+  catch(e){const c=e&&e.code;if(c==="invalid_argument"&&!S.localMode){
+      // This viewer can read the shared lists but not write them: keep their saves on this device instead.
+      goLocal();try{await fn();toast((okMsg?okMsg+". ":"")+"Saved on this device only.");return true;}catch(e2){toast("Couldn't save.");return false;}}
+    if(c==="invalid_argument"){S.canWrite=false;toast("Couldn't save that.");}else if(c==="quota_exceeded")toast("The shared database is full.");else toast("Couldn't save. Try again in a moment.");return false;}
+}
+function snapshotOf(l){const o={};["address","town","area","zip","kind","subtype","price","status","beds","baths","sqft","acres","mls","lat","lng"].forEach(k=>{if(l[k]!=null)o[k]=l[k];});o.commute=derive(l).commute;return o;}
+async function toggleSave(id){
+  if(!needUser())return;const l=S.listings.get(id);if(!l)return;
+  const pid=S.user.id, doc=S.saves.get(pid), items=Object.assign({},(doc&&doc.items)||{});
+  if(items[id]){delete items[id];await write(()=>S.db.doc("saves/"+pid).set({name:S.user.name,items}),"Removed from "+S.user.name+"'s list");}
+  else{const entry={savedAt:new Date().toISOString(),note:"",snapshot:snapshotOf(l)};
+    if(doc) await write(()=>S.db.doc("saves/"+pid).update({items:{[id]:entry}}),"Saved to "+S.user.name+"'s list");
+    else await write(()=>S.db.doc("saves/"+pid).set({name:S.user.name,items:{[id]:entry}}),"Saved to "+S.user.name+"'s list");}
+}
+async function saveMyNote(id,note){if(!needUser())return;const pid=S.user.id;if(!savesOf(pid)[id])return;await write(()=>S.db.doc("saves/"+pid).update({items:{[id]:{note:note.slice(0,1000)}}}),"Note saved");}
+function patchListing(id,patch){const l=S.listings.get(id);const ref=(l&&l._ref)||("listings/"+id);return ref.startsWith("sets/")?S.db.doc(ref).update({items:{[id]:patch}}):S.db.doc(ref).update(patch);}
+async function setTag(id,tag,val){if(!needUser())return;await write(()=>patchListing(id,{tags:{[tag]:val}}),val?TAGNAME[tag]+" tagged":TAGNAME[tag]+" removed");}
+async function setStatus(id,status){if(!needUser())return;await write(()=>patchListing(id,{status,statusBy:S.user.name,statusAt:new Date().toISOString().slice(0,10)}),"Status set to "+status);}
+async function addNote(id,text){
+  if(!needUser())return;text=text.trim();if(!text)return;
+  const key="n"+Date.now()+Math.random().toString(36).slice(2,6);const entry={by:S.user.name,text:text.slice(0,1000),at:new Date().toISOString()};
+  const ex=S.notes.has(id);
+  await write(()=>ex?S.db.doc("notes/"+id).update({entries:{[key]:entry}}):S.db.doc("notes/"+id).set({entries:{[key]:entry}}),"Note added");
+}
+async function saveLoan(id,loan){
+  if(!needUser())return;const l=S.listings.get(id);const pid=S.user.id,doc=S.saves.get(pid);const items=(doc&&doc.items)||{};
+  const entry=items[id]?{loan}:{savedAt:new Date().toISOString(),note:"",snapshot:snapshotOf(l),loan};
+  await write(()=>doc?S.db.doc("saves/"+pid).update({items:{[id]:entry}}):S.db.doc("saves/"+pid).set({name:S.user.name,items:{[id]:entry}}),"Loan scenario saved to "+S.user.name+"'s list");
+}
+
+/* ---------- loan calculator ---------- */
+const PROGRAMS = [
+  {k:"conv30",n:"Conventional 30-yr",term:30,minDown:3},
+  {k:"conv15",n:"Conventional 15-yr",term:15,minDown:3},
+  {k:"fha30",n:"FHA 30-yr",term:30,minDown:3.5},
+  {k:"va30",n:"VA 30-yr",term:30,minDown:0},
+  {k:"usda30",n:"USDA 30-yr",term:30,minDown:0,maxDown:0}
+];
+function calc(p){
+  const price=+p.price||0, downPct=+p.downPct||0, down=price*downPct/100, prog=PROGRAMS.find(x=>x.k===p.program)||PROGRAMS[0];
+  let base=price-down, upfront=0, mi=0;
+  if(prog.k==="fha30"){upfront=base*0.0175;mi=(base+upfront)*(downPct<5?0.0055:0.005)/12;}
+  else if(prog.k==="va30"){const fee=downPct<5?0.0215:downPct<10?0.015:0.0125;upfront=base*fee;}
+  else if(prog.k==="usda30"){upfront=base*0.01;mi=(base+upfront)*0.0035/12;}
+  else if(downPct<20){mi=base*(+p.pmi||0.55)/100/12;}
+  const loan=base+upfront, r=(+p.rate||0)/100/12, n=(+p.term||prog.term)*12;
+  const pi= r? loan*r/(1-Math.pow(1+r,-n)) : loan/n;
+  const tax=price*(+p.taxPct||0)/100/12, ins=(+p.ins||0)/12, flood=(+p.flood||0)/12, hoa=+p.hoa||0;
+  const total=pi+mi+tax+ins+flood+hoa;
+  const cash=down+price*(+p.closingPct||0)/100;
+  return {price,down,loan,upfront,pi,mi,tax,ins,flood,hoa,total,cash,prog};
+}
+function loanSummary(s){return `${(PROGRAMS.find(p=>p.k===s.program)||{}).n||"Loan"}, ${s.downPct}% down at ${s.rate}%: ${money(s.total)}/mo`;}
+let LOAN=null;
+function openLoan(id){
+  const l=S.listings.get(id);if(!l)return;derive(l);
+  const t=TOWN[l.area]||TOWNS[0];
+  const saved=S.user&&savesOf(S.user.id)[id]&&savesOf(S.user.id)[id].loan;
+  LOAN={id, p: saved?Object.assign({},saved,{price:l.price}):{price:l.price, program:"conv30", downPct:20, rate:RATES.conv30, term:30, taxPct:+(t.tax*100).toFixed(2), ins: l.kind==="condo"?1200:(l.kind==="lot"?0:3200), flood: l.kind==="lot"?0:900, hoa: l.kind==="condo"?375:0, pmi:0.55, closingPct:3}};
+  renderLoan();$("#loanModal").hidden=false;
+}
+function renderLoan(){
+  const l=S.listings.get(LOAN.id),p=LOAN.p,c=calc(p);
+  const prog=c.prog, inp=(id,label,val,step,suffix)=>`<label class="f" for="${id}">${label}<input type="number" id="${id}" value="${val}" step="${step}" min="0">${suffix?`<span class="hint">${suffix}</span>`:""}</label>`;
+  const parts=[["Principal & interest",c.pi,"var(--nav)"],[prog.k==="fha30"?"FHA mortgage insurance":prog.k==="usda30"?"USDA annual fee":"PMI",c.mi,"var(--warn)"],["Property tax",c.tax,"var(--condo)"],["Homeowners / wind",c.ins,"var(--lot)"],["Flood insurance",c.flood,"var(--muted)"],["HOA",c.hoa,"var(--accent)"]];
+  const downs=[0,3,3.5,5,10,20,25];
+  const rows=PROGRAMS.map(pr=>{const cells=downs.map(dp=>{if(dp<pr.minDown||(pr.maxDown!=null&&dp>pr.maxDown))return null;const rr=calc(Object.assign({},p,{program:pr.k,downPct:dp,rate:RATES[pr.k],term:pr.term}));return rr.total;});return {pr,cells};});
+  let best=Infinity;rows.forEach(r=>r.cells.forEach(v=>{if(v!=null&&v<best)best=v;}));
+  $("#loanTitle").textContent="Monthly payment · "+l.address;
+  $("#loanBody").innerHTML=`
+   <div class="loan-grid">
+     <div style="display:grid;gap:10px">
+       <label class="f" for="lp-program">Loan type<select id="lp-program">${PROGRAMS.map(x=>`<option value="${x.k}" ${x.k===p.program?"selected":""}>${x.n}</option>`).join("")}</select></label>
+       <div class="row2">${inp("lp-price","Price ($)",p.price,1000)}${inp("lp-down","Down payment (%)",p.downPct,0.5,money(c.down))}
+       ${inp("lp-rate","Interest rate (%)",p.rate,0.05)}${inp("lp-term","Term (years)",p.term,5)}
+       ${inp("lp-tax","Property tax (% / yr)",p.taxPct,0.01)}${inp("lp-ins","Homeowners + wind ($ / yr)",p.ins,100)}
+       ${inp("lp-flood","Flood insurance ($ / yr)",p.flood,50)}${inp("lp-hoa","HOA ($ / mo)",p.hoa,5)}
+       ${inp("lp-pmi","PMI if under 20% down (% / yr)",p.pmi,0.05)}${inp("lp-close","Closing costs (% of price)",p.closingPct,0.25)}</div>
+       <p class="hint" style="margin:0">Default rates are national averages for ${RATES.asOf} (The Mortgage Reports). Tax defaults are rough combined county and town rates for ${esc(l.area)}; check the ${esc((TOWN[l.area]||{}).county||"")} County tax office. FHA adds a 1.75% upfront premium, VA a funding fee (waived for some veterans), USDA a 1% fee and only applies in eligible rural areas such as much of mainland Currituck. Coastal insurance varies a lot, so get a quote.</p>
+     </div>
+     <div style="display:grid;gap:12px;align-content:start">
+       <div><div class="hint">Estimated monthly payment</div><div class="bigpay num">${money(c.total)}</div></div>
+       <div class="bar-stack">${parts.filter(x=>x[1]>0).map(([n,v,col])=>`<i title="${n}" style="width:${(v/c.total*100).toFixed(1)}%;background:${col}"></i>`).join("")}</div>
+       <div class="breakdown num">${parts.map(([n,v,col])=>`<span><i style="display:inline-block;width:8px;height:8px;border-radius:2px;background:${col};margin-right:6px"></i>${n}</span><span>${money(v)}</span>`).join("")}<span class="tot">Total</span><span class="tot">${money(c.total)}</span></div>
+       <div class="kv num"><span>Loan amount</span><span>${money(c.loan)}${c.upfront?` (incl. ${money(c.upfront)} financed fee)`:""}</span><span>Cash to close</span><span>${money(c.cash)} (down + closing)</span><span>Income to qualify</span><span>about ${money(c.total/0.36*12)}/yr at a 36% payment ratio</span></div>
+       <div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn pri" type="button" id="lpSave">Save to ${S.user?esc(S.user.name)+"'s":"my"} list</button></div>
+     </div>
+   </div>
+   <div class="sec" style="margin-top:14px"><h3>Compare loans and down payments</h3>
+     <div class="matrix-wrap"><table class="matrix"><thead><tr><th>Program (default rate)</th>${downs.map(d=>`<th>${d}% down</th>`).join("")}</tr></thead>
+     <tbody>${rows.map(r=>`<tr><td>${r.pr.n} <span class="hint">${RATES[r.pr.k]}%</span></td>${r.cells.map(v=>v==null?`<td class="na">n/a</td>`:`<td class="${Math.abs(v-best)<1?"best":""}">${money(v)}</td>`).join("")}</tr>`).join("")}</tbody></table></div>
+     <p class="hint" style="margin:6px 0 0">Monthly totals include tax, insurance, flood and HOA from the left. Tap a row's program above to model it in detail.</p></div>`;
+  const bind=(id,key,num=true)=>{$("#"+id).onchange=e=>{LOAN.p[key]=num?+e.target.value:e.target.value;if(key==="program"){const pr=PROGRAMS.find(x=>x.k===e.target.value);LOAN.p.rate=RATES[pr.k];LOAN.p.term=pr.term;if(LOAN.p.downPct<pr.minDown)LOAN.p.downPct=pr.minDown;if(pr.maxDown!=null)LOAN.p.downPct=pr.maxDown;}renderLoan();};};
+  bind("lp-program","program",false);bind("lp-price","price");bind("lp-down","downPct");bind("lp-rate","rate");bind("lp-term","term");bind("lp-tax","taxPct");bind("lp-ins","ins");bind("lp-flood","flood");bind("lp-hoa","hoa");bind("lp-pmi","pmi");bind("lp-close","closingPct");
+  $("#lpSave").onclick=()=>{const c2=calc(LOAN.p);saveLoan(LOAN.id,Object.assign({},LOAN.p,{total:Math.round(c2.total),savedAt:new Date().toISOString()}));};
+}
+
+/* ---------- lists view ---------- */
+function renderLists(){
+  const ppl=peopleList();if(!S.listPerson)S.listPerson=S.user?S.user.id:ppl[0].id;
+  const tabs=$("#listPeople");tabs.innerHTML="";
+  ppl.forEach(p=>{const n=Object.keys(savesOf(p.id)).length;tabs.appendChild(chipBtn(`${p.name} (${n})`,S.listPerson===p.id,()=>{S.listPerson=p.id;renderLists();}));});
+  const items=Object.entries(savesOf(S.listPerson));const who=(ppl.find(p=>p.id===S.listPerson)||{}).name||"";
+  const body=$("#listBody");
+  const shareBox=$("#shareBox");
+  if(shareBox){shareBox.innerHTML="";if(S.localMode&&items.length){const b=document.createElement("button");b.className="btn";b.type="button";b.textContent=`Share ${who}'s list`;b.onclick=()=>shareList(who,items);shareBox.appendChild(b);}}
+  if(!items.length){body.innerHTML=`<p class="lede">${esc(who)} hasn't saved anything yet. Tap ♡ on any listing on the map to start a list.</p>`;return;}
+  const groups={house:[],condo:[],lot:[]};
+  items.forEach(([id,it])=>{const cur=S.listings.get(id);const snap=it.snapshot||{};const k=(cur&&cur.kind)||snap.kind||"house";(groups[k]||groups.house).push({id,it,cur,snap});});
+  body.innerHTML=KINDS.map(([k,n])=>{const g=groups[k];if(!g.length)return"";g.sort((a,b)=>((a.cur||a.snap).price||0)-((b.cur||b.snap).price||0));
+    return `<div class="group"><h2>${n} <small>${g.length}</small></h2><div class="cards">${g.map(({id,it,cur,snap})=>{const x=cur||snap;const chg=cur&&snap.price&&cur.price!==snap.price?cur.price-snap.price:0;
+      return `<div class="scard"><div class="p num">${money(x.price)} ${chg?`<span class="chg" style="color:${chg<0?"var(--good)":"var(--bad)"}">${chg<0?"▼":"▲"} ${money(Math.abs(chg))} since saved</span>`:""}</div>
+        <div class="a">${esc(x.address||id)}</div><div class="m num">${esc(x.area||"")} · ${esc(factLine(x))} · ~${cur?derive(cur).commute:(snap.commute||"?")} min to FRF</div>
+        <div class="m"><span class="pill ${esc(x.status||"")}">${esc(x.status||"")}</span>${cur?"":" · no longer in the listings feed"}</div>
+        ${it.note?`<div class="m">“${esc(it.note)}”</div>`:""}${it.loan?`<div class="loan num">${esc(loanSummary(it.loan))}</div>`:""}
+        <div class="row">${cur?`<button class="btn sm" data-open="${esc(id)}" type="button">Show on map</button><button class="btn sm" data-loan="${esc(id)}" type="button">Loan calculator</button>`:""}<a class="btn sm" target="_blank" rel="noopener" href="${esc(linksFor(Object.assign({zip:""},x))[1][1])}">Zillow</a>
+        ${S.user&&S.user.id===S.listPerson?`<button class="btn sm" data-rm="${esc(id)}" type="button">Remove</button>`:""}</div></div>`;}).join("")}</div></div>`;}).join("");
+  body.querySelectorAll("[data-open]").forEach(b=>b.onclick=()=>{go("map");select(b.dataset.open,true);map.setView([S.listings.get(b.dataset.open).lat,S.listings.get(b.dataset.open).lng],14);});
+  body.querySelectorAll("[data-loan]").forEach(b=>b.onclick=()=>openLoan(b.dataset.loan));
+  body.querySelectorAll("[data-rm]").forEach(b=>b.onclick=()=>toggleSave(b.dataset.rm));
+}
+
+function shareList(who,items){
+  const payload={n:who,i:items.map(([id,it])=>[id,it.note||""])};
+  const enc=btoa(unescape(encodeURIComponent(JSON.stringify(payload)))).replace(/\+/g,"-").replace(/\//g,"_").replace(/=+$/,"");
+  const url=location.href.split("#")[0]+"#"+(window.__FAMILY_KEY?"k="+window.__FAMILY_KEY+"&":"")+"share="+enc;
+  const done=()=>toast("Link copied. Paste it in a text to family.");
+  try{navigator.clipboard.writeText(url).then(done,()=>prompt2(url));}catch(e){prompt2(url);}
+}
+function prompt2(url){const t=document.createElement("textarea");t.value=url;t.style.cssText="width:100%;height:80px";const box=$("#shareBox");box.appendChild(t);t.select();toast("Copy the link below");}
+async function importShared(){
+  const m=(location.hash||"").match(/(?:^#|&)share=([A-Za-z0-9_-]+)/);if(!m)return;
+  try{const json=decodeURIComponent(escape(atob(m[1].replace(/-/g,"+").replace(/_/g,"/"))));const p=JSON.parse(json);
+    const pid=slug(p.n+"-shared");const items={};
+    for(const [id,note] of p.i){const l=S.listings.get(id);items[id]={savedAt:new Date().toISOString(),note,snapshot:l?snapshotOf(l):{address:id}};}
+    await S.db.doc("people/"+pid).set({name:p.n+" (shared)",createdAt:new Date().toISOString()});
+    await S.db.doc("saves/"+pid).set({name:p.n+" (shared)",items});
+    history.replaceState(null,"",location.pathname+location.search);
+    S.listPerson=pid;go("lists");toast(`Opened ${p.n}'s shared list`);
+  }catch(e){toast("That shared link couldn't be opened");}
+}
+
+/* ---------- users ---------- */
+function renderUsers(){
+  familyLinkBox();
+  const g=$("#peopleGrid");g.innerHTML="";
+  peopleList().forEach(p=>{const b=document.createElement("button");b.type="button";b.className="pcard";b.setAttribute("aria-pressed",S.user&&S.user.id===p.id?"true":"false");
+    const n=Object.keys(savesOf(p.id)).length;
+    b.innerHTML=`<span class="dot" style="background:${colorFor(p.name)}">${initial(p.name)}</span><b>${esc(p.name)}</b><small>${n} saved${S.user&&S.user.id===p.id?" · browsing now":""}</small>`;
+    b.onclick=()=>setUser(p);g.appendChild(b);});
+}
+function familyLinkBox(){
+  const host=$("#familyLink");if(!host)return;host.innerHTML="";
+  if(!WEB||!window.__FAMILY_KEY){host.hidden=true;return;}
+  host.hidden=false;
+  const url=location.href.split("#")[0]+"#k="+window.__FAMILY_KEY;
+  host.innerHTML=`<b>Family link</b><p class="hint" style="margin:0">This site is locked. Only this link opens it, so send it just to family. It works on any phone or computer.</p><div><button class="btn pri" type="button">Copy family link</button></div>`;
+  host.querySelector("button").onclick=()=>{const done=()=>toast("Family link copied");try{navigator.clipboard.writeText(url).then(done,()=>{const t=document.createElement("textarea");t.value=url;t.rows=3;host.appendChild(t);t.select();});}catch(e){}};
+}
+function setUser(p){S.user={id:p.id,name:p.name};store.set("obx.user",S.user);S.listPerson=p.id;toast("Browsing as "+p.name);render();go("map");}
+function renderWho(){const u=S.user;$("#whoName").textContent=u?u.name:"Pick a user";const d=$("#whoDot");d.textContent=u?initial(u.name):"?";d.style.background=u?colorFor(u.name):"var(--muted)";}
+
+/* ---------- navigation ---------- */
+function go(v){
+  S.view=v;["map","lists","users"].forEach(x=>{$("#view-"+x).hidden=x!==v;$("#tab-"+x).setAttribute("aria-selected",x===v?"true":"false");});
+  if(v==="lists")renderLists();if(v==="users")renderUsers();if(v==="map"&&map)setTimeout(()=>map.invalidateSize(),0);
+}
+
+/* ---------- add listing ---------- */
+function openAdd(){if(!needUser())return;const s=$("#a-town");if(!s.options.length)TOWNS.forEach(t=>s.add(new Option(t.name,t.name)));$("#addModal").hidden=false;$("#a-address").focus();}
+async function submitAdd(e){
+  e.preventDefault();const addr=$("#a-address").value.trim(),town=$("#a-town").value;if(!addr)return;
+  const t=TOWN[town],id=slug(addr+"-"+(town==="Colington"?"Kill Devil Hills":town));
+  if(S.listings.has(id)){toast("That address is already listed");select(id,true);$("#addModal").hidden=true;return;}
+  const num=v=>v===""?undefined:+v;const kind=$("#a-kind").value;
+  const doc={address:addr,town:town==="Colington"?"Kill Devil Hills":town,area:town,kind,subtype:kind==="house"?"Single-family":kind==="condo"?"Condo":"Land",
+    price:+$("#a-price").value||0,status:$("#a-status").value,beds:num($("#a-beds").value),baths:num($("#a-baths").value),sqft:num($("#a-sqft").value),acres:num($("#a-acres").value),mls:$("#a-mls").value.trim()||undefined,
+    lat:t.c[0]+(Math.random()-.5)*0.004,lng:t.c[1]+(Math.random()-.5)*0.004,geo:"approx",needsGeocode:true,
+    source:{name:"Added by "+S.user.name,url:$("#a-url").value.trim()||""},addedBy:S.user.name,addedAt:new Date().toISOString().slice(0,10),seenAt:new Date().toISOString().slice(0,10),tags:{}};
+  Object.keys(doc).forEach(k=>doc[k]===undefined&&delete doc[k]);
+  const ok=await write(()=>S.db.doc("listings/"+id).set(doc),"Listing added");
+  if(ok){const note=$("#a-note").value.trim();if(note)await addNote(id,note);$("#addForm").reset();$("#addModal").hidden=true;setTimeout(()=>select(id,true),400);}
+}
+
+/* ---------- wiring ---------- */
+function wire(){
+  document.querySelectorAll(".tabs button").forEach(b=>b.onclick=()=>go(b.dataset.view));
+  $("#whoBtn").onclick=()=>go("users");
+  $("#modeTown").onclick=()=>{S.f.mode="town";changed(true);};
+  $("#modeRadius").onclick=()=>{S.f.mode="radius";changed(true);};
+  let rt;$("#radius").oninput=e=>{S.f.radius=+e.target.value;$("#radiusVal").textContent=S.f.radius+" mi";drawRadius();clearTimeout(rt);rt=setTimeout(()=>changed(true),150);};
+  $("#pmin").onchange=e=>{S.f.pmin=+e.target.value;changed();};$("#pmax").onchange=e=>{S.f.pmax=+e.target.value;changed();};
+  ["beds","baths","sqft","acres"].forEach(k=>$("#"+k).onchange=e=>{S.f[k]=+e.target.value;changed();});
+  [["commute","commuteVal",60," min"],["elem","elemVal",15," mi"],["high","highVal",25," mi"]].forEach(([k,lab,max,u])=>{let tt;$("#"+k).oninput=e=>{S.f[k]=+e.target.value;$("#"+lab).textContent=S.f[k]>=max?"Any":"≤ "+S.f[k]+u;clearTimeout(tt);tt=setTimeout(changed,150);};});
+  ["favOnly","savedAny","familyAdded"].forEach(k=>$("#"+k).onchange=e=>{if(k==="favOnly"&&e.target.checked&&!S.user){e.target.checked=false;needUser();return;}S.f[k]=e.target.checked;changed();});
+  let qt;$("#q").oninput=e=>{clearTimeout(qt);qt=setTimeout(()=>{S.f.q=e.target.value.trim();changed();},200);};
+  $("#sort").onchange=e=>{S.f.sort=e.target.value;changed();};
+  $("#resetBtn").onclick=()=>{S.f=defaultFilters();changed(true);};
+  $("#moreBtn").onclick=()=>{S.shown+=150;renderList();};
+  $("#fitBtn").onclick=fitResults;
+  $("#listBtn").onclick=()=>setListHidden(!S.listHidden);
+  document.querySelectorAll("#baseSeg button").forEach(b=>b.onclick=()=>setBase(b.dataset.base));
+  if(WEB){const sb=$("#satBtn");if(sb)sb.hidden=true;const bs=$("#baseSeg");if(bs)bs.hidden=false;}
+  $("#schoolsBtn").onclick=e=>{S.schools=!S.schools;e.currentTarget.setAttribute("aria-pressed",S.schools);if(S.schools)schoolLayer.addTo(map);else map.removeLayer(schoolLayer);};
+  $("#sheetHandle").onclick=()=>{const p=$("#panel");if(p.classList.contains("mini")){setListHidden(false);}else p.classList.toggle("full");};
+  $("#addBtn").onclick=openAdd;$("#addForm").onsubmit=submitAdd;
+  document.querySelectorAll("[data-close]").forEach(b=>b.onclick=()=>b.closest(".modal").hidden=true);
+  document.querySelectorAll(".modal").forEach(m=>m.addEventListener("click",e=>{if(e.target===m)m.hidden=true;}));
+  document.addEventListener("keydown",e=>{if(e.key==="Escape"){const open=[...document.querySelectorAll(".modal")].find(m=>!m.hidden);if(open)open.hidden=true;else if(S.selected)closeDrawer();}});
+  $("#otherForm").onsubmit=async e=>{e.preventDefault();const name=$("#otherName").value.trim().replace(/\s+/g," ").slice(0,40);if(!name)return;const id=slug(name);
+    if(!DEFAULT_PEOPLE.map(slug).includes(id)&&!S.people.has(id)&&S.db) await write(()=>S.db.doc("people/"+id).set({name,createdAt:new Date().toISOString()}));
+    $("#otherName").value="";setUser({id,name});};
+}
+
+/* ---------- data ---------- */
+const SNAP = window.__SNAPSHOT || {asOf:null, items:{}};
+function areaSlug(a){return String(a||"").toLowerCase().replace(/[^a-z0-9]+/g,"-");}
+function snapshotSets(){const sets={};for(const id in SNAP.items){const it=SNAP.items[id];const k=areaSlug(it.area);(sets[k]=sets[k]||{area:it.area,items:{}}).items[id]=it;}return sets;}
+/* A small stand-in for the shared database, kept in this browser, used when the viewer isn't signed in. */
+function makeLocalDb(){
+  const KEY="obx.local.v1";let saved={};try{saved=JSON.parse(localStorage.getItem(KEY)||"{}")||{};}catch(e){}
+  const C={sets:new Map(Object.entries(snapshotSets())),listings:new Map(Object.entries(saved.listings||{})),saves:new Map(Object.entries(saved.saves||{})),notes:new Map(Object.entries(saved.notes||{})),people:new Map(Object.entries(saved.people||{})),meta:new Map()};
+  const patches=saved.setPatches||{};
+  const merge=(a,b)=>{for(const k in b){const v=b[k];if(v&&typeof v==="object"&&!Array.isArray(v)&&a[k]&&typeof a[k]==="object")merge(a[k],v);else a[k]=JSON.parse(JSON.stringify(v));}return a;};
+  for(const k in patches){if(C.sets.has(k))merge(C.sets.get(k),patches[k]);}
+  const subs=[];const fire=()=>setTimeout(()=>subs.forEach(f=>f()),0);
+  const persist=()=>{try{localStorage.setItem(KEY,JSON.stringify({listings:Object.fromEntries(C.listings),saves:Object.fromEntries(C.saves),notes:Object.fromEntries(C.notes),people:Object.fromEntries(C.people),setPatches:patches}));}catch(e){}};
+  const snap=c=>({docs:[...C[c].entries()].map(([id,d])=>({id,exists:true,data:()=>d})),size:C[c].size});
+  return {local:true,
+    collection(c){C[c]=C[c]||new Map();return {limit(){return this;},onSnapshot(n){const f=()=>n(snap(c));subs.push(f);setTimeout(f,0);return()=>{};}};},
+    doc(p){const [c,id]=p.split("/");C[c]=C[c]||new Map();return {
+      onSnapshot(n){const f=()=>n({exists:C[c].has(id),data:()=>C[c].get(id)});subs.push(f);setTimeout(f,0);return()=>{};},
+      async set(d){C[c].set(id,JSON.parse(JSON.stringify(d)));if(c==="sets")patches[id]=JSON.parse(JSON.stringify(d));persist();fire();},
+      async update(d){const cur=C[c].get(id);if(!cur)throw {code:"invalid_argument"};merge(cur,d);if(c==="sets")merge(patches[id]=patches[id]||{},d);persist();fire();}};}};
+}
+async function getCap(name){for(let i=0;i<60&&!(window.claude&&window.claude.use);i++)await new Promise(r=>setTimeout(r,100));if(!(window.claude&&window.claude.use))return null;try{return await window.claude.use(name);}catch(e){return null;}}
+function goLocal(){(S.unsubs||[]).forEach(u=>{try{u()}catch(e){}});S.unsubs=[];S.db=makeLocalDb();S.localMode=true;S.assets=null;subscribe();showLocalBanner();}
+function subscribe(){
+  const db=S.db;S.unsubs=S.unsubs||[];const keep=u=>{S.unsubs.push(u);return u;};
+  const onErr=e=>{console.warn(e);};
+  let fromSets=new Map(),fromDocs=new Map(),gotSets=false,gotDocs=false;
+  const rebuild=()=>{if(!gotSets||!gotDocs)return;const m=new Map(fromDocs);for(const [k,v] of fromSets)m.set(k,v);S.listings=m;S.dbReady=true;render();if(!subscribe._fit){subscribe._fit=true;fitResults();}};
+  keep(db.collection("sets").limit(100).onSnapshot(snap=>{fromSets=new Map();snap.docs.forEach(d=>{const items=(d.data()||{}).items||{};for(const id in items)fromSets.set(id,Object.assign({},items[id],{id,_ref:"sets/"+d.id}));});gotSets=true;rebuild();},onErr));
+  keep(db.collection("listings").limit(1000).onSnapshot(snap=>{fromDocs=new Map(snap.docs.map(d=>[d.id,Object.assign({},d.data(),{id:d.id,_ref:"listings/"+d.id})]));gotDocs=true;rebuild();},onErr));
+  keep(db.collection("people").limit(200).onSnapshot(snap=>{S.people=new Map(snap.docs.map(d=>[d.id,d.data()]));render();},onErr));
+  keep(db.collection("saves").limit(200).onSnapshot(snap=>{S.saves=new Map(snap.docs.map(d=>[d.id,d.data()]));render();},onErr));
+  keep(db.collection("notes").limit(1000).onSnapshot(snap=>{S.notes=new Map(snap.docs.map(d=>[d.id,d.data()]));if(S.selected)renderDrawer();},onErr));
+  if(SNAP.asOf){const b=$(".brand span");b.textContent=`Manteo to Grandy · listings checked ${String(SNAP.asOf).slice(0,10)}`;}
+  keep(db.doc("meta/refresh").onSnapshot(snap=>{S.meta=snap.exists?snap.data():null;const b=$(".brand span");if(S.meta&&S.meta.lastRun)b.textContent=`Manteo to Grandy · listings checked ${String(S.meta.lastRun).slice(0,10)}`;},onErr));
+}
+function showLocalBanner(){
+  let b=document.getElementById("localBanner");if(b)return;
+  b=document.createElement("div");b.id="localBanner";b.className="banner";
+  b.innerHTML=WEB?`Saves and notes are kept on this device. Use “Share list” on the Lists tab to send yours to family. <button class="btn sm" type="button">OK</button>`:`You're browsing without signing in. Saves and notes stay on this device. <button class="btn sm" type="button">OK</button>`;
+  if(WEB&&store.get("obx.bannerSeen",false))return; if(WEB)store.set("obx.bannerSeen",true);
+  b.querySelector("button").onclick=()=>b.remove();document.querySelector("main").appendChild(b);
+  const lede=document.querySelector("#view-users .lede");if(lede)lede.textContent+=WEB?" Saves are kept on this device; share your list from the Lists tab.":" Because you aren't signed in to Claude, your saves are kept on this device only.";
+}
+async function boot(){
+  wire();initMap();render();
+  const h=(location.hash||"").replace("#","");if(["lists","users"].includes(h))go(h);else if(!S.user)go("users");
+  S.db=WEB?null:await getCap("db");
+  if(S.db){getCap("assets").then(a=>{S.assets=a;});}
+  else{S.db=makeLocalDb();S.localMode=true;showLocalBanner();}
+  subscribe();
+  if(S.localMode) setTimeout(importShared,300);
+}
+boot();
+})();
+};</script>
+<script>(async function(){
+  var params=new URLSearchParams((location.hash||"").slice(1)),k=params.get("k");
+  try{ if(k) localStorage.setItem("obx.k",k); else k=localStorage.getItem("obx.k"); }catch(e){}
+  function lock(){document.getElementById("lock").hidden=false;}
+  if(!k||!window.crypto||!crypto.subtle||!window.__ENC){lock();return;}
+  function b64(s){s=s.replace(/-/g,"+").replace(/_/g,"/");s+="===".slice((s.length+3)%4);return Uint8Array.from(atob(s),function(c){return c.charCodeAt(0);});}
+  try{
+    var key=await crypto.subtle.importKey("raw",b64(k),"AES-GCM",false,["decrypt"]);
+    var pt=await crypto.subtle.decrypt({name:"AES-GCM",iv:b64(__ENC.iv)},key,b64(__ENC.ct));
+    window.__SNAPSHOT=JSON.parse(new TextDecoder().decode(pt));
+    window.__FAMILY_KEY=k;
+    params.delete("k");var rest=params.toString();history.replaceState(null,"",location.pathname+location.search+(rest?"#"+rest:""));
+    document.getElementById("app").hidden=false;
+    window.__startApp();
+  }catch(e){try{localStorage.removeItem("obx.k");}catch(_){}lock();}
+})();</script>
+</body></html>
