@@ -333,6 +333,22 @@ table.matrix td.best{color:var(--accent);font-weight:700}
 .pcard.alerts .chips{margin-top:6px}
 .alfields{display:grid;gap:12px}
 #alertsBox:empty{display:none}
+/* address search */
+.searchbar{box-sizing:border-box;position:absolute;top:10px;left:10px;width:min(440px,calc(100% - 20px));z-index:650;display:flex;align-items:center;gap:8px;background:var(--panel);border:1px solid var(--line);border-radius:999px;box-shadow:var(--shadow);padding:0 6px 0 14px;height:44px;color:var(--muted)}
+.searchbar:focus-within{border-color:var(--accent);box-shadow:0 0 0 3px color-mix(in srgb,var(--accent) 25%,transparent),var(--shadow)}
+.searchbar svg{flex:none}
+.searchbar input{flex:1;min-width:0;border:0;background:transparent;font-size:16px;color:var(--ink);outline:none;padding:0;height:100%}
+.searchbar #addrClear{flex:none;width:32px;height:32px;border-radius:50%;border:0;background:var(--panel-2);color:var(--ink);font-size:20px;line-height:1;cursor:pointer}
+#addrSug{position:absolute;top:calc(100% + 6px);left:0;right:0;margin:0;padding:6px;list-style:none;background:var(--panel);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow);max-height:min(60vh,420px);overflow:auto}
+#addrSug li{display:grid;gap:2px;padding:9px 10px;border-radius:9px;cursor:pointer;color:var(--ink)}
+#addrSug li[aria-selected="true"],#addrSug li[data-id]:hover{background:var(--panel-2)}
+#addrSug li .sa{font-weight:600;font-size:15px}
+#addrSug li .sm{font-size:13px;color:var(--muted)}
+#addrSug li mark{background:transparent;color:var(--accent);font-weight:800}
+#addrSug li.none{cursor:default;color:var(--muted);font-size:14px}
+#chipbar{top:62px}
+@media (max-width:899px){#chipbar{top:60px}.searchbar{top:8px;left:10px;width:calc(100% - 20px)}}
+#addrSug{box-sizing:border-box}
 </style>
 </head><body>
 <div id="lock" hidden><div class="box"><h1>OBX House Hunt</h1><p>This map is private. Open it with the family link Drew sent you.</p></div></div>
@@ -447,6 +463,12 @@ table.matrix td.best{color:var(--accent);font-weight:700}
       </aside>
       <div id="mapwrap">
         <div id="map" role="application" aria-label="Map of listings"></div>
+        <div class="searchbar" role="search">
+          <svg aria-hidden="true" viewBox="0 0 24 24" width="18" height="18"><circle cx="10.5" cy="10.5" r="6.5" fill="none" stroke="currentColor" stroke-width="2.2"/><path d="M15.5 15.5 21 21" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg>
+          <input id="addrSearch" type="text" inputmode="search" enterkeyhint="search" placeholder="Search an address or MLS #" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" role="combobox" aria-label="Search listings by address" aria-autocomplete="list" aria-controls="addrSug" aria-expanded="false">
+          <button type="button" id="addrClear" aria-label="Clear search" hidden>×</button>
+          <ul id="addrSug" role="listbox" hidden></ul>
+        </div>
         <div id="chipbar" aria-live="polite"></div>
         <div class="legend" aria-hidden="true">
           <span><i style="background:var(--house)"></i>House</span>
@@ -1386,7 +1408,54 @@ async function submitAdd(e){
 }
 
 /* ---------- wiring ---------- */
+/* ---------- address search with autocomplete ---------- */
+const ABBR={dr:"drive",st:"street",rd:"road",ln:"lane",ct:"court",ave:"avenue",av:"avenue",trl:"trail",tr:"trail",hwy:"highway",blvd:"boulevard",cir:"circle",pl:"place",pkwy:"parkway",ter:"terrace",n:"north",s:"south",e:"east",w:"west",kdh:"kill devil hills"};
+const normQ=s=>String(s||"").toLowerCase().replace(/[.,#]/g," ").split(/\s+/).filter(Boolean).map(t=>ABBR[t]||t).join(" ");
+function searchListings(q){
+  const toks=normQ(q).split(" ").filter(Boolean);if(!toks.length)return [];
+  const out=[];
+  for(const l of S.listings.values()){
+    const words=normQ([l.address,l.area,l.town,l.zip,l.mls].join(" ")).split(" ");
+    if(!toks.every(t=>words.some(w=>w.startsWith(t))))continue;
+    const addr=normQ(l.address);let score=0;const aw=addr.split(" ");
+    if(toks.every(t=>aw.some(w=>w.startsWith(t))))score-=2; // whole query is in the street address
+    if(addr.startsWith(toks.join(" ")))score-=3;
+    if(words[0]===toks[0])score-=2;
+    if(String(l.mls||"")===q.trim())score-=5;
+    if(l.status==="Gone"||l.status==="Sold")score+=4;
+    out.push([score,l]);
+  }
+  return out.sort((a,b)=>a[0]-b[0]||(a[1].price||0)-(b[1].price||0)).slice(0,8).map(x=>x[1]);
+}
+function wireSearch(){
+  const inp=$("#addrSearch"),ul=$("#addrSug"),clr=$("#addrClear");if(!inp)return;
+  let hits=[],active=-1;
+  const close=()=>{ul.hidden=true;inp.setAttribute("aria-expanded","false");active=-1;};
+  const hl=(text,q)=>{let h=esc(text);normQ(q).split(" ").filter(Boolean).forEach(t=>{const raw=Object.keys(ABBR).find(k=>ABBR[k]===t&&new RegExp("\\b"+k+"\\b","i").test(text));const re=new RegExp("\\b("+(raw||t).replace(/[^a-z0-9]/gi,"")+")","i");h=h.replace(re,"<mark>$1</mark>");});return h;};
+  const show=()=>{
+    const q=inp.value;clr.hidden=!q;hits=q.trim().length>=2?searchListings(q):[];active=-1;
+    if(!q.trim()||q.trim().length<2){close();return;}
+    ul.innerHTML=hits.length?hits.map((l,i)=>`<li role="option" id="sug${i}" data-id="${esc(l.id)}" aria-selected="false"><span class="sa">${hl(l.address,q)}</span><span class="sm">${esc(l.area||l.town)} · ${l.kind==="lot"?"Lot":esc(factLine(l))} · <b>${money(l.price)}</b>${l.status!=="Active"?` · ${esc(l.status)}`:""}${passes(l)?"":` · <i>hidden by filters</i>`}</span></li>`).join(""):`<li class="none">No listing matches “${esc(q.trim())}”. Try just the house number and street.</li>`;
+    ul.hidden=false;inp.setAttribute("aria-expanded","true");
+    ul.querySelectorAll("li[data-id]").forEach(li=>{li.onpointerdown=e=>e.preventDefault();li.onclick=()=>pick(li.dataset.id);});
+  };
+  const mark=()=>{ul.querySelectorAll("li[data-id]").forEach((li,i)=>li.setAttribute("aria-selected",String(i===active)));const a=ul.querySelector('[aria-selected="true"]');if(a){a.scrollIntoView({block:"nearest"});inp.setAttribute("aria-activedescendant",a.id);}};
+  const pick=id=>{const l=S.listings.get(id);if(!l)return;inp.value=l.address;clr.hidden=false;close();inp.blur();
+    if(S.view!=="map")go("map");if(map&&l.lat!=null)map.setView([l.lat,l.lng],Math.max(map.getZoom(),16));select(id,false);
+    if(!passes(l))toast("Showing it even though your filters hide it");};
+  inp.addEventListener("input",show);
+  inp.addEventListener("focus",()=>{if(inp.value.trim().length>=2)show();});
+  inp.addEventListener("blur",()=>setTimeout(close,150));
+  inp.addEventListener("keydown",e=>{
+    if(e.key==="ArrowDown"&&hits.length){e.preventDefault();active=(active+1)%hits.length;mark();}
+    else if(e.key==="ArrowUp"&&hits.length){e.preventDefault();active=(active-1+hits.length)%hits.length;mark();}
+    else if(e.key==="Enter"){e.preventDefault();if(hits.length)pick(hits[Math.max(active,0)].id);}
+    else if(e.key==="Escape"){close();inp.blur();}
+  });
+  clr.onclick=()=>{inp.value="";clr.hidden=true;close();inp.focus();};
+}
 function wire(){
+  wireSearch();
   document.querySelectorAll(".tabs button").forEach(b=>b.onclick=()=>go(b.dataset.view));
   $("#whoBtn").onclick=()=>go("users");
   $("#modeTown").onclick=()=>{S.f.mode="town";changed(true);};
