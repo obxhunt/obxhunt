@@ -354,7 +354,7 @@ table.matrix td.best{color:var(--accent);font-weight:700}
 <div id="lock" hidden><div class="box"><h1>OBX House Hunt</h1><p>This map is private. Open it with the family link Drew sent you.</p></div></div>
 <div id="app" hidden>
   <header class="bar">
-    <div class="brand"><b>OBX House Hunt</b><span>Manteo to Grandy, measured from the FRF pier</span></div>
+    <div class="brand"><b>OBX House Hunt</b><span>Wanchese to Grandy, measured from the FRF pier</span></div>
     <nav class="tabs" role="tablist" aria-label="Views">
       <button role="tab" id="tab-map" aria-selected="true" data-view="map">Map</button>
       <button role="tab" id="tab-lists" aria-selected="false" data-view="lists">Lists</button>
@@ -557,6 +557,7 @@ const TOWNS = [
   {name:"Colington", land:"bar", c:[36.012,-75.712], county:"Dare", tax:0.0049},
   {name:"Nags Head", land:"bar", c:[35.948,-75.622], county:"Dare", tax:0.0070},
   {name:"Manteo", land:"roa", c:[35.912,-75.675], county:"Dare", tax:0.0086},
+  {name:"Wanchese", land:"roa", c:[35.842,-75.640], county:"Dare", tax:0.0049},
   {name:"Point Harbor", land:"main", c:[36.083,-75.800], county:"Currituck", tax:0.0046},
   {name:"Harbinger", land:"main", c:[36.100,-75.816], county:"Currituck", tax:0.0046},
   {name:"Powells Point", land:"main", c:[36.122,-75.838], county:"Currituck", tax:0.0046},
@@ -1620,8 +1621,8 @@ function subscribe(){
   keep(db.collection("people").limit(200).onSnapshot(snap=>{S.people=new Map(snap.docs.map(d=>[d.id,d.data()]));render();},onErr));
   keep(db.collection("saves").limit(200).onSnapshot(snap=>{S.saves=new Map(snap.docs.map(d=>[d.id,d.data()]));render();},onErr));
   keep(db.collection("notes").limit(1000).onSnapshot(snap=>{S.notes=new Map(snap.docs.map(d=>[d.id,d.data()]));if(S.selected)renderDrawer();},onErr));
-  if(SNAP.asOf){const b=$(".brand span");b.textContent=`Manteo to Grandy · listings checked ${String(SNAP.asOf).slice(0,10)}`;}
-  keep(db.doc("meta/refresh").onSnapshot(snap=>{S.meta=snap.exists?snap.data():null;const b=$(".brand span");if(S.meta&&S.meta.lastRun)b.textContent=`Manteo to Grandy · listings checked ${String(S.meta.lastRun).slice(0,10)}`;},onErr));
+  if(SNAP.asOf){const b=$(".brand span");b.textContent=`Wanchese to Grandy · listings checked ${String(SNAP.asOf).slice(0,10)}`;}
+  keep(db.doc("meta/refresh").onSnapshot(snap=>{S.meta=snap.exists?snap.data():null;const b=$(".brand span");if(S.meta&&S.meta.lastRun)b.textContent=`Wanchese to Grandy · listings checked ${String(S.meta.lastRun).slice(0,10)}`;},onErr));
 }
 function showLocalBanner(){
   let b=document.getElementById("localBanner");if(b)return;
