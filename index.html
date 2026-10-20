@@ -1474,6 +1474,10 @@ async function submitAdd(e){
 }
 
 /* ---------- wiring ---------- */
+function checkedLabel(sn){
+  if(sn.checkedAt){const d=new Date(sn.checkedAt);if(!isNaN(d))return d.toLocaleString("en-US",{timeZone:"America/New_York",month:"short",day:"numeric",hour:"numeric",minute:"2-digit"});}
+  const a=String(sn.asOf||"").slice(0,10);if(!a)return "";const d=new Date(a+"T12:00:00");return isNaN(d)?a:d.toLocaleDateString("en-US",{month:"short",day:"numeric"});
+}
 /* ---------- address search with autocomplete ---------- */
 const ABBR={dr:"drive",st:"street",rd:"road",ln:"lane",ct:"court",ave:"avenue",av:"avenue",trl:"trail",tr:"trail",hwy:"highway",blvd:"boulevard",cir:"circle",pl:"place",pkwy:"parkway",ter:"terrace",n:"north",s:"south",e:"east",w:"west",kdh:"kill devil hills"};
 const normQ=s=>String(s||"").toLowerCase().replace(/[.,#]/g," ").split(/\s+/).filter(Boolean).map(t=>ABBR[t]||t).join(" ");
@@ -1691,7 +1695,7 @@ function subscribe(){
   keep(db.collection("people").limit(200).onSnapshot(snap=>{S.people=new Map(snap.docs.map(d=>[d.id,d.data()]));render();},onErr));
   keep(db.collection("saves").limit(200).onSnapshot(snap=>{S.saves=new Map(snap.docs.map(d=>[d.id,d.data()]));render();},onErr));
   keep(db.collection("notes").limit(1000).onSnapshot(snap=>{S.notes=new Map(snap.docs.map(d=>[d.id,d.data()]));if(S.selected)renderDrawer();},onErr));
-  if(SNAP.asOf){const b=$(".brand span");b.textContent=`Wanchese to Grandy · listings checked ${String(SNAP.asOf).slice(0,10)}`;}
+  if(SNAP.asOf||SNAP.checkedAt){const b=$(".brand span");b.textContent=`Wanchese to Grandy · listings checked ${checkedLabel(SNAP)}`;}
   keep(db.doc("meta/refresh").onSnapshot(snap=>{S.meta=snap.exists?snap.data():null;const b=$(".brand span");if(S.meta&&S.meta.lastRun)b.textContent=`Wanchese to Grandy · listings checked ${String(S.meta.lastRun).slice(0,10)}`;},onErr));
 }
 function showLocalBanner(){
