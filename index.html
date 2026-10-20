@@ -696,7 +696,6 @@ let map, markerLayer, landLayer, roadLayer, townLayer, radiusLayer, schoolLayer,
 const markers=new Map();
 function initMap(){
   map=L.map("map",{zoomControl:false,attributionControl:true,minZoom:8,maxZoom:18,zoomSnap:0.5,preferCanvas:true,maxBounds:[[35.70,-76.25],[36.45,-75.30]]}).setView([36.06,-75.73],10.5);
-  L.control.zoom({position:"bottomright"}).addTo(map);
   map.on("moveend zoomend",updateSatLink);updateSatLink();
   map.attributionControl.setPrefix(false).addAttribution("Coastline: geo-maps (Natural Earth/OSM) · Pins: US Census geocoder");
   if(WEB){
