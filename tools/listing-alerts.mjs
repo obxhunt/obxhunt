@@ -83,7 +83,7 @@ const people = [];
 for (const f of await listDir("people")) { const d = await getJson("people/" + f); if (d) people.push(Object.assign({ id: f.slice(0, -5) }, d.data)); }
 const sentDoc = await getJson("alerts/sent.json");
 const sent = (sentDoc && sentDoc.data) || {};
-console.log(`${fresh.length} new listing(s) in the last 3 days; ${people.filter(p => p.alerts && p.alerts.on && p.email).length} person(s) with new-listing alerts on, ${people.filter(p => p.alerts && p.alerts.drops && p.email).length} with price-drop alerts on`);
+console.log(`${fresh.length} new listing(s) in the last 3 days; ${people.filter(p => p.alerts && p.alerts.on && p.email).length} person(s) with new-listing alerts on, ${people.filter(p => p.alerts && p.alerts.drops && p.email).length} with list-update alerts on`);
 
 const OUT = process.env.OUT; if (OUT) fs.mkdirSync(OUT, { recursive: true });
 let tx = null, emailed = 0, changed = false;
@@ -120,47 +120,56 @@ for (const p of people) {
   }
   hits.forEach(l => { mine[l.id] = today; }); emailed++; changed = true;
 }
-// ---- price drops on each person's saved list ----
-// alerts/prices.json remembers the last price seen for every saved listing ({person: {listing: price}}),
-// for everyone, so turning the checkbox on later only reports drops from then on.
+// ---- price drops and status changes on each person's saved list ----
+// alerts/prices.json remembers the last price and status seen for every saved listing
+// ({person: {listing: {p, s}}}), for everyone, so turning the checkbox on later only reports changes from then on.
 const pricesDoc = await getJson("alerts/prices.json");
 const prices = (pricesDoc && pricesDoc.data) || {};
 let pricesChanged = false, dropMails = 0;
 const pct = (a, b) => Math.round((a - b) / a * 1000) / 10;
+const STATUS_WORD = { Active: "back on the market", Pending: "now pending (under contract)", Sold: "sold", Gone: "off the market" };
 for (const f of await listDir("saves")) {
   const pid = f.slice(0, -5); const sv = await getJson("saves/" + f); const items = (sv && sv.data && sv.data.items) || {};
-  const base = prices[pid] || (prices[pid] = {}); const drops = [];
+  const base = prices[pid] || (prices[pid] = {}); const hits = [];
   for (const [id, e] of Object.entries(items)) {
-    const l = snap.items[id]; if (!l || !l.price || ["Gone", "Sold"].includes(l.status)) continue;
-    const was = base[id] ?? (e.snapshot && e.snapshot.price) ?? l.price;
-    if (l.price < was) drops.push(Object.assign({ id, was }, l));
-    if (base[id] !== l.price) { base[id] = l.price; pricesChanged = true; }
+    const l = snap.items[id]; if (!l) continue;
+    const curS = l.status || "Active", snapS = e.snapshot || {};
+    const b = typeof base[id] === "number" ? { p: base[id], s: curS } : base[id];
+    const wasP = b ? b.p : (snapS.price ?? l.price), wasS = b ? b.s : (snapS.status || curS);
+    const drop = l.price && wasP && l.price < wasP && !["Gone", "Sold"].includes(curS);
+    const moved = curS !== wasS;
+    if (drop || moved) hits.push(Object.assign({ id, was: drop ? wasP : null, wasS: moved ? wasS : null }, l, { status: curS }));
+    const nb = { p: l.price || wasP, s: curS };
+    if (!b || b.p !== nb.p || b.s !== nb.s || typeof base[id] === "number") { base[id] = nb; pricesChanged = true; }
   }
   for (const id in base) if (!items[id]) { delete base[id]; pricesChanged = true; }
   const p = people.find(x => x.id === pid); const a = (p && p.alerts) || {};
-  if (!drops.length || !a.drops || !p.email) continue;
-  drops.sort((x, y) => (y.was - y.price) - (x.was - x.price));
+  if (!hits.length || !a.drops || !p.email) continue;
+  hits.sort((x, y) => (y.wasS ? 1 : 0) - (x.wasS ? 1 : 0) || ((y.was || 0) - y.price) - ((x.was || 0) - x.price));
   const name = String(p.name || p.id).replace(/ \(shared\)$/, "");
-  const subject = `OBX alert: ${drops.length === 1 ? `price drop, ${drops[0].address} (${kmoney(drops[0].was)} → ${kmoney(drops[0].price)})` : `${drops.length} price drops on ${name}'s list`}`;
+  const one = h => [h.was ? `price drop (${kmoney(h.was)} → ${kmoney(h.price)})` : "", h.wasS ? (STATUS_WORD[h.status] || "now " + h.status) : ""].filter(Boolean).join(", ");
+  const subject = `OBX alert: ${hits.length === 1 ? `${hits[0].address}, ${one(hits[0])}` : `${hits.length} updates on ${name}'s list`}`;
+  const SC = { Active: "#1a7f4b", Pending: "#b26a00", Sold: "#8a1c2b", Gone: "#5b6675" };
   const row = l => { const ph = photo(l); return `<tr><td style="padding:0 0 14px"><table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#fff;border:1px solid #e3ddd0;border-radius:12px;overflow:hidden">
     ${ph ? `<tr><td><a href="${esc(link(l.id))}"><img src="${esc(ph)}" width="560" alt="" style="display:block;width:100%;max-width:560px;height:auto;border:0"></a></td></tr>` : ""}
     <tr><td style="padding:12px 16px 14px;font-family:Helvetica,Arial,sans-serif;color:#17263a">
-      <div style="font-size:22px;font-weight:700">${money(l.price)} <span style="font-size:15px;font-weight:600;color:#7a8390;text-decoration:line-through">${money(l.was)}</span></div>
-      <div style="font-size:14px;font-weight:700;color:#1a7f4b;margin-top:2px">Down ${money(l.was - l.price)} (${pct(l.was, l.price)}%)</div>
+      ${l.wasS ? `<div style="font-size:13px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:${SC[l.status] || "#17263a"};margin-bottom:4px">${esc(l.wasS)} → ${esc(l.status)}: ${esc(STATUS_WORD[l.status] || "")}</div>` : ""}
+      <div style="font-size:22px;font-weight:700">${l.status === "Sold" && l.soldPrice ? "Sold for " + money(l.soldPrice) : money(l.price)}${l.was ? ` <span style="font-size:15px;font-weight:600;color:#7a8390;text-decoration:line-through">${money(l.was)}</span>` : ""}</div>
+      ${l.was ? `<div style="font-size:14px;font-weight:700;color:#1a7f4b;margin-top:2px">Down ${money(l.was - l.price)} (${pct(l.was, l.price)}%)</div>` : ""}
       <div style="font-size:16px;font-weight:600;margin-top:4px">${esc(l.address)}</div>
-      <div style="font-size:13px;color:#5b6675;margin-top:2px">${esc(l.area || l.town || "")} · ${esc(KIND[l.kind] || "")}${facts(l) ? " · " + esc(facts(l)) : ""}${l.status && l.status !== "Active" ? " · " + esc(l.status) : ""}</div>
+      <div style="font-size:13px;color:#5b6675;margin-top:2px">${esc(l.area || l.town || "")} · ${esc(KIND[l.kind] || "")}${facts(l) ? " · " + esc(facts(l)) : ""}${!l.wasS && l.status !== "Active" ? " · " + esc(l.status) : ""}</div>
       <div style="margin-top:10px;font-size:14px"><a href="${esc(link(l.id))}" style="color:#b3157c;font-weight:700;text-decoration:none">Open on the map</a> &nbsp;·&nbsp; <a href="${esc(zillow(l))}" style="color:#17263a;text-decoration:none">All photos on Zillow</a></div>
     </td></tr></table></td></tr>`; };
   const html = `<!doctype html><html><body style="margin:0;background:#f3f0e8"><table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#f3f0e8"><tr><td align="center" style="padding:20px 12px">
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:560px">
 <tr><td style="font-family:Helvetica,Arial,sans-serif;color:#17263a;padding:0 0 16px">
   <div style="font-size:13px;letter-spacing:.12em;text-transform:uppercase;color:#b3157c;font-weight:700">OBX House Hunt</div>
-  <div style="font-size:26px;font-weight:800;margin-top:2px">Price drop${drops.length === 1 ? "" : "s"} on ${esc(name)}'s list</div>
-</td></tr>${drops.map(row).join("")}
-<tr><td style="font-family:Helvetica,Arial,sans-serif;font-size:11.5px;color:#7a8390;padding:6px 0 20px">You get this because ${esc(name)}'s price-drop alert is on. Change or turn it off on the site's Users page. Listing photos courtesy of the listing brokers. The map link is private, so please don't forward it.</td></tr>
+  <div style="font-size:26px;font-weight:800;margin-top:2px">${hits.length === 1 ? "An update" : hits.length + " updates"} on ${esc(name)}'s list</div>
+</td></tr>${hits.map(row).join("")}
+<tr><td style="font-family:Helvetica,Arial,sans-serif;font-size:11.5px;color:#7a8390;padding:6px 0 20px">You get this because ${esc(name)}'s price-drop and status alert is on. Change or turn it off on the site's Users page. Listing photos courtesy of the listing brokers. The map link is private, so please don't forward it.</td></tr>
 </table></td></tr></table></body></html>`;
-  const text = `Price drops on ${name}'s list\n\n` + drops.map(l => `${money(l.was)} → ${money(l.price)} (down ${money(l.was - l.price)})  ${l.address} (${l.area || l.town})\n  ${link(l.id)}`).join("\n\n") + "\n\nChange or turn off alerts on the site's Users page.\n";
-  if (OUT) { fs.writeFileSync(path.join(OUT, pid + "-drops.html"), html); console.log(`Price-drop preview for one person: ${drops.length} listing(s); subject: ${subject}`); }
+  const text = `Updates on ${name}'s list\n\n` + hits.map(l => `${l.address} (${l.area || l.town}): ${one(l)}\n  ${link(l.id)}`).join("\n\n") + "\n\nChange or turn off alerts on the site's Users page.\n";
+  if (OUT) { fs.writeFileSync(path.join(OUT, pid + "-updates.html"), html); console.log(`List-update preview for one person: ${hits.length} listing(s); subject: ${subject}`); }
   else {
     const pass = (process.env.GMAIL_APP_PASSWORD || "").replace(/\s+/g, ""); if (!pass) { console.error("GMAIL_APP_PASSWORD secret is missing"); process.exit(1); }
     if (!tx) { const nodemailer = (await import("nodemailer")).default; tx = nodemailer.createTransport({ service: "gmail", auth: { user: mail.from, pass } }); }
@@ -168,8 +177,8 @@ for (const f of await listDir("saves")) {
   }
   dropMails++;
 }
-if (pricesChanged) await putJson("alerts/prices.json", prices, pricesDoc && pricesDoc.sha, "Record saved-listing prices for price-drop alerts");
-console.log(`Sent ${dropMails} price-drop email(s)`);
+if (pricesChanged) await putJson("alerts/prices.json", prices, pricesDoc && pricesDoc.sha, "Record saved-listing prices and statuses for list alerts");
+console.log(`Sent ${dropMails} list-update email(s)`);
 
 // forget entries older than 90 days
 const cutoff = new Date(Date.now() - 90 * 864e5).toLocaleDateString("en-CA", { timeZone: "America/New_York" });
