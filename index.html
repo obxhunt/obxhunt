@@ -439,7 +439,8 @@ table.matrix td.best{color:var(--accent);font-weight:700}
                 </div>
               </div>
             </details>
-            <details class="fg">
+            <!-- Schools filter: hidden for now. To bring it back, set SHOW_SCHOOL_FILTER = true in app.js. -->
+            <details class="fg" id="schoolGroup" hidden>
               <summary>Schools <span class="sv" id="sv-comm"></span></summary>
               <div class="fbody">
                 <label class="f" for="elem">Nearest elementary school: <span class="rangeval num" id="elemVal">Any</span></label>
@@ -510,7 +511,7 @@ table.matrix td.best{color:var(--accent);font-weight:700}
             <li><svg viewBox="0 0 20 20"><circle cx="10" cy="10" r="7" style="fill:var(--house);stroke:var(--accent);stroke-width:2.6"/></svg>Pink ring: saved by you</li>
             <li><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" style="fill:var(--house);stroke:var(--accent);stroke-width:3"/></svg>Big pink ring: the listing you have open</li>
             <li><span class="kfrf">FRF PIER</span>Your work, the USACE Field Research Facility</li>
-            <li><span class="kschool">E</span><span class="kschool">M</span><span class="kschool">H</span>Elementary, middle and high schools (shown while a school distance is set)</li>
+            <!-- school pins only appear with the schools filter (hidden for now): <li><span class="kschool">E</span><span class="kschool">M</span><span class="kschool">H</span>Elementary, middle and high schools (shown while a school distance is set)</li> -->
             <li><span class="ktown">DUCK</span>Town name: tap to filter. Bold is picked, faded is filtered out</li>
           </ul>
           <h4>On listings</h4>
@@ -725,8 +726,8 @@ function passes(l){
   if(f.baths && !(l.baths>=f.baths)) return false;
   if(f.sqft && !(l.sqft>=f.sqft)) return false;
   if(f.acres && !(l.acres>=f.acres)) return false;
-  if(f.elem<15 && l.elem.d>f.elem) return false;
-  if(f.high<25 && l.high.d>f.high) return false;
+  if(SHOW_SCHOOL_FILTER&&f.elem<15 && l.elem.d>f.elem) return false;
+  if(SHOW_SCHOOL_FILTER&&f.high<25 && l.high.d>f.high) return false;
   if(SHOW_AMENITY_FILTER&&f.tags.length){const t=l.tags||{};for(const k of f.tags) if(!t[k]) return false;}
   if(f.favOnly && !isMine(l.id)) return false;
   if(f.savedAny && !saversOf(l.id).length) return false;
@@ -969,6 +970,7 @@ function buildControls(){
   [["Under $400k",0,400000],["Under $500k",0,500000],["$500k–$800k",500000,800000],["$800k+",800000,0]].forEach(([n,a,b])=>pq.appendChild(chipBtn(n,f.pmin===a&&f.pmax===b,()=>{if(f.pmin===a&&f.pmax===b){f.pmin=0;f.pmax=0;}else{f.pmin=a;f.pmax=b;}changed();})));
   $("#beds").value=f.beds;$("#baths").value=f.baths;$("#sqft").value=f.sqft;$("#acres").value=f.acres;
   $("#commute").value=Math.min(f.commute,60);$("#commuteVal").textContent="≤ "+f.commute+" min";
+  {const sg=$("#schoolGroup");if(sg)sg.hidden=!SHOW_SCHOOL_FILTER;}
   $("#elem").value=f.elem;$("#elemVal").textContent=f.elem>=15?"Any":"≤ "+f.elem+" mi";
   $("#high").value=f.high;$("#highVal").textContent=f.high>=25?"Any":"≤ "+f.high+" mi";
   const ag=$("#amenityGroup");if(ag)ag.hidden=!SHOW_AMENITY_FILTER;
@@ -1005,8 +1007,8 @@ function chipsOverlay(){
   if(f.baths) add("Baths",f.baths+"+",()=>{f.baths=0;changed();});
   if(f.sqft) add("Size",f.sqft.toLocaleString()+"+ sq ft",()=>{f.sqft=0;changed();});
   if(f.acres) add("Lot",f.acres+"+ ac",()=>{f.acres=0;changed();});
-  if(f.elem<15) add("Elem school",`≤ ${f.elem} mi`,()=>{f.elem=15;changed();});
-  if(f.high<25) add("High school",`≤ ${f.high} mi`,()=>{f.high=25;changed();});
+  if(SHOW_SCHOOL_FILTER&&f.elem<15) add("Elem school",`≤ ${f.elem} mi`,()=>{f.elem=15;changed();});
+  if(SHOW_SCHOOL_FILTER&&f.high<25) add("High school",`≤ ${f.high} mi`,()=>{f.high=25;changed();});
   if(SHOW_AMENITY_FILTER)f.tags.forEach(t=>add("Has",TAGNAME[t],()=>{f.tags=f.tags.filter(x=>x!==t);changed();}));
   const defSt=["Active","Pending","Unverified"];if(f.statuses.slice().sort().join()!==defSt.slice().sort().join()) add("Status",f.statuses.join(", "),()=>{f.statuses=defSt;changed();});
   if(f.favOnly) add("List",(S.user?S.user.name:"My")+"'s saves",()=>{f.favOnly=false;changed();});
@@ -1064,7 +1066,7 @@ function render(){
   compute(); buildControls(); chipsOverlay(); renderList();
   if(map){updateMarkers();drawRadius();
     // School pins show while a school-distance filter is set.
-    const sch=S.f.elem<15||S.f.high<25;if(sch!==!!S.schools){S.schools=sch;if(sch)schoolLayer.addTo(map);else map.removeLayer(schoolLayer);}}
+    const sch=SHOW_SCHOOL_FILTER&&(S.f.elem<15||S.f.high<25);if(sch!==!!S.schools){S.schools=sch;if(sch)schoolLayer.addTo(map);else map.removeLayer(schoolLayer);}}
   if(S.selected) renderDrawer();
   if(S.view==="lists") renderLists();
   if(S.view==="users") renderUsers();
@@ -1486,6 +1488,8 @@ async function submitAdd(e){
 // Amenities filter is hidden until amenity data exists (family tags on listings, or a data source).
 // Flip to true to show the filter section again; the tagging buttons on each listing stay either way.
 const SHOW_AMENITY_FILTER = false;
+// Schools filter (and the school pins it shows on the map) is hidden for now; listings still list nearby schools.
+const SHOW_SCHOOL_FILTER = false;
 const DOMS=[["new","New this week",0,7],["30","Under 30 days",0,29],["90","Under 90 days",0,89],["90p","90+ days",90,1e9],["180p","6+ months",180,1e9]];
 function domDays(l){if(!l.listedAt)return null;const t=new Date().toLocaleDateString("en-CA",{timeZone:"America/New_York"});const d=Math.round((Date.parse(t)-Date.parse(l.listedAt))/864e5);return isNaN(d)?null:Math.max(0,d);}
 function domLine(l){
