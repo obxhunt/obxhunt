@@ -1578,10 +1578,12 @@ async function flushVotes(){
   const ok=await write(()=>S.db.doc("votes/"+pid).set({name:S.user.name,items}));
   if(ok){for(const id in sent)if(SW.pending[id]===sent[id])delete SW.pending[id];}
 }
+// random order, so swiping isn't cheapest-first (or whatever the list sort is)
+function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
 function openSwipe(){
   if(!needUser())return;
   const mine=myVoteItems();
-  SW.deck=RESULTS.filter(l=>!mine[l.id]);SW.total=RESULTS.length;SW.i=0;SW.undo=[];
+  SW.deck=shuffle(RESULTS.filter(l=>!mine[l.id]));SW.total=RESULTS.length;SW.i=0;SW.undo=[];
   $("#swipe").hidden=false;document.body.classList.add("swiping");
   try{history.pushState({obxSwipe:1},"");}catch(e){}
   renderSwipe();
@@ -1618,7 +1620,7 @@ function renderSwipe(){
     const voted=Object.keys(myVoteItems()).length;
     deck.innerHTML=`<div class="swdone"><div class="big">🏁</div><b>${SW.total?"That's every listing in your filters.":"No listings match your filters."}</b><p>${voted} vote${voted===1?"":"s"} from you so far. Change the filters on the map for a new stack, or see how everyone voted.</p><div class="row"><button class="btn pri" type="button" id="swSeeVotes">See swipe votes</button><button class="btn" type="button" id="swAgain">Re-swipe these</button></div></div>`;
     $("#swSeeVotes").onclick=()=>{closeSwipe();S.listPerson="__votes";go("lists");};
-    $("#swAgain").onclick=()=>{SW.deck=RESULTS.slice();SW.i=0;SW.undo=[];renderSwipe();};
+    $("#swAgain").onclick=()=>{SW.deck=shuffle(RESULTS.slice());SW.i=0;SW.undo=[];renderSwipe();};
     ["swDown","swUp","swInfo"].forEach(id=>$("#"+id).disabled=true);$("#swUndo").disabled=!SW.undo.length;return;
   }
   ["swDown","swUp","swInfo"].forEach(id=>$("#"+id).disabled=false);$("#swUndo").disabled=!SW.undo.length;
