@@ -416,6 +416,8 @@ body.swiping{overflow:hidden}
 .vrow img,.vimg{width:64px;height:48px;object-fit:cover;border-radius:6px;flex:none;background:var(--panel-2)}
 .vmain{flex:1;min-width:0;font-size:14px}.vmain .m{font-size:12.5px}
 .vscore{display:grid;justify-items:center;gap:3px;flex:none}.vscore b{font-size:18px}.vscore small{font-size:11px;color:var(--muted)}
+.exportrow{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.exportrow .hint{margin:0}
 </style>
 </head><body>
 <div id="lock" hidden><div class="box"><h1>OBX House Hunt</h1><p>This map is private. Open it with the family link Drew sent you.</p></div></div>
@@ -1392,7 +1394,9 @@ function renderLists(){
   const items=Object.entries(savesOf(S.listPerson));const who=(ppl.find(p=>p.id===S.listPerson)||{}).name||"";
   const body=$("#listBody");
   const shareBox=$("#shareBox");
-  if(shareBox){shareBox.innerHTML="";if(S.localMode&&items.length){const b=document.createElement("button");b.className="btn";b.type="button";b.textContent=`Share ${who}'s list`;b.onclick=()=>shareList(who,items);shareBox.appendChild(b);}}
+  if(shareBox){shareBox.innerHTML="";if(S.localMode&&items.length){const b=document.createElement("button");b.className="btn";b.type="button";b.textContent=`Share ${who}'s list`;b.onclick=()=>shareList(who,items);shareBox.appendChild(b);}
+    if(items.length){const row=document.createElement("div");row.className="exportrow";row.innerHTML=`<span class="hint">Export ${esc(who)}'s list:</span><button class="btn sm" type="button" data-x="xlsx">Excel</button><button class="btn sm" type="button" data-x="pdf">PDF with map</button>`;
+      const pid=S.listPerson;row.querySelectorAll("button").forEach(b=>b.onclick=async()=>{if(b.disabled)return;b.disabled=true;try{await (b.dataset.x==="xlsx"?exportExcel:exportPdf)(pid,who);}catch(e){console.error(e);toast("Couldn't make the file. Try again.");}finally{b.disabled=false;}});shareBox.appendChild(row);}}
   if(!items.length){body.innerHTML=`<p class="lede">${esc(who)} hasn't saved anything yet. Tap ♡ on any listing on the map to start a list.</p>`;return;}
   const groups={house:[],condo:[],lot:[]};
   items.forEach(([id,it])=>{const cur=S.listings.get(id);const snap=it.snapshot||{};const k=(cur&&cur.kind)||snap.kind||"house";(groups[k]||groups.house).push({id,it,cur,snap});});
@@ -1409,6 +1413,131 @@ function renderLists(){
   body.querySelectorAll("[data-rm]").forEach(b=>b.onclick=()=>toggleSave(b.dataset.rm));
 }
 
+/* ---------- export a list (Excel, or PDF with a numbered map) ---------- */
+const LIBS={xlsx:"https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js",
+  jspdf:"https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js",
+  autotable:"https://cdn.jsdelivr.net/npm/jspdf-autotable@3.8.2/dist/jspdf.plugin.autotable.min.js"};
+const libLoads={};
+function loadLib(k){return libLoads[k]||(libLoads[k]=new Promise((ok,no)=>{const s=document.createElement("script");s.src=LIBS[k];s.onload=ok;s.onerror=()=>{delete libLoads[k];no(new Error("couldn't load "+k));};document.head.appendChild(s);}));}
+const STATUS_COLOR={Active:"#2e7d4f",Pending:"#a86b00",Contingent:"#a86b00",Sold:"#b23a3a",Gone:"#6b7480"};
+function exportRows(pid){
+  const items=Object.entries(savesOf(pid)),rows=[];
+  items.forEach(([id,it])=>{const cur=S.listings.get(id);const snap=it.snapshot||{};const x=cur?derive(cur):snap;rows.push({id,it,cur,snap,x});});
+  const ko={house:0,condo:1,lot:2};
+  rows.sort((a,b)=>(ko[a.x.kind]??0)-(ko[b.x.kind]??0)||(a.x.price||0)-(b.x.price||0)); // same order as the list page
+  return rows.map((r,i)=>{const {x,it,cur,snap}=r;const status=x.status||"Active";
+    const savedP=snap.price||null,chg=cur&&savedP&&cur.price!==savedP?cur.price-savedP:null;
+    const frfMi=x.lat!=null?hav(x,FRF):null;
+    return {n:i+1,id:r.id,address:x.address||r.id,area:x.area||x.town||"",town:x.town||"",zip:x.zip||"",kind:KINDNAME[x.kind]||"",subtype:x.subtype||"",status,
+      price:x.price||null,savedP,chg,prevPrice:x.prevPrice||null,soldPrice:x.soldPrice||null,
+      beds:x.beds??null,baths:x.baths??null,sqft:x.sqft||null,acres:x.acres||null,ppsf:x.price&&x.sqft?Math.round(x.price/x.sqft):null,
+      dom:cur?domDays(cur):null,listed:x.listedAt||"",commute:cur?cur.commute:(snap.commute??null),frfMi:frfMi!=null?Math.round(frfMi*10)/10:null,
+      mls:x.mls||"",saved:(it.savedAt||"").slice(0,10),note:it.note||"",loan:it.loan?loanSummary(it.loan):"",
+      lat:x.lat??null,lng:x.lng??null,url:(cur&&cur.source&&cur.source.url)||"",zillow:linksFor(Object.assign({zip:""},x))[1][1],inFeed:!!cur};});
+}
+function exportName(who,ext){return `${who}'s OBX list ${new Date().toLocaleDateString("en-CA",{timeZone:"America/New_York"})}.${ext}`;}
+async function exportExcel(pid,who){
+  const rows=exportRows(pid);if(!rows.length)return;
+  toast("Making the spreadsheet…");
+  try{await loadLib("xlsx");}catch(e){toast("Couldn't load the spreadsheet tool. Check your connection and try again.");return;}
+  const cols=[["#","n",5],["Address","address",28],["Area","area",15],["ZIP","zip",7],["Type","kind",16],["Style","subtype",14],["Status","status",10],
+    ["Price","price",12,"$#,##0"],["Price when saved","savedP",14,"$#,##0"],["Change since saved","chg",14,"+$#,##0;-$#,##0;$0"],["Previous list price","prevPrice",14,"$#,##0"],["Sold price","soldPrice",12,"$#,##0"],
+    ["Beds","beds",6],["Baths","baths",6],["Sq ft","sqft",8,"#,##0"],["Acres","acres",7],["$ per sq ft","ppsf",10,"$#,##0"],
+    ["Days on market","dom",9],["Listed","listed",11],["Drive to FRF (min)","commute",10],["Miles to FRF","frfMi",9],["MLS #","mls",9],
+    ["Saved on","saved",11],["Note","note",40],["Loan scenario","loan",40],["Latitude","lat",10],["Longitude","lng",11],["Listing page","url",16],["Zillow","zillow",12]];
+  const aoa=[cols.map(c=>c[0])].concat(rows.map(r=>cols.map(c=>{const v=r[c[1]];return v==null?"":v;})));
+  const ws=XLSX.utils.aoa_to_sheet(aoa);
+  rows.forEach((r,i)=>cols.forEach((c,j)=>{const ref=XLSX.utils.encode_cell({r:i+1,c:j});const cell=ws[ref];if(!cell)return;
+    if(c[3]&&typeof cell.v==="number")cell.z=c[3];
+    if((c[1]==="url"||c[1]==="zillow")&&cell.v){cell.l={Target:cell.v};cell.v=c[1]==="url"?"Coldwell Banker":"Zillow";cell.t="s";}}));
+  ws["!cols"]=cols.map(c=>({wch:c[2]}));
+  ws["!autofilter"]={ref:XLSX.utils.encode_range({s:{r:0,c:0},e:{r:rows.length,c:cols.length-1}})};
+  const about=XLSX.utils.aoa_to_sheet([[`${who}'s OBX House Hunt list`],[`Exported ${new Date().toLocaleString("en-US",{timeZone:"America/New_York",dateStyle:"medium",timeStyle:"short"})} Eastern`],
+    [`Listings last checked ${typeof SNAP!=="undefined"&&SNAP?checkedLabel(SNAP):""} Eastern`],[""],
+    ["Prices and status come from the Outer Banks MLS (via Coldwell Banker). Drive time to FRF is an estimate."],
+    [rows.some(r=>!r.inFeed)?"Listings no longer in the feed show the details from when they were saved.":""]]);
+  about["!cols"]=[{wch:90}];
+  const wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,ws,"List");XLSX.utils.book_append_sheet(wb,about,"About");
+  XLSX.writeFile(wb,exportName(who,"xlsx"));
+  toast("Spreadsheet downloaded");
+}
+/* Draws the listings on a street map, zoomed to fit, with numbered markers. Returns a canvas. */
+async function exportMap(rows,W,H){
+  const pts=rows.filter(r=>r.lat!=null&&r.lng!=null);
+  const c=document.createElement("canvas");c.width=W;c.height=H;const g=c.getContext("2d");
+  const wx=(lng,z)=>(lng+180)/360*256*2**z, wy=(lat,z)=>{const s=Math.sin(lat*Math.PI/180);return (0.5-Math.log((1+s)/(1-s))/(4*Math.PI))*256*2**z;};
+  let lat0=Math.min(...pts.map(p=>p.lat)),lat1=Math.max(...pts.map(p=>p.lat)),lng0=Math.min(...pts.map(p=>p.lng)),lng1=Math.max(...pts.map(p=>p.lng));
+  if(!pts.length){lat0=35.85;lat1=36.25;lng0=-75.85;lng1=-75.6;}
+  const pad=60;let z=17;
+  while(z>8&&(wx(lng1,z)-wx(lng0,z)>W-2*pad||wy(lat0,z)-wy(lat1,z)>H-2*pad))z--;
+  const cx=(wx(lng0,z)+wx(lng1,z))/2,cy=(wy(lat0,z)+wy(lat1,z))/2,x0=cx-W/2,y0=cy-H/2;
+  const P=(lat,lng)=>[wx(lng,z)-x0,wy(lat,z)-y0];
+  // fallback base drawn first: water, the site's own coastline and roads (covered by map tiles when they load)
+  g.fillStyle="#cfe0ea";g.fillRect(0,0,W,H);
+  g.fillStyle="#f2efe6";g.strokeStyle="#c9c2b0";g.lineWidth=1;
+  const ring=r=>{g.beginPath();r.forEach(([lng,lat],i)=>{const [x,y]=P(lat,lng);i?g.lineTo(x,y):g.moveTo(x,y);});g.closePath();};
+  (LAND.type==="FeatureCollection"?LAND.features.map(f=>f.geometry):[LAND.geometry||LAND]).forEach(gm=>{if(!gm)return;const polys=gm.type==="Polygon"?[gm.coordinates]:gm.type==="MultiPolygon"?gm.coordinates:[];polys.forEach(pl=>{ring(pl[0]);g.fill();g.stroke();});});
+  g.strokeStyle="#b9b2a2";for(const k in ROADS){const r=ROADS[k];g.lineWidth=r.speed>=45?3:1.6;g.beginPath();r.pts.forEach(([lat,lng],i)=>{const [x,y]=P(lat,lng);i?g.lineTo(x,y):g.moveTo(x,y);});g.stroke();}
+  // Esri street map tiles
+  const tiles=[];
+  for(let tx=Math.floor(x0/256);tx<=Math.floor((x0+W)/256);tx++)for(let ty=Math.floor(y0/256);ty<=Math.floor((y0+H)/256);ty++)tiles.push([tx,ty]);
+  let got=0;
+  await Promise.all(tiles.map(([tx,ty])=>new Promise(res=>{const im=new Image();im.crossOrigin="anonymous";im.referrerPolicy="no-referrer";
+    const t=setTimeout(()=>res(),9000);
+    im.onload=()=>{clearTimeout(t);try{g.drawImage(im,Math.round(tx*256-x0),Math.round(ty*256-y0));got++;}catch(e){}res();};im.onerror=()=>{clearTimeout(t);res();};
+    im.src=`https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/${z}/${ty}/${tx}`;})));
+  try{c.toDataURL();}catch(e){ // a tile tainted the canvas: redraw without tiles
+    return exportMapBare(rows,W,H);}
+  // FRF pier
+  {const [fx,fy]=P(FRF.lat,FRF.lng);if(fx>-20&&fx<W+20&&fy>-20&&fy<H+20){g.fillStyle="#17263a";g.beginPath();g.moveTo(fx,fy-11);g.lineTo(fx+9,fy+6);g.lineTo(fx-9,fy+6);g.closePath();g.fill();
+    g.font="bold 20px Helvetica,Arial,sans-serif";g.lineWidth=4;g.strokeStyle="#fff";g.strokeText("FRF",fx+12,fy+7);g.fillText("FRF",fx+12,fy+7);}}
+  // numbered markers, nudged apart where they overlap, with a leader line back to the true spot
+  const R=17;const ms=pts.map(p=>{const [x,y]=P(p.lat,p.lng);return {p,x,y,lx:x,ly:y};});
+  for(let it=0;it<120;it++){let moved=false;for(let i=0;i<ms.length;i++)for(let j=i+1;j<ms.length;j++){const a=ms[i],b=ms[j];let dx=b.lx-a.lx,dy=b.ly-a.ly,d=Math.hypot(dx,dy);const need=2*R+3;
+      if(d<need){if(d<.01){dx=Math.cos(j*2.4);dy=Math.sin(j*2.4);d=1;}const push=(need-d)/2;a.lx-=dx/d*push;a.ly-=dy/d*push;b.lx+=dx/d*push;b.ly+=dy/d*push;moved=true;}}
+    if(!moved)break;}
+  ms.forEach(m=>{m.lx=Math.max(R+2,Math.min(W-R-2,m.lx));m.ly=Math.max(R+2,Math.min(H-R-2,m.ly));});
+  ms.forEach(m=>{if(Math.hypot(m.lx-m.x,m.ly-m.y)>4){g.strokeStyle="#17263a";g.lineWidth=2;g.beginPath();g.moveTo(m.x,m.y);g.lineTo(m.lx,m.ly);g.stroke();g.fillStyle="#17263a";g.beginPath();g.arc(m.x,m.y,3.5,0,7);g.fill();}});
+  ms.slice().reverse().forEach(m=>{g.fillStyle=STATUS_COLOR[m.p.status]||"#17263a";g.strokeStyle="#fff";g.lineWidth=3.5;g.beginPath();g.arc(m.lx,m.ly,R,0,7);g.fill();g.stroke();
+    g.fillStyle="#fff";g.font=`bold ${m.p.n>99?15:18}px Helvetica,Arial,sans-serif`;g.textAlign="center";g.textBaseline="middle";g.fillText(String(m.p.n),m.lx,m.ly+1);});
+  g.textAlign="right";g.textBaseline="bottom";g.font="15px Helvetica,Arial,sans-serif";const att=got?"Map © Esri, HERE, Garmin, USGS":"Coastline and roads: OBX House Hunt";
+  g.fillStyle="rgba(255,255,255,.8)";const tw=g.measureText(att).width;g.fillRect(W-tw-12,H-24,tw+12,24);g.fillStyle="#333";g.fillText(att,W-6,H-4);
+  return c;
+}
+async function exportMapBare(rows,W,H){const keep=window.Image;window.Image=function(){const o={};setTimeout(()=>o.onerror&&o.onerror(),0);return o;};try{return await exportMap(rows,W,H);}finally{window.Image=keep;}}
+async function exportPdf(pid,who){
+  const rows=exportRows(pid);if(!rows.length)return;
+  toast("Making the PDF…");
+  try{await loadLib("jspdf");await loadLib("autotable");}catch(e){toast("Couldn't load the PDF tool. Check your connection and try again.");return;}
+  const {jsPDF}=window.jspdf;const doc=new jsPDF({orientation:"landscape",unit:"pt",format:"letter"});
+  const PW=doc.internal.pageSize.getWidth(),M=30,mapW=PW-2*M,mapH=380;
+  const canvas=await exportMap(rows,Math.round(mapW*2),Math.round(mapH*2));
+  const when=new Date().toLocaleDateString("en-US",{timeZone:"America/New_York",month:"long",day:"numeric",year:"numeric"});
+  doc.setFont("helvetica","bold");doc.setFontSize(18);doc.setTextColor(23,38,58);doc.text(`${who}'s list`,M,M+10);
+  doc.setFont("helvetica","normal");doc.setFontSize(10);doc.setTextColor(91,102,117);
+  doc.text(`${rows.length} listing${rows.length===1?"":"s"} · OBX House Hunt · exported ${when}`,M,M+26);
+  // legend
+  let lx=PW-M;doc.setFontSize(9);
+  [["Gone / off market","Gone"],["Sold","Sold"],["Pending","Pending"],["Active","Active"]].filter(([,s])=>rows.some(r=>r.status===s)||s==="Active").forEach(([t,s])=>{
+    const w=doc.getTextWidth(t);lx-=w;doc.setTextColor(60,60,60);doc.text(t,lx,M+24);const [r,gg,b]=STATUS_COLOR[s].match(/\w\w/g).map(h=>parseInt(h,16));doc.setFillColor(r,gg,b);doc.circle(lx-7,M+21,4.5,"F");lx-=20;});
+  doc.addImage(canvas.toDataURL("image/jpeg",0.88),"JPEG",M,M+36,mapW,mapH);
+  doc.setDrawColor(200,194,180);doc.rect(M,M+36,mapW,mapH);
+  const noCoords=rows.filter(r=>r.lat==null).length;
+  const body=rows.map(r=>[r.n,r.address+(r.inFeed?"":"\n(no longer in the feed)"),r.area,r.kind==="Condo / townhome"?"Condo":r.kind,r.status,
+    r.status==="Sold"&&r.soldPrice?"Sold "+money(r.soldPrice):money(r.price)+(r.chg?`\n${r.chg<0?"down":"up"} ${money(Math.abs(r.chg))} since saved`:""),
+    r.beds??"",r.baths??"",r.sqft?r.sqft.toLocaleString("en-US"):(r.acres?r.acres+" ac":""),r.ppsf?money(r.ppsf):"",r.dom??"",r.commute!=null?r.commute+" min":"",r.mls,r.note]);
+  doc.autoTable({startY:M+36+mapH+14,margin:{left:M,right:M,top:M,bottom:M},
+    head:[["#","Address","Area","Type","Status","Price","Bd","Ba","Sq ft","$/sq ft","Days on mkt","To FRF","MLS #","Note"]],body,
+    styles:{font:"helvetica",fontSize:8.5,cellPadding:4,textColor:[23,38,58],lineColor:[227,221,208],lineWidth:.5,valign:"middle"},
+    headStyles:{fillColor:[23,38,58],textColor:255,fontStyle:"bold"},alternateRowStyles:{fillColor:[247,245,240]},
+    columnStyles:{0:{halign:"center",fontStyle:"bold",cellWidth:24},1:{cellWidth:118,fontStyle:"bold"},2:{cellWidth:76},3:{cellWidth:42},4:{cellWidth:46},5:{cellWidth:78,halign:"right"},6:{halign:"center",cellWidth:22},7:{halign:"center",cellWidth:22},8:{halign:"right",cellWidth:44},9:{halign:"right",cellWidth:40},10:{halign:"center",cellWidth:38},11:{halign:"right",cellWidth:40},12:{cellWidth:54},13:{cellWidth:"auto",fontSize:8}},
+    didParseCell:d=>{if(d.section==="body"&&d.column.index===0){const s=rows[d.row.index].status;const [r,g,b]=(STATUS_COLOR[s]||"#17263a").match(/\w\w/g).map(h=>parseInt(h,16));d.cell.styles.textColor=[r,g,b];}},
+    didDrawPage:()=>{const ph=doc.internal.pageSize.getHeight();doc.setFontSize(8);doc.setTextColor(122,131,144);
+      doc.text(`Prices and status: Outer Banks MLS via Coldwell Banker. Drive times are estimates.${noCoords?` ${noCoords} listing(s) without a map location aren't on the map.`:""}`,M,ph-14);
+      doc.text(`Page ${doc.internal.getNumberOfPages()}`,PW-M,ph-14,{align:"right"});}});
+  doc.save(exportName(who,"pdf"));
+  toast("PDF downloaded");
+}
 function shareList(who,items){
   const payload={n:who,i:items.map(([id,it])=>[id,it.note||""])};
   const enc=btoa(unescape(encodeURIComponent(JSON.stringify(payload)))).replace(/\+/g,"-").replace(/\//g,"_").replace(/=+$/,"");
