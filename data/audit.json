@@ -1,21 +1,21 @@
 {
  "note": "Daily spot-check sample for the OBX House Hunt site. Public MLS facts only.",
- "checkedAt": "2026-10-21T15:24:31.618Z",
+ "checkedAt": "2026-10-21T16:01:30.774Z",
  "asOf": "2026-10-21",
  "totals": {
-  "listings": 680,
-  "active": 510,
+  "listings": 683,
+  "active": 513,
   "pending": 162,
   "gone": 0
  },
  "onMarketByTown": {
   "Point Harbor": 2,
-  "Manteo": 55,
+  "Manteo": 56,
   "Powells Point": 15,
   "Harbinger": 3,
   "Kitty Hawk": 71,
-  "Southern Shores": 36,
-  "Kill Devil Hills": 225,
+  "Southern Shores": 37,
+  "Kill Devil Hills": 226,
   "Jarvisburg": 37,
   "Nags Head": 120,
   "Duck": 53,
@@ -23,8 +23,8 @@
   "Wanchese": 4
  },
  "batch": 1,
- "batches": 13,
- "batchSize": 52,
+ "batches": 14,
+ "batchSize": 49,
  "rotationKey": "2026-10-21",
  "sample": [
   {
@@ -275,7 +275,7 @@
    "baths": null,
    "sqft": null,
    "acres": 0.39,
-   "listedAt": "2025-04-24",
+   "listedAt": "2025-04-23",
    "mls": "129076",
    "url": "https://www.coldwellbanker.com/nc/duck/102-sea-hawk-dr-e-lot-19/lid-P00800000Gqxj88icKGLUzg3mhQ5CUIfdVynkQDy"
   },
@@ -331,7 +331,7 @@
    "baths": 2,
    "sqft": 1458,
    "acres": null,
-   "listedAt": "2025-07-10",
+   "listedAt": "2025-07-09",
    "mls": "129834",
    "url": "https://www.coldwellbanker.com/nc/duck/1245-duck-rd--213/lid-P00800000HHLJEgx4Xx3hVObBLg4jJDFwR3M9gfh"
   },
@@ -345,7 +345,7 @@
    "baths": null,
    "sqft": null,
    "acres": 0.11,
-   "listedAt": "2025-07-17",
+   "listedAt": "2025-07-16",
    "mls": "129908",
    "url": "https://www.coldwellbanker.com/nc/kill-devil-hills/0-w-palmetto-st-lot-21r/lid-P00800000GvJ7KsMkhBChM7FeNba4dlSeAVtRoqI"
   },
@@ -387,7 +387,7 @@
    "baths": 9,
    "sqft": 5194,
    "acres": null,
-   "listedAt": "2025-08-02",
+   "listedAt": "2025-08-01",
    "mls": "130063",
    "url": "https://www.coldwellbanker.com/nc/nags-head/5015-s-virginia-dare-trl/lid-P00800000Gw8QzzhlUQx2Q5gRokYVuyevU4fu9MV"
   },
@@ -527,7 +527,7 @@
    "baths": 2,
    "sqft": 1366,
    "acres": null,
-   "listedAt": "2025-10-14",
+   "listedAt": "2025-10-13",
    "mls": "130749",
    "url": "https://www.coldwellbanker.com/nc/kill-devil-hills/1513-colington-rd/lid-P00800000GzuYOM66t7R37wQJZZSlslj21L81HEu"
   },
@@ -712,48 +712,6 @@
    "listedAt": "2025-12-10",
    "mls": "131268",
    "url": "https://www.coldwellbanker.com/nc/manteo/173-creefs-ridge-rd/lid-P00800000H2sHcPsZ2MU3UFSoWq7wA2EIxzXub9k"
-  },
-  {
-   "address": "101 Captains Way",
-   "town": "Powells Point",
-   "price": 357777,
-   "status": "Active",
-   "kind": "lot",
-   "beds": null,
-   "baths": null,
-   "sqft": null,
-   "acres": 0.43,
-   "listedAt": "2025-12-18",
-   "mls": "131316",
-   "url": "https://www.coldwellbanker.com/nc/powells-point/101-captains-way-lot-135/lid-P00800000HHLJEgx4Xx3hVObBLg4jJDEtJMzxfg3"
-  },
-  {
-   "address": "1327 W Kitty Hawk Road",
-   "town": "Kitty Hawk",
-   "price": 1399000,
-   "status": "Active",
-   "kind": "house",
-   "beds": 3,
-   "baths": 1,
-   "sqft": 1386,
-   "acres": 14.47,
-   "listedAt": "2026-01-06",
-   "mls": "131404",
-   "url": "https://www.coldwellbanker.com/nc/kitty-hawk/1327-w-kitty-hawk-rd/lid-P00800000GtFVUOhkkfc2WkRo3hQAT4bVOu1k87x"
-  },
-  {
-   "address": "105 Charlotte Street",
-   "town": "Kill Devil Hills",
-   "price": 499000,
-   "status": "Active",
-   "kind": "house",
-   "beds": 4,
-   "baths": 2,
-   "sqft": 936,
-   "acres": null,
-   "listedAt": "2026-01-09",
-   "mls": "131439",
-   "url": "https://www.coldwellbanker.com/nc/kill-devil-hills/105-charlotte-st/lid-P00800000H4QNZ8z7oiXwqGoqcpgnYPw0UsLemQK"
   }
  ]
 }
