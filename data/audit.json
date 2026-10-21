@@ -1,24 +1,24 @@
 {
  "note": "Daily spot-check sample for the OBX House Hunt site. Public MLS facts only.",
- "checkedAt": "2026-10-21T19:57:36.868Z",
+ "checkedAt": "2026-10-21T22:02:47.312Z",
  "asOf": "2026-10-21",
  "totals": {
-  "listings": 687,
-  "active": 512,
-  "pending": 153,
+  "listings": 688,
+  "active": 513,
+  "pending": 151,
   "gone": 10
  },
  "onMarketByTown": {
   "Point Harbor": 2,
-  "Manteo": 55,
+  "Manteo": 54,
   "Powells Point": 15,
   "Harbinger": 3,
-  "Kitty Hawk": 64,
+  "Kitty Hawk": 65,
   "Southern Shores": 36,
   "Kill Devil Hills": 225,
   "Jarvisburg": 37,
   "Nags Head": 118,
-  "Duck": 54,
+  "Duck": 53,
   "Grandy": 52,
   "Wanchese": 4
  },
@@ -485,7 +485,7 @@
    "baths": null,
    "sqft": null,
    "acres": null,
-   "listedAt": "2025-09-30",
+   "listedAt": "2025-09-29",
    "mls": "130627",
    "url": "https://www.coldwellbanker.com/nc/kill-devil-hills/1304-water-oak-drive-lot-12/lid-P00800000GzCBNH4i5A02bDZ9evZi1mWn6HxGda6"
   },
@@ -499,7 +499,7 @@
    "baths": 3,
    "sqft": 1636,
    "acres": null,
-   "listedAt": "2025-10-02",
+   "listedAt": "2025-10-01",
    "mls": "130652",
    "url": "https://www.coldwellbanker.com/nc/nags-head/4124-w-brant-ct/lid-P00800000GzIkI637o6zOMQZ77eitp3E0kebj3WO"
   },
@@ -653,7 +653,7 @@
    "baths": 3,
    "sqft": 2093,
    "acres": null,
-   "listedAt": "2025-11-23",
+   "listedAt": "2025-11-22",
    "mls": "131153",
    "url": "https://www.coldwellbanker.com/nc/kill-devil-hills/105-kay-ct/lid-P00800000H1zdFhc6uhPnieRLXNUdIU1fYKhyn89"
   },
@@ -737,7 +737,7 @@
    "baths": 2,
    "sqft": 936,
    "acres": null,
-   "listedAt": "2026-01-09",
+   "listedAt": "2026-01-08",
    "mls": "131439",
    "url": "https://www.coldwellbanker.com/nc/kill-devil-hills/105-charlotte-st/lid-P00800000H4QNZ8z7oiXwqGoqcpgnYPw0UsLemQK"
   },
@@ -751,7 +751,7 @@
    "baths": 3,
    "sqft": 1756,
    "acres": null,
-   "listedAt": "2026-01-12",
+   "listedAt": "2026-01-11",
    "mls": "131464",
    "url": "https://www.coldwellbanker.com/nc/nags-head/103-limulus-dr/lid-P00800000H4Zz0MExqT7X9OuuctRH27hGCwQ0rMo"
   }
