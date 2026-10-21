@@ -1,6 +1,6 @@
 {
  "note": "Daily spot-check sample for the OBX House Hunt site. Public MLS facts only.",
- "checkedAt": "2026-10-21T10:01:35.592Z",
+ "checkedAt": "2026-10-21T13:01:34.806Z",
  "asOf": "2026-10-21",
  "totals": {
   "listings": 679,
@@ -24,46 +24,46 @@
  },
  "sample": [
   {
-   "address": "400 W Ocean Acres Drive",
+   "address": "319 W Ocean Acres Drive",
    "town": "Kill Devil Hills",
-   "price": 599000,
+   "price": 549000,
    "status": "Active",
    "kind": "house",
    "beds": 4,
-   "baths": 3,
-   "sqft": 1724,
+   "baths": 4,
+   "sqft": 2155,
    "acres": null,
-   "listedAt": "2026-09-17",
-   "mls": "134082",
-   "url": "https://www.coldwellbanker.com/nc/kill-devil-hills/400-w-ocean-acres-dr/lid-P00800000HHOD5AGQuIfReb0MzgKS2sA2zZ5egxy"
+   "listedAt": "2026-04-21",
+   "mls": "132588",
+   "url": "https://www.coldwellbanker.com/nc/kill-devil-hills/319-w-ocean-acres-dr/lid-P00800000H9hcv4ThXH8OeFD5ToRM3ffVNKd3uAK"
   },
   {
-   "address": "MM Indian Kettle (hancock) Road",
+   "address": "104 Indian Kettle Road",
    "town": "Jarvisburg",
-   "price": 464900,
+   "price": 379900,
    "status": "Active",
    "kind": "house",
    "beds": 3,
    "baths": 2,
-   "sqft": 1462,
+   "sqft": 1189,
    "acres": null,
-   "listedAt": "2026-04-13",
-   "mls": "10629441",
-   "url": "https://www.coldwellbanker.com/nc/jarvisburg/indian-kettle-rd/lid-P00800000H9H4jSfMLC15knUthjfA8Byx6SfOGVr"
+   "listedAt": "2026-05-20",
+   "mls": "100575049",
+   "url": "https://www.coldwellbanker.com/nc/jarvisburg/104-indian-kettle-rd/lid-P00800000HBCMZSwPauSxowbs3ZI9MjOxkYlHzSX"
   },
   {
-   "address": "104 Perrys Way Branch Road",
+   "address": "104 Admirals View Drive",
    "town": "Grandy",
-   "price": 599000,
+   "price": 438250,
    "status": "Active",
    "kind": "house",
-   "beds": 4,
+   "beds": 3,
    "baths": 3,
-   "sqft": 2410,
+   "sqft": 1461,
    "acres": null,
-   "listedAt": "2026-09-15",
-   "mls": "134076",
-   "url": "https://www.coldwellbanker.com/nc/grandy/104-perrys-way/lid-P00800000HHJT88D8HLE9IPbaBvxLovDNZ7Zx8Dh"
+   "listedAt": "2026-08-06",
+   "mls": "133642",
+   "url": "https://www.coldwellbanker.com/nc/grandy/104-admirals-view-dr/lid-P00800000HFEO6MuHDp74XqipZqhytRlsY2I2NSa"
   },
   {
    "address": "1303 Swordfish Way",
@@ -108,46 +108,46 @@
    "url": "https://www.coldwellbanker.com/nc/kill-devil-hills/1513-colington-rd/lid-P00800000GzuYOM66t7R37wQJZZSlslj21L81HEu"
   },
   {
-   "address": "101 Edgewater Drive",
+   "address": "100 Savannah Avenue",
    "town": "Grandy",
-   "price": 148000,
+   "price": 425000,
    "status": "Active",
    "kind": "house",
    "beds": 3,
    "baths": 2,
-   "sqft": 902,
+   "sqft": 1956,
    "acres": null,
-   "listedAt": "2026-07-22",
-   "mls": "100590451",
-   "url": "https://www.coldwellbanker.com/nc/grandy/101-edgewater-dr/lid-P00800000HERs8BZruvaeIkFHRMFk00S1eGyfaVn"
+   "listedAt": "2026-05-15",
+   "mls": "132857",
+   "url": "https://www.coldwellbanker.com/nc/grandy/100-savannah-ave/lid-P00800000HAvWPQoQh5ohjtSRfYwWYwPuBOskUdA"
   },
   {
-   "address": "117 Sea Colony Drive Unit 211 B",
+   "address": "1245 Duck Road Unit 205",
    "town": "Duck",
-   "price": 360000,
+   "price": 675000,
    "status": "Active",
    "kind": "condo",
-   "beds": 1,
+   "beds": 3,
    "baths": 2,
-   "sqft": 672,
+   "sqft": 1417,
    "acres": null,
-   "listedAt": "2025-11-02",
-   "mls": "130956",
-   "url": "https://www.coldwellbanker.com/nc/duck/117-sea-colony-dr-unit-211-b/lid-P00800000H0t9XKcL2UR3taW5kuRTLbx7plAdEYu"
+   "listedAt": "2025-11-12",
+   "mls": "131038",
+   "url": "https://www.coldwellbanker.com/nc/duck/1245-duck-rd--205/lid-P00800000H1PTDuQN8UiUGwnbA8VpRZaqgalqMzw"
   },
   {
-   "address": "500 W Fifth Street",
+   "address": "411 W Walker Street",
    "town": "Kill Devil Hills",
-   "price": 465000,
+   "price": 699900,
    "status": "Active",
    "kind": "house",
    "beds": 3,
-   "baths": 1,
-   "sqft": 1440,
+   "baths": 3,
+   "sqft": 1745,
    "acres": null,
-   "listedAt": "2026-05-22",
-   "mls": "132923",
-   "url": "https://www.coldwellbanker.com/nc/kill-devil-hills/500-w-5th-st/lid-P00800000HBIF7cL4bQ7AbT55Ml2pE9HSis4DHY5"
+   "listedAt": "2026-07-10",
+   "mls": "133393",
+   "url": "https://www.coldwellbanker.com/nc/kill-devil-hills/411-w-walker-st/lid-P00800000HDpOTCCFEDoh2nWK271ctt9MWi7eij5"
   },
   {
    "address": "3403 Briggs Street",
@@ -178,18 +178,18 @@
    "url": "https://www.coldwellbanker.com/nc/kill-devil-hills/0-w-palmetto-st-lot-21r/lid-P00800000GvJ7KsMkhBChM7FeNba4dlSeAVtRoqI"
   },
   {
-   "address": "227 Colonial Beach Road",
+   "address": "149 Linden Street",
    "town": "Jarvisburg",
-   "price": 420000,
+   "price": 51300,
    "status": "Active",
-   "kind": "house",
-   "beds": 3,
-   "baths": 1,
-   "sqft": 1192,
-   "acres": null,
-   "listedAt": "2026-09-11",
-   "mls": "100602645",
-   "url": "https://www.coldwellbanker.com/nc/jarvisburg/227-colonial-beach-rd/lid-P00800000HH5hPd7GKK6pUsulCIeyUbMxOBQlaMZ"
+   "kind": "lot",
+   "beds": null,
+   "baths": null,
+   "sqft": null,
+   "acres": 0.13,
+   "listedAt": "2026-09-02",
+   "mls": "133932",
+   "url": "https://www.coldwellbanker.com/nc/jarvisburg/149-linden-st-lot-9r/lid-P00800000HHLJG7PqZupYNP2vNnWuQ6uz3Fow8nx"
   },
   {
    "address": "124 Sea Gull Court",
@@ -220,18 +220,18 @@
    "url": "https://www.coldwellbanker.com/nc/point-harbor/102-acorn-ln/lid-P00800000HBiZ9ZsUiCzF5sMTJ4xNoUZOFADuxLO"
   },
   {
-   "address": "10303D E Loon Court",
+   "address": "103 E Sea Holly Court",
    "town": "Nags Head",
-   "price": 1275000,
+   "price": 899900,
    "status": "Active",
    "kind": "house",
-   "beds": 4,
+   "beds": 5,
    "baths": 3,
-   "sqft": 1845,
+   "sqft": 2176,
    "acres": null,
-   "listedAt": "2026-09-05",
-   "mls": "133980",
-   "url": "https://www.coldwellbanker.com/nc/nags-head/10303d-e-loon-ct/lid-P00800000HGm3CXmfRhlw5qs4ymFN56ur1z121kG"
+   "listedAt": "2026-08-15",
+   "mls": "133742",
+   "url": "https://www.coldwellbanker.com/nc/nags-head/103-sea-holly-ct/lid-P00800000HFgUQkNQMAa452wR111G3MNRKynaC6S"
   },
   {
    "address": "1319 N Virginia Dare Trail Unit 4L",
@@ -262,46 +262,46 @@
    "url": "https://www.coldwellbanker.com/nc/kill-devil-hills/1111b-cambridge-rd-unit-308/lid-P00800000HItXQVtvsEaS5CdNIL2aMHH059NGj3X"
   },
   {
-   "address": "1237 S Virginia Dare Trail Lot 3",
+   "address": "112 Sea Gull Court",
    "town": "Kill Devil Hills",
-   "price": 750000,
-   "status": "Pending",
-   "kind": "lot",
-   "beds": null,
-   "baths": null,
-   "sqft": null,
-   "acres": null,
-   "listedAt": "2026-04-19",
-   "mls": "132569",
-   "url": "https://www.coldwellbanker.com/nc/kill-devil-hills/1237-s-virginia-dare-trl-lot-3/lid-P00800000HHKSvCLDKqYo9n2A0lIXZgshZxmgJFv"
-  },
-  {
-   "address": "3904 Poor Ridge Road",
-   "town": "Kitty Hawk",
-   "price": 50000,
-   "status": "Pending",
-   "kind": "lot",
-   "beds": null,
-   "baths": null,
-   "sqft": null,
-   "acres": 0.1,
-   "listedAt": "2025-03-28",
-   "mls": "122606",
-   "url": "https://www.coldwellbanker.com/nc/kitty-hawk/3904-poor-ridge-rd/lid-P00800000GIMdYkJ8rHmUJS4VEXkIDReU42PbzMf"
-  },
-  {
-   "address": "113 Forest Avenue",
-   "town": "Manteo",
-   "price": 359000,
+   "price": 140000,
    "status": "Pending",
    "kind": "house",
    "beds": 2,
    "baths": 2,
-   "sqft": 1120,
+   "sqft": 970,
    "acres": null,
-   "listedAt": "2026-09-18",
-   "mls": "134115",
-   "url": "https://www.coldwellbanker.com/nc/manteo/113-forest-ave/lid-P00800000HHSoNzVOpZ3frGeKXqV0FvU5NvuFIk5"
+   "listedAt": "2026-10-15",
+   "mls": "134366",
+   "url": "https://www.coldwellbanker.com/nc/kill-devil-hills/112-seagull-ct/lid-P00800000HIqDV93sPoLxcclbIU8yjVmmeWcwp79"
+  },
+  {
+   "address": "0 N The Woods Road",
+   "town": "Kitty Hawk",
+   "price": 3000000,
+   "status": "Pending",
+   "kind": "lot",
+   "beds": null,
+   "baths": null,
+   "sqft": null,
+   "acres": 5,
+   "listedAt": "2025-03-28",
+   "mls": "124118",
+   "url": "https://www.coldwellbanker.com/nc/kitty-hawk/0-north-the-woods-road/lid-P00800000GR9phIrHsDndArBQ0EVTBd6qUgCu7OE"
+  },
+  {
+   "address": "109 Poplar Street",
+   "town": "Manteo",
+   "price": 429000,
+   "status": "Pending",
+   "kind": "house",
+   "beds": 3,
+   "baths": 2,
+   "sqft": 1380,
+   "acres": null,
+   "listedAt": "2026-10-03",
+   "mls": "134247",
+   "url": "https://www.coldwellbanker.com/nc/manteo/109-poplar-st/lid-P00800000HIEG1sQdEdcewyIrK0jKZ52u3aIJwbs"
   }
  ]
 }
