@@ -11,7 +11,7 @@ A private family house-hunting map for the Outer Banks. The site opens only with
 | `index.html` | The site |
 | `data/listings.enc.js` | Encrypted listings, updated automatically several times a day |
 | `data/key.enc.js` | Encrypted keys the site needs after it's unlocked |
-| `data/audit.json` | A small public sample (20 listings, public MLS facts only) used for a daily accuracy check |
+| `data/audit.json` | A rotating daily sample (~50 listings, public MLS facts only) used for a daily accuracy check |
 | `tools/` | Scripts for the email workflows |
 | `.github/workflows/` | Listing alerts, Weekly Top Picks email, Health alert |
 
