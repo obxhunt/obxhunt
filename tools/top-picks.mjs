@@ -21,7 +21,7 @@ const mail = JSON.parse(dec(grab("data/key.enc.js", "__MAILENC")));
 async function loadData() {
   const out = {};
   if (process.env.DATA_DIR) {
-    for (const dir of ["saves", "patches", "added", "notes"]) {
+    for (const dir of ["saves", "patches", "added", "notes", "votes"]) {
       const d = path.join(process.env.DATA_DIR, dir); if (!fs.existsSync(d)) continue;
       for (const f of fs.readdirSync(d)) if (f.endsWith(".json")) out[dir + "/" + f] = JSON.parse(fs.readFileSync(path.join(d, f), "utf8"));
     }
@@ -34,7 +34,7 @@ async function loadData() {
   if (!t.ok) throw new Error("Couldn't read family data: HTTP " + t.status);
   const tree = (await t.json()).tree || [];
   for (const e of tree) {
-    if (e.type !== "blob" || !/^(saves|patches|added|notes)\/[^/]+\.json$/.test(e.path)) continue;
+    if (e.type !== "blob" || !/^(saves|patches|added|notes|votes)\/[^/]+\.json$/.test(e.path)) continue;
     const b = await fetch(API + "/git/blobs/" + e.sha, { headers: H }); if (!b.ok) continue;
     try { out[e.path] = JSON.parse(Buffer.from((await b.json()).content, "base64").toString("utf8")); } catch {}
   }
@@ -87,6 +87,15 @@ const fresh = [...listings].map(([id, l]) => Object.assign({ id }, l))
   .filter(l => l.addedAt && String(l.addedAt).slice(0, 10) >= weekAgoDay && String(l.addedAt).slice(0, 10) > SEED_DATE && !["Gone", "Sold"].includes(l.status))
   .sort((a, b) => ({ house: 0, condo: 1, lot: 2 }[a.kind] ?? 0) - ({ house: 0, condo: 1, lot: 2 }[b.kind] ?? 0) || (a.price || 0) - (b.price || 0));
 const NEW_CAP = 30;
+// Most upvoted in swipe mode (net = upvotes minus downvotes), top 8 with at least one upvote
+const tally = new Map();
+for (const [p, doc] of Object.entries(data)) {
+  if (!p.startsWith("votes/")) continue;
+  const name = String(doc.name || p.slice(6, -5));
+  for (const [id, it] of Object.entries(doc.items || {})) { if (!it || !it.v) continue; const x = tally.get(id) || { up: 0, down: 0, voters: [] }; it.v > 0 ? x.up++ : x.down++; x.voters.push((it.v > 0 ? "👍 " : "👎 ") + name); tally.set(id, x); }
+}
+const voted = [...tally].map(([id, x]) => ({ id, x, l: listings.get(id) })).filter(r => r.l && r.x.up > 0 && r.l.status !== "Gone")
+  .sort((a, b) => (b.x.up - b.x.down) - (a.x.up - a.x.down) || b.x.up - a.x.up || (a.l.price || 0) - (b.l.price || 0)).slice(0, 8);
 const link = id => SITE + "#" + CODE + (id ? "&l=" + encodeURIComponent(id) : "");
 const topLink = SITE + "#" + CODE + "&top";
 const today = new Date().toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric", timeZone: "America/New_York" });
@@ -116,6 +125,10 @@ const newRow = l => { const ph = photo(l); return `<tr><td style="padding:0 0 10
   </td></tr></table></td></tr>`; };
 const kindCounts = ["house", "condo", "lot"].map(k => [k, fresh.filter(l => l.kind === k).length]).filter(([, n]) => n);
 const under500 = fresh.filter(l => l.price && l.price < 500000 && l.kind !== "lot").length;
+const voteSection = TEST_IDS.length || !voted.length ? "" : `<tr><td style="font-family:Helvetica,Arial,sans-serif;color:#17263a;padding:10px 0 12px">
+  <div style="font-size:22px;font-weight:800">Most upvoted in swipe mode</div>
+  <div style="font-size:14px;color:#5b6675;margin-top:4px">Ranked by upvotes minus downvotes from everyone's swiping.</div>
+</td></tr>${voted.map((r, i) => { const l = Object.assign({ id: r.id }, r.l); return newRow(l).replace('<div style="font-size:16px;font-weight:700">', `<div style="font-size:16px;font-weight:700"><span style="color:#b3157c">#${i + 1}</span> `).replace("</td></tr></table></td></tr>", `<div style="font-size:12.5px;color:#5b6675;margin-top:2px">${esc(r.x.voters.join(", "))}</div></td></tr></table></td></tr>`); }).join("")}`;
 const newSection = TEST_IDS.length ? "" : `<tr><td style="font-family:Helvetica,Arial,sans-serif;color:#17263a;padding:10px 0 12px">
   <div style="font-size:22px;font-weight:800">New listings this week</div>
   <div style="font-size:14px;color:#5b6675;margin-top:4px">${fresh.length ? `${fresh.length} new: ${esc(kindCounts.map(([k, n]) => n + " " + ({ house: n === 1 ? "house" : "houses", condo: n === 1 ? "condo / townhome" : "condos / townhomes", lot: n === 1 ? "lot" : "lots" }[k])).join(", "))}${under500 ? ` · ${under500} home${under500 === 1 ? "" : "s"} under $500k` : ""}. Homes first, then lots, lowest price first.` : "No new listings came on the market this week."}</div>
@@ -130,6 +143,7 @@ ${TEST_IDS.length ? `<tr><td style="font-family:Helvetica,Arial,sans-serif;paddi
   <div style="font-size:14px;color:#5b6675;margin-top:4px">${esc(today)} · ${TEST_IDS.length ? `${picks.length} sample listings` : picks.length ? `${picks.length} listing${picks.length === 1 ? "" : "s"} saved by two or more of us` : "no overlaps yet"}</div>
 </td></tr>
 ${picks.length ? picks.map(card).join("") : `<tr><td style="font-family:Helvetica,Arial,sans-serif;font-size:15px;color:#17263a;padding:0 0 18px">Nobody has saved the same listing yet. ${counts.length ? "Saved so far: " + esc(counts.map(([n, c]) => `${n} ${c}`).join(", ")) + "." : ""} Heart the places you like on the map and the shared ones will show up here next week.</td></tr>`}
+${voteSection}
 ${newSection}
 <tr><td style="font-family:Helvetica,Arial,sans-serif;font-size:14px;padding:8px 0 24px"><a href="${esc(topLink)}" style="display:inline-block;background:#17263a;color:#fff;text-decoration:none;font-weight:700;padding:10px 16px;border-radius:8px">Open Top Picks on the map</a></td></tr>
 <tr><td style="font-family:Helvetica,Arial,sans-serif;font-size:11.5px;color:#7a8390;padding-bottom:20px">Listing photos courtesy of the listing brokers. Prices and status as of the latest daily refresh (${esc(String(snap.asOf || "").slice(0, 10))}). Sent weekly to the family; the link above is private, so please don't forward it.</td></tr>

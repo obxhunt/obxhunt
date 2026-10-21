@@ -375,6 +375,47 @@ table.matrix td.best{color:var(--accent);font-weight:700}
 .dhead .hf i{font-style:normal;color:var(--muted)}
 .dhead .hc{font-size:14px;margin-top:3px;color:var(--ink)}
 .dhead .hc span{color:var(--muted)}
+/* ---------- swipe mode (beta) ---------- */
+.swipebtn small{font-size:10px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--accent);margin-left:3px}
+body.swiping{overflow:hidden}
+#swipe{position:fixed;inset:0;z-index:4000;background:#0e141c;color:#fff;display:flex;flex-direction:column;padding-bottom:env(safe-area-inset-bottom,0px)}
+#swipe[hidden]{display:none}
+.swhead{display:flex;align-items:center;gap:10px;padding:10px 14px;padding-top:max(10px,env(safe-area-inset-top,0px))}
+.swtitle{flex:1;text-align:center;font-size:16px}.swtitle small{font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:#ee6cbf;font-weight:700;margin-left:2px}
+.swtitle span{color:#9fb0c3;font-size:14px}
+.swx,.swhelp{width:38px;height:38px;border-radius:50%;border:0;background:rgba(255,255,255,.12);color:#fff;font-size:22px;line-height:1;cursor:pointer}
+.swhelp{font-size:17px;font-weight:700}
+.swdeck{position:relative;flex:1;min-height:0;margin:0 12px}
+.swc{position:absolute;inset:0;border-radius:18px;overflow:hidden;background:#1b2430;box-shadow:0 10px 30px rgba(0,0,0,.45);touch-action:none;user-select:none;-webkit-user-select:none;will-change:transform}
+.swc:not(.top){transform:scale(.95) translateY(10px);filter:brightness(.7)}
+.swc.top{cursor:grab}
+.swph{position:absolute;inset:0}
+.swph img,.swaer{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;pointer-events:none}
+.swaer{display:flex;align-items:center;justify-content:center;overflow:hidden}.swaer .aerial{flex:none;border-radius:0}
+.swbars{position:absolute;top:8px;left:10px;right:10px;display:flex;gap:4px;z-index:2}
+.swbars i{flex:1;height:3px;border-radius:2px;background:rgba(255,255,255,.35)}.swbars i.on{background:#fff}.swbars i.maybe{opacity:.4}
+.swtap{position:absolute;top:0;bottom:32%;width:35%;z-index:1}.swtap.l{left:0}.swtap.r{right:0}
+.swinfo{position:absolute;left:0;right:0;bottom:0;z-index:2;padding:60px 16px 16px;background:linear-gradient(to top,rgba(0,0,0,.88) 0%,rgba(0,0,0,.6) 55%,transparent 100%);pointer-events:none}
+.swp{font-size:30px;font-weight:800;line-height:1.05}.swp .drop{font-size:14px;color:#6fe3a0;font-weight:700}
+.swa{font-size:18px;font-weight:700;margin-top:3px}
+.swm,.swf{font-size:14px;color:#dbe4ee;margin-top:3px}
+.swinfo .pill{border-color:currentColor;font-size:11px}
+.swstamp{position:absolute;top:34px;z-index:3;font-size:34px;font-weight:900;letter-spacing:.08em;padding:2px 12px;border:4px solid;border-radius:10px;opacity:0;pointer-events:none}
+.swstamp.up{left:22px;color:#4cd98a;transform:rotate(-14deg)}.swstamp.down{right:22px;color:#ff5c6c;transform:rotate(14deg)}
+.swbtns{display:flex;justify-content:center;align-items:center;gap:18px;padding:14px 0 16px}
+.swb{width:64px;height:64px;border-radius:50%;border:0;background:#fff;font-size:28px;cursor:pointer;box-shadow:0 4px 14px rgba(0,0,0,.35);display:grid;place-items:center}
+.swb.down{color:#ff4d5e}.swb.up{color:#20b866}.swb.small{width:46px;height:46px;font-size:20px;color:#3b4b5e;font-weight:700}
+.swb:disabled{opacity:.35;cursor:default}
+.swdone{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:10px;padding:24px;color:#e8eef5}
+.swdone .big{font-size:52px}.swdone p{color:#9fb0c3;max-width:340px;margin:0}.swdone .row{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-top:6px}
+/* Lists: swipe votes */
+.chip.quiet{opacity:.75;font-weight:500}
+.vlist{display:grid;gap:8px;margin-top:10px}
+.vrow{display:flex;align-items:center;gap:10px;border:1px solid var(--line);background:var(--panel);border-radius:12px;padding:8px 10px}
+.vrank{width:22px;text-align:center;color:var(--muted);font-weight:700}
+.vrow img,.vimg{width:64px;height:48px;object-fit:cover;border-radius:6px;flex:none;background:var(--panel-2)}
+.vmain{flex:1;min-width:0;font-size:14px}.vmain .m{font-size:12.5px}
+.vscore{display:grid;justify-items:center;gap:3px;flex:none}.vscore b{font-size:18px}.vscore small{font-size:11px;color:var(--muted)}
 </style>
 </head><body>
 <div id="lock" hidden><div class="box"><h1>OBX House Hunt</h1><p>This map is private. Open it with the family link Drew sent you.</p></div></div>
@@ -395,7 +436,8 @@ table.matrix td.best{color:var(--accent);font-weight:700}
         <div class="panel-head">
           <h2>Find a place</h2>
           <span class="count num" id="countTop"></span>
-          <button class="btn sm" id="addBtn" type="button" style="margin-left:auto">+ Add listing</button>
+          <button class="btn sm swipebtn" id="swipeBtn" type="button" style="margin-left:auto" title="Swipe through the listings in your filters">Swipe <small>beta</small></button>
+          <button class="btn sm" id="addBtn" type="button">+ Add listing</button>
         </div>
         <div class="scroll" id="panelScroll">
           <div class="filters" id="filters">
@@ -592,6 +634,16 @@ table.matrix td.best{color:var(--accent);font-weight:700}
     </form>
   </div>
 </div>
+<div id="swipe" hidden role="dialog" aria-label="Swipe through listings (beta)">
+  <div class="swhead"><button type="button" class="swx" id="swClose" aria-label="Close swipe mode">×</button><div class="swtitle"><b>Swipe</b> <small>beta</small><span id="swCount"></span></div><button type="button" class="swhelp" id="swHelp" aria-label="How swiping works">?</button></div>
+  <div class="swdeck" id="swDeck"></div>
+  <div class="swbtns">
+    <button type="button" class="swb down" id="swDown" aria-label="Downvote (swipe left)">✕</button>
+    <button type="button" class="swb small" id="swUndo" aria-label="Undo last vote">↺</button>
+    <button type="button" class="swb small" id="swInfo" aria-label="Open this listing on the map">i</button>
+    <button type="button" class="swb up" id="swUp" aria-label="Upvote (swipe right)">♥</button>
+  </div>
+</div>
 <div id="toast" hidden role="status"></div>
 
 <script>window.__WEB=true;window.__LAND={"type":"MultiPolygon","coordinates":[[[[-75.9307,35.9266],[-75.9179,35.9203],[-75.9261,35.9159],[-75.9239,35.9074],[-75.9223,35.9132],[-75.9171,35.9144],[-75.9036,35.9085],[-75.9039,35.8945],[-75.9003,35.8924],[-75.9049,35.8843],[-75.8968,35.8893],[-75.8924,35.8836],[-75.8889,35.8843],[-75.8903,35.8905],[-75.8838,35.8912],[-75.8769,35.8851],[-75.8792,35.8819],[-75.8764,35.8794],[-75.875,35.8835],[-75.8648,35.8789],[-75.8638,35.8655],[-75.8604,35.8665],[-75.8602,35.8763],[-75.8674,35.8839],[-75.8551,35.8941],[-75.853,35.8936],[-75.8511,35.89],[-75.8537,35.8959],[-75.8618,35.893],[-75.8652,35.895],[-75.8648,35.8902],[-75.8717,35.8862],[-75.8827,35.8963],[-75.8932,35.8948],[-75.8943,35.9124],[-75.9021,35.9195],[-75.9097,35.92],[-75.9109,35.9242],[-75.908,35.9323],[-75.8955,35.9359],[-75.8795,35.9268],[-75.862,35.9232],[-75.86,35.919],[-75.8567,35.9261],[-75.8486,35.9272],[-75.845,35.9235],[-75.8346,35.9263],[-75.8312,35.9197],[-75.8262,35.9247],[-75.8102,35.9218],[-75.8152,35.9283],[-75.8465,35.943],[-75.8653,35.9402],[-75.8737,35.944],[-75.8637,35.9432],[-75.8559,35.9467],[-75.857,35.9542],[-75.849,35.9627],[-75.8546,35.9706],[-75.8524,35.9735],[-75.861,35.9731],[-75.862,35.9765],[-75.8583,35.9767],[-75.8095,35.9585],[-75.8051,35.9539],[-75.8144,35.9468],[-75.8121,35.9415],[-75.8155,35.9401],[-75.8094,35.9393],[-75.8112,35.9457],[-75.8071,35.944],[-75.809,35.9424],[-75.8057,35.9424],[-75.8056,35.9461],[-75.7832,35.9337],[-75.7825,35.9191],[-75.7785,35.9141],[-75.7679,35.9122],[-75.773,35.9088],[-75.768,35.9087],[-75.772,35.9058],[-75.7691,35.9062],[-75.7642,35.8911],[-75.7623,35.8901],[-75.7637,35.8891],[-75.7617,35.8898],[-75.7488,35.8831],[-75.7541,35.8759],[-75.7481,35.862],[-75.7555,35.855],[-75.7507,35.8565],[-75.7498,35.8505],[-75.7527,35.8529],[-75.7568,35.852],[-75.7595,35.8504],[-75.7621,35.8472],[-75.7619,35.8443],[-75.7641,35.8438],[-75.7654,35.8459],[-75.7661,35.8457],[-75.7724,35.8417],[-75.7747,35.8372],[-75.7765,35.837],[-75.7776,35.8353],[-75.7768,35.834],[-75.7774,35.8355],[-75.7746,35.837],[-75.7721,35.8418],[-75.7657,35.8457],[-75.7641,35.8436],[-75.7619,35.8441],[-75.7618,35.8471],[-75.7594,35.8501],[-75.7529,35.8526],[-75.7345,35.8371],[-75.7345,35.83],[-75.9812,35.83],[-75.9755,35.8385],[-75.9877,35.8624],[-75.9803,35.8695],[-75.9847,35.8882],[-75.9811,35.8948],[-75.9693,35.8971],[-75.9529,35.9097],[-75.9475,35.9191],[-75.9307,35.9266]],[[-75.8057,35.9226],[-75.7995,35.9246],[-75.8057,35.9299],[-75.8105,35.9246],[-75.8057,35.9246],[-75.8057,35.9226]],[[-75.8496,35.8697],[-75.8477,35.8712],[-75.8496,35.8712],[-75.8496,35.8697]],[[-75.9814,35.8847],[-75.9761,35.8891],[-75.9814,35.8891],[-75.9814,35.8847]],[[-75.8936,35.8465],[-75.8936,35.8534],[-75.9023,35.8534],[-75.8936,35.8465]],[[-75.7617,35.8534],[-75.7651,35.8534],[-75.7617,35.8507],[-75.7584,35.8534],[-75.754,35.8534],[-75.7607,35.8589],[-75.7559,35.8712],[-75.7617,35.8756],[-75.7666,35.8712],[-75.7617,35.8712],[-75.7617,35.8534]]],[[[-76.02,35.9340],[-76.0128,35.9245],[-76.0198,35.9145],[-76.02,35.9144],[-76.02,35.9340]]],[[[-76.02,35.9524],[-76.014,35.9573],[-76.017,35.946],[-76.02,35.9470],[-76.02,35.9524]]],[[[-75.9067,35.943],[-75.9197,35.9356],[-75.9478,35.9596],[-75.9229,35.9704],[-75.897,35.9763],[-75.897,35.9687],[-75.8936,35.9687],[-75.8936,35.9602],[-75.8827,35.9602],[-75.8932,35.9687],[-75.8815,35.9689],[-75.8787,35.9712],[-75.8816,35.9753],[-75.8764,35.9731],[-75.8704,35.9781],[-75.8653,35.9729],[-75.8734,35.9703],[-75.8725,35.9676],[-75.8684,35.9692],[-75.8694,35.9603],[-75.8964,35.953],[-75.9044,35.9548],[-75.9019,35.9539],[-75.9067,35.943]]],[[[-76.02,35.9602],[-76.02,35.9653],[-76.0193,35.9649],[-76.016,35.9602],[-76.02,35.9602]]],[[[-75.8719,36.279],[-75.8775,36.28],[-75.8671,36.2735],[-75.8757,36.2707],[-75.8769,36.2647],[-75.8711,36.2601],[-75.8706,36.2648],[-75.8611,36.264],[-75.8732,36.2543],[-75.8682,36.2452],[-75.8639,36.2456],[-75.8656,36.2374],[-75.8612,36.2319],[-75.866,36.2284],[-75.8623,36.2291],[-75.8519,36.2191],[-75.8547,36.2183],[-75.8496,36.2156],[-75.8496,36.2129],[-75.8528,36.2082],[-75.8496,36.2107],[-75.8459,36.2005],[-75.8409,36.201],[-75.84,36.1966],[-75.8468,36.1918],[-75.8429,36.1924],[-75.8398,36.1882],[-75.8426,36.1831],[-75.84,36.1769],[-75.8286,36.1662],[-75.8325,36.1646],[-75.8251,36.1636],[-75.8252,36.1656],[-75.8216,36.1634],[-75.821,36.16],[-75.8259,36.1596],[-75.8276,36.1602],[-75.8296,36.1556],[-75.8224,36.1546],[-75.8262,36.1479],[-75.8077,36.1315],[-75.8106,36.129],[-75.8142,36.1336],[-75.8114,36.1225],[-75.8045,36.1201],[-75.8057,36.1201],[-75.8057,36.1133],[-75.7986,36.1181],[-75.8031,36.0991],[-75.7894,36.079],[-75.7964,36.0746],[-75.794,36.0718],[-75.8448,36.1001],[-75.8496,36.1081],[-75.8507,36.1076],[-75.8681,36.1284],[-75.8639,36.1379],[-75.8646,36.1556],[-75.8684,36.1734],[-75.8716,36.1734],[-75.8716,36.1794],[-75.9086,36.2088],[-75.9117,36.2177],[-75.9093,36.2266],[-75.9238,36.2443],[-75.9375,36.2557],[-75.9595,36.2565],[-75.9736,36.2443],[-75.9538,36.2443],[-75.9488,36.2266],[-75.9479,36.2088],[-75.9595,36.1955],[-75.9595,36.1911],[-75.9508,36.1911],[-75.9375,36.1812],[-75.9155,36.1707],[-75.9141,36.1646],[-75.9326,36.1651],[-76.0099,36.1851],[-76.0141,36.1823],[-76.019,36.1911],[-76.02,36.1922],[-76.02,36.31],[-76.0046,36.31],[-76.0034,36.3073],[-75.9595,36.3043],[-75.9595,36.31],[-75.8926,36.31],[-75.8834,36.2859],[-75.8698,36.2837],[-75.8719,36.279]],[[-75.825,36.16],[-75.8251,36.1636],[-75.8251,36.1636],[-75.825,36.16]],[[-75.9375,36.2989],[-75.94,36.2974],[-75.9472,36.2797],[-75.9515,36.2797],[-75.938,36.2689],[-75.9595,36.2681],[-75.9814,36.2643],[-75.9814,36.262],[-75.9375,36.262],[-75.9375,36.2797],[-75.9321,36.2797],[-75.9375,36.2841],[-75.9375,36.2989]],[[-75.9766,36.2974],[-75.9595,36.2836],[-75.9595,36.2974],[-75.9766,36.2974]],[[-75.9895,36.2974],[-75.9814,36.291],[-75.9814,36.2974],[-75.9895,36.2974]],[[-75.8522,36.1379],[-75.8367,36.1379],[-75.8496,36.1426],[-75.8522,36.1379]],[[-75.9814,36.2158],[-75.9884,36.2088],[-75.9814,36.2024],[-75.9717,36.2088],[-75.9651,36.2233],[-75.9814,36.2158]],[[-75.9155,36.2487],[-75.9155,36.2443],[-75.9101,36.2443],[-75.9155,36.2487]]],[[[-75.8379,36.2088],[-75.829,36.1897],[-75.843,36.2072],[-75.8421,36.2088],[-75.8379,36.2088]]],[[[-75.8722,36.2646],[-75.8714,36.261],[-75.8763,36.2645],[-75.8738,36.2705],[-75.8714,36.268],[-75.8683,36.2678],[-75.8735,36.2708],[-75.865,36.2725],[-75.8644,36.2789],[-75.862,36.2662],[-75.8644,36.2661],[-75.8647,36.2688],[-75.8661,36.267],[-75.8646,36.266],[-75.8722,36.2646]]],[[[-75.8369,36.2741],[-75.8378,36.2715],[-75.8423,36.2747],[-75.8425,36.2795],[-75.8307,36.2777],[-75.8369,36.2741]]],[[[-75.8615,36.2777],[-75.8583,36.2762],[-75.8622,36.2758],[-75.8625,36.2792],[-75.8694,36.282],[-75.8651,36.2867],[-75.8588,36.2835],[-75.8615,36.2777]]],[[[-75.8436,36.2893],[-75.8418,36.2927],[-75.8313,36.2867],[-75.8424,36.2886],[-75.8421,36.2859],[-75.8436,36.2893]]],[[[-75.8421,36.3012],[-75.8458,36.3063],[-75.8415,36.3067],[-75.8299,36.3003],[-75.8321,36.2986],[-75.8379,36.2973],[-75.8408,36.3002],[-75.8374,36.303],[-75.8422,36.3051],[-75.8421,36.3012]]],[[[-75.6309,35.8643],[-75.6325,35.8696],[-75.6364,35.8667],[-75.6402,35.87],[-75.6356,35.8762],[-75.6381,35.8713],[-75.6354,35.8709],[-75.6319,35.883],[-75.6284,35.8825],[-75.6312,35.8874],[-75.624,35.8753],[-75.6244,35.873],[-75.6232,35.8728],[-75.6209,35.8674],[-75.6237,35.8672],[-75.6138,35.8513],[-75.6309,35.8643]]],[[[-75.6676,35.9254],[-75.6592,35.9193],[-75.6636,35.9115],[-75.6698,35.9114],[-75.669,35.9011],[-75.6598,35.8998],[-75.6593,35.8969],[-75.6574,35.8986],[-75.6613,35.9031],[-75.65,35.9036],[-75.649,35.9068],[-75.6435,35.9068],[-75.6344,35.8907],[-75.6375,35.8859],[-75.6331,35.8876],[-75.6306,35.8838],[-75.6334,35.8845],[-75.6396,35.8744],[-75.6416,35.8791],[-75.645,35.8801],[-75.6402,35.8744],[-75.6418,35.8675],[-75.6372,35.8578],[-75.6198,35.8472],[-75.6166,35.8405],[-75.6223,35.8454],[-75.6247,35.8434],[-75.6171,35.8396],[-75.6164,35.83],[-75.6504,35.83],[-75.648,35.8338],[-75.6532,35.831],[-75.6557,35.8334],[-75.6521,35.8387],[-75.6559,35.8366],[-75.6587,35.8433],[-75.6635,35.8502],[-75.6585,35.8586],[-75.6598,35.8689],[-75.6635,35.8674],[-75.6633,35.8742],[-75.672,35.883],[-75.6817,35.8841],[-75.6827,35.8889],[-75.6762,35.8844],[-75.6787,35.8873],[-75.6756,35.8882],[-75.6794,35.8884],[-75.6794,35.8872],[-75.6805,35.8934],[-75.6834,35.8941],[-75.682,35.8913],[-75.6845,35.8909],[-75.6968,35.9016],[-75.6969,35.9102],[-75.7026,35.916],[-75.7229,35.9253],[-75.7277,35.9345],[-75.7237,35.934],[-75.7277,35.9348],[-75.7186,35.9393],[-75.6999,35.9377],[-75.6676,35.9254]],[[-75.6438,35.8891],[-75.6519,35.8955],[-75.6519,35.8891],[-75.6438,35.8891]],[[-75.67,35.9068],[-75.6738,35.91],[-75.6738,35.9068],[-75.67,35.9068]],[[-75.6519,35.8534],[-75.6562,35.8534],[-75.6519,35.8499],[-75.6519,35.8534]],[[-75.6475,35.8712],[-75.6519,35.8747],[-75.6519,35.8712],[-75.6475,35.8712]]],[[[-75.6103,35.8841],[-75.6067,35.8849],[-75.6103,35.885],[-75.6082,35.8898],[-75.6012,35.8891],[-75.6047,35.8846],[-75.6103,35.8841]]],[[[-75.7002,36.0259],[-75.7006,36.0324],[-75.6962,36.031],[-75.6976,36.0257],[-75.6962,36.0259],[-75.6957,36.0207],[-75.698,36.0204],[-75.7016,36.0152],[-75.7035,36.0151],[-75.7016,36.0163],[-75.6999,36.0213],[-75.7011,36.0193],[-75.7117,36.0245],[-75.6988,36.0256],[-75.7002,36.0259]]],[[[-75.7013,36.0334],[-75.7058,36.0405],[-75.7,36.0386],[-75.6994,36.0364],[-75.7013,36.0334]]],[[[-75.6617,36.0262],[-75.5829,35.887],[-75.5556,35.83],[-75.5684,35.83],[-75.5766,35.8351],[-75.5795,35.8393],[-75.5767,35.842],[-75.5796,35.84],[-75.5785,35.8431],[-75.5845,35.8472],[-75.5899,35.8461],[-75.5894,35.8504],[-75.594,35.8526],[-75.5913,35.854],[-75.5953,35.8543],[-75.5956,35.8657],[-75.5979,35.8642],[-75.5999,35.8754],[-75.6021,35.874],[-75.5982,35.8882],[-75.6038,35.8959],[-75.5985,35.8955],[-75.6033,35.9001],[-75.6016,35.9034],[-75.6158,35.8983],[-75.6186,35.8939],[-75.6222,35.8964],[-75.6215,35.9003],[-75.6169,35.8985],[-75.6105,35.9012],[-75.6125,35.9055],[-75.6079,35.9027],[-75.609,35.9068],[-75.6078,35.9073],[-75.6057,35.9037],[-75.5997,35.9081],[-75.6211,35.9336],[-75.6256,35.9419],[-75.622,35.9381],[-75.6247,35.9425],[-75.6219,35.9403],[-75.6214,35.9439],[-75.6196,35.9408],[-75.6213,35.9441],[-75.626,35.9422],[-75.6468,35.9668],[-75.6685,35.9729],[-75.6676,35.978],[-75.6626,35.9783],[-75.6734,35.9879],[-75.6716,35.9922],[-75.6671,35.9958],[-75.6738,35.9958],[-75.6738,35.9913],[-75.6767,35.9902],[-75.6743,35.9965],[-75.6792,35.999],[-75.6783,36.0021],[-75.682,35.9956],[-75.6863,36.0064],[-75.6899,36.0066],[-75.6878,35.9982],[-75.6946,36.0002],[-75.6971,35.9941],[-75.711,36.0034],[-75.7167,36.0037],[-75.7178,36.0082],[-75.7285,36.005],[-75.7277,36.0222],[-75.7235,36.0239],[-75.7105,36.021],[-75.7084,36.0116],[-75.7015,36.0089],[-75.7017,36.0139],[-75.6961,36.0162],[-75.6919,36.0245],[-75.6884,36.0153],[-75.6806,36.0142],[-75.6805,36.0181],[-75.6916,36.0506],[-75.6997,36.0616],[-75.7028,36.0622],[-75.7007,36.0596],[-75.7067,36.0529],[-75.719,36.0464],[-75.7234,36.0475],[-75.7206,36.0507],[-75.7244,36.0479],[-75.7211,36.0548],[-75.726,36.0468],[-75.7309,36.0496],[-75.7309,36.0462],[-75.7369,36.0478],[-75.7349,36.0457],[-75.7263,36.0454],[-75.7327,36.0407],[-75.7379,36.0417],[-75.7407,36.0846],[-75.7343,36.0846],[-75.7397,36.0885],[-75.7411,36.0873],[-75.7482,36.1125],[-75.7397,36.1024],[-75.7397,36.1314],[-75.7449,36.1322],[-75.7447,36.1387],[-75.7572,36.1666],[-75.7573,36.1812],[-75.7738,36.2277],[-75.7783,36.234],[-75.7787,36.2291],[-75.7877,36.2285],[-75.7853,36.2349],[-75.7928,36.2309],[-75.7872,36.2346],[-75.7903,36.2346],[-75.7881,36.2386],[-75.785,36.2356],[-75.7818,36.2441],[-75.7907,36.2523],[-75.7916,36.259],[-75.794,36.2604],[-75.7943,36.2573],[-75.7996,36.261],[-75.7973,36.266],[-75.7995,36.2632],[-75.8035,36.2672],[-75.8018,36.2766],[-75.8067,36.2907],[-75.8116,36.2952],[-75.8149,36.3031],[-75.8126,36.2951],[-75.8174,36.2921],[-75.8173,36.2923],[-75.8206,36.2922],[-75.8182,36.3023],[-75.8207,36.3007],[-75.8162,36.3056],[-75.8190,36.31],[-75.8102,36.31],[-75.8057,36.3064],[-75.8057,36.31],[-75.8019,36.31],[-75.7857,36.2623],[-75.7175,36.1132],[-75.6617,36.0262]],[[-75.8173,36.2924],[-75.8172,36.2924],[-75.8173,36.2923],[-75.8173,36.2924]],[[-75.8164,36.2956],[-75.8172,36.2963],[-75.8172,36.2924],[-75.8164,36.2956]],[[-75.7217,36.0491],[-75.7178,36.0491],[-75.7178,36.0522],[-75.7217,36.0491]],[[-75.6813,36.0136],[-75.6738,36.0048],[-75.6738,36.0174],[-75.6813,36.0136]],[[-75.6985,36.0136],[-75.6958,36.0136],[-75.6958,36.0157],[-75.6985,36.0136]],[[-75.7178,36.0717],[-75.7254,36.0669],[-75.7178,36.0592],[-75.7178,36.0669],[-75.7126,36.0669],[-75.7178,36.0717]],[[-75.7178,36.1024],[-75.7178,36.1078],[-75.7245,36.1024],[-75.7178,36.1024]],[[-75.5859,35.8891],[-75.5915,35.8891],[-75.5859,35.8847],[-75.5859,35.8891]]],[[[-75.7935,36.2411],[-75.7932,36.237],[-75.7949,36.2473],[-75.791,36.2432],[-75.7935,36.2411]]],[[[-75.7969,36.25],[-75.8041,36.2479],[-75.7991,36.2539],[-75.8013,36.2595],[-75.7922,36.2546],[-75.7969,36.25]]],[[[-75.8212,36.2706],[-75.8173,36.2676],[-75.8263,36.2601],[-75.8222,36.265],[-75.8212,36.2706]]],[[[-75.8311,36.2974],[-75.8276,36.2974],[-75.8273,36.2995],[-75.8276,36.3021],[-75.8292,36.3008],[-75.8335,36.3037],[-75.8246,36.303],[-75.8276,36.3028],[-75.8256,36.3011],[-75.8271,36.2968],[-75.8272,36.2989],[-75.8282,36.2939],[-75.833,36.2948],[-75.8311,36.2974]]],[[[-75.8372,36.31],[-75.8308,36.31],[-75.8314,36.3084],[-75.8372,36.3096],[-75.8372,36.31]]],[[[-75.8222,36.31],[-75.821,36.3093],[-75.8257,36.3089],[-75.8263,36.31],[-75.8222,36.31]]]]};window.__ROADS={"nc12_duck":{"speed":30,"land":"bar","pts":[[36.2045,-75.7655],[36.1971,-75.763],[36.1886,-75.7597],[36.1826,-75.7552],[36.1746,-75.7563],[36.1696,-75.7556],[36.164,-75.753],[36.156,-75.7475],[36.148,-75.744],[36.1412,-75.7375],[36.133,-75.733],[36.122,-75.7265],[36.112,-75.721],[36.1023,-75.7146]]},"beach_rd":{"speed":35,"land":"bar","pts":[[36.1023,-75.7146],[36.09,-75.702],[36.078,-75.695],[36.0696,-75.6923],[36.0646,-75.689],[36.056,-75.683],[36.0468,-75.6772],[36.0396,-75.6727],[36.0322,-75.6681],[36.0259,-75.6643],[36.0219,-75.662],[36.016,-75.6586],[36.0101,-75.6549],[36.0019,-75.65],[35.9962,-75.6467],[35.9898,-75.6427],[35.978,-75.6365],[35.9671,-75.6297],[35.9486,-75.6193],[35.9327,-75.6102],[35.9232,-75.6049],[35.9129,-75.5993],[35.9044,-75.5976]]},"us158_bypass":{"speed":45,"land":"bar","pts":[[36.1023,-75.7146],[36.095,-75.711],[36.085,-75.7065],[36.076,-75.702],[36.066,-75.6955],[36.056,-75.689],[36.045,-75.6815],[36.0387,-75.6759],[36.03,-75.672],[36.02,-75.669],[36.0115,-75.6655],[36.0,-75.6585],[35.988,-75.65],[35.976,-75.641],[35.96,-75.6305],[35.9425,-75.6178],[35.926,-75.6085],[35.9085,-75.601]]},"us158_bridge":{"speed":50,"land":"bar","pts":[[36.1023,-75.7146],[36.099,-75.726],[36.0965,-75.738],[36.0865,-75.7677],[36.0815,-75.796]]},"caratoke":{"speed":55,"land":"main","pts":[[36.0815,-75.796],[36.088,-75.804],[36.095,-75.8115],[36.104,-75.818],[36.115,-75.825],[36.128,-75.833],[36.1416,-75.843],[36.16,-75.854],[36.1836,-75.8643],[36.201,-75.87],[36.22,-75.878],[36.2447,-75.8842],[36.265,-75.89],[36.295,-75.9]]},"colington_rd":{"speed":35,"land":"bar","pts":[[36.0115,-75.6655],[36.013,-75.68],[36.0138,-75.694],[36.0125,-75.703],[36.011,-75.708],[36.006,-75.71],[36.0,-75.706],[35.9979,-75.7022]]},"colington_harbour":{"speed":25,"land":"bar","pts":[[36.011,-75.708],[36.013,-75.715],[36.01,-75.72],[36.0075,-75.72]]},"us64_causeway":{"speed":45,"land":"bar","pts":[[35.9085,-75.601],[35.9044,-75.5976]]},"causeway":{"speed":45,"land":"roa","pts":[[35.9044,-75.5976],[35.899,-75.615],[35.8952,-75.6372],[35.8963,-75.6425],[35.901,-75.656],[35.908,-75.668],[35.9182,-75.6777],[35.924,-75.69],[35.925,-75.703],[35.923,-75.72]]},"ooi_rd":{"speed":40,"land":"bar","pts":[[35.9044,-75.5976],[35.885,-75.5855],[35.87,-75.577],[35.8605,-75.5716],[35.852,-75.5667]]},"ss_dogwood":{"speed":30,"land":"bar","pts":[[36.099,-75.726],[36.108,-75.737],[36.118,-75.74],[36.13,-75.74],[36.1412,-75.7375]]},"kh_rd":{"speed":30,"land":"bar","pts":[[36.076,-75.702],[36.07,-75.715],[36.064,-75.73],[36.06,-75.739]]}};</script>
@@ -682,7 +734,7 @@ function nearestSchool(l,type){let best=null,bd=Infinity;for(const s of SCHOOLS)
 /* ---------- state ---------- */
 const S = {
   db:null, dbReady:false, canWrite:true,
-  listings:new Map(), people:new Map(), saves:new Map(), notes:new Map(), meta:null,
+  listings:new Map(), people:new Map(), saves:new Map(), notes:new Map(), votes:new Map(), meta:null,
   user: store.get("obx.user", null), view:"map", selected:null, shown:120,
   f: (()=>{const f=Object.assign(defaultFilters(), store.get("obx.filters", {}));
     // the old "Radius from FRF" mode became "Commute to FRF"; the old separate drive-time slider is gone
@@ -1334,7 +1386,9 @@ function renderLists(){
   const picks=topPicks();
   tabs.appendChild(chipBtn(`★ Top picks (${picks.length})`,S.listPerson==="__top",()=>{S.listPerson="__top";renderLists();}));
   ppl.forEach(p=>{const n=Object.keys(savesOf(p.id)).length;tabs.appendChild(chipBtn(`${p.name} (${n})`,S.listPerson===p.id,()=>{S.listPerson=p.id;renderLists();}));});
+  {const vt=voteTally().size;tabs.appendChild(chipBtn(`Swipe votes (${vt})`,S.listPerson==="__votes",()=>{S.listPerson="__votes";renderLists();}));tabs.lastChild.classList.add("quiet");}
   if(S.listPerson==="__top"){renderTopPicks(picks);return;}
+  if(S.listPerson==="__votes"){renderVotes();return;}
   const items=Object.entries(savesOf(S.listPerson));const who=(ppl.find(p=>p.id===S.listPerson)||{}).name||"";
   const body=$("#listBody");
   const shareBox=$("#shareBox");
@@ -1505,6 +1559,123 @@ function checkedLabel(sn){
   if(sn.checkedAt){const d=new Date(sn.checkedAt);if(!isNaN(d))return d.toLocaleString("en-US",{timeZone:"America/New_York",month:"short",day:"numeric",hour:"numeric",minute:"2-digit"});}
   const a=String(sn.asOf||"").slice(0,10);if(!a)return "";const d=new Date(a+"T12:00:00");return isNaN(d)?a:d.toLocaleDateString("en-US",{month:"short",day:"numeric"});
 }
+/* ---------- swipe mode (beta) ----------
+   Votes are a shared tally (votes/<person>.json), separate from anyone's saved list. */
+const SW={deck:[],i:0,undo:[],pending:{},flushT:null,busy:false};
+function myVoteItems(){if(!S.user)return {};const base=Object.assign({},((S.votes.get(S.user.id)||{}).items)||{});for(const id in SW.pending){if(SW.pending[id]===0)delete base[id];else base[id]={v:SW.pending[id],at:new Date().toISOString()};}return base;}
+function voteTally(){
+  const t=new Map();const people=new Map(peopleList().map(p=>[p.id,p.name]));
+  const docs=new Map(S.votes);if(S.user)docs.set(S.user.id,{name:S.user.name,items:myVoteItems()});
+  for(const [pid,d] of docs){const nm=people.get(pid)||(d&&d.name)||pid;for(const [lid,it] of Object.entries((d&&d.items)||{})){if(!it||!it.v)continue;const x=t.get(lid)||{up:0,down:0,voters:[]};if(it.v>0)x.up++;else x.down++;x.voters.push({name:nm,v:it.v});t.set(lid,x);}}
+  for(const x of t.values())x.net=x.up-x.down;return t;
+}
+function castVote(lid,v){SW.pending[lid]=v;clearTimeout(SW.flushT);SW.flushT=setTimeout(flushVotes,1500);}
+async function flushVotes(){
+  clearTimeout(SW.flushT);if(!S.user||!S.db||!Object.keys(SW.pending).length)return;
+  const pid=S.user.id,sent=Object.assign({},SW.pending);
+  const cur=S.votes.get(pid);const items=Object.assign({},(cur&&cur.items)||{});
+  for(const id in sent){if(sent[id]===0)delete items[id];else items[id]={v:sent[id],at:new Date().toISOString()};}
+  const ok=await write(()=>S.db.doc("votes/"+pid).set({name:S.user.name,items}));
+  if(ok){for(const id in sent)if(SW.pending[id]===sent[id])delete SW.pending[id];}
+}
+function openSwipe(){
+  if(!needUser())return;
+  const mine=myVoteItems();
+  SW.deck=RESULTS.filter(l=>!mine[l.id]);SW.total=RESULTS.length;SW.i=0;SW.undo=[];
+  $("#swipe").hidden=false;document.body.classList.add("swiping");
+  try{history.pushState({obxSwipe:1},"");}catch(e){}
+  renderSwipe();
+  if(!store.get("obx.swipeHelp",false)){store.set("obx.swipeHelp",true);swipeHelp();}
+}
+function closeSwipe(fromBack){
+  if($("#swipe").hidden)return;flushVotes();
+  $("#swipe").hidden=true;document.body.classList.remove("swiping");
+  if(fromBack!==true&&history.state&&history.state.obxSwipe){try{history.back();}catch(e){}}
+  render();
+}
+function swipeHelp(){toast("Swipe right (or ♥) to upvote, left (or ✕) to downvote. Tap the photo's sides to flip through pictures.");}
+function swCard(l,top){
+  const d=derive(l),tal=voteTally().get(l.id);
+  const dom=domDays(l);
+  const facts=l.kind==="lot"?[l.acres?l.acres+" acres":""]:[l.beds!=null?l.beds+" bd":"",l.baths!=null?l.baths+" ba":"",l.sqft?l.sqft.toLocaleString()+" sq ft":"",l.acres?l.acres+" ac":""];
+  const ph=listingPhoto(l,0);
+  return `<div class="swc${top?" top":""}" data-id="${esc(l.id)}">
+    <div class="swph">${ph?`<img alt="Listing photo of ${esc(l.address)}" referrerpolicy="no-referrer" draggable="false" src="${esc(ph)}">`:`<div class="swaer">${aerial(l,640,640,18)}</div>`}<div class="swbars"></div><div class="swtap l"></div><div class="swtap r"></div></div>
+    <div class="swstamp up">LIKE</div><div class="swstamp down">NOPE</div>
+    <div class="swinfo">
+      <div class="swp num">${money(l.price)}${l.prevPrice&&l.prevPrice>l.price?` <small class="drop">▼ ${money(l.prevPrice-l.price)}</small>`:""}</div>
+      <div class="swa">${esc(l.address)}</div>
+      <div class="swm">${esc(l.area||l.town)} · ${esc(KINDNAME[l.kind]||"")}${l.status!=="Active"?` · <span class="pill ${esc(l.status)}">${esc(l.status)}</span>`:""}</div>
+      <div class="swf num">${facts.filter(Boolean).map(esc).join(" · ")}${l.sqft&&l.price&&l.kind!=="lot"?` · $${Math.round(l.price/l.sqft)}/sq ft`:""}</div>
+      <div class="swf num">🚗 ~${d.commute} min to FRF${dom!=null?` · 📅 ${dom===0?"listed today":dom+" days on market"}`:""}</div>
+      ${tal?`<div class="swf num">👍 ${tal.up} · 👎 ${tal.down}</div>`:""}
+    </div></div>`;
+}
+function renderSwipe(){
+  const deck=$("#swDeck");const left=SW.deck.length-SW.i;
+  $("#swCount").textContent=left>0?` · ${left} to go`:"";
+  if(left<=0){
+    const voted=Object.keys(myVoteItems()).length;
+    deck.innerHTML=`<div class="swdone"><div class="big">🏁</div><b>${SW.total?"That's every listing in your filters.":"No listings match your filters."}</b><p>${voted} vote${voted===1?"":"s"} from you so far. Change the filters on the map for a new stack, or see how everyone voted.</p><div class="row"><button class="btn pri" type="button" id="swSeeVotes">See swipe votes</button><button class="btn" type="button" id="swAgain">Re-swipe these</button></div></div>`;
+    $("#swSeeVotes").onclick=()=>{closeSwipe();S.listPerson="__votes";go("lists");};
+    $("#swAgain").onclick=()=>{SW.deck=RESULTS.slice();SW.i=0;SW.undo=[];renderSwipe();};
+    ["swDown","swUp","swInfo"].forEach(id=>$("#"+id).disabled=true);$("#swUndo").disabled=!SW.undo.length;return;
+  }
+  ["swDown","swUp","swInfo"].forEach(id=>$("#"+id).disabled=false);$("#swUndo").disabled=!SW.undo.length;
+  const cur=SW.deck[SW.i],next=SW.deck[SW.i+1];
+  deck.innerHTML=(next?swCard(next,false):"")+swCard(cur,true);
+  wireSwCard(deck.querySelector(".swc.top"),cur);
+}
+function wireSwCard(card,l){
+  const img=card.querySelector(".swph img"),bars=card.querySelector(".swbars");
+  let pi=0,known=1,ended=false;
+  const drawBars=()=>{bars.innerHTML=img?Array.from({length:ended?known:known+1},(_,i)=>`<i class="${i===pi?"on":""}${!ended&&i===known?" maybe":""}"></i>`).join(""):"";};
+  const probe=i=>{if(ended||!img)return;const t=new Image();t.referrerPolicy="no-referrer";t.onload=()=>{if(i>=known){known=i+1;drawBars();probe(i+1);}};t.onerror=()=>{ended=true;drawBars();};t.src=listingPhoto(l,i);};
+  if(img){img.onerror=()=>{if(pi===0){card.querySelector(".swph").insertAdjacentHTML("afterbegin",`<div class="swaer">${aerial(l,640,640,18)}</div>`);img.remove();bars.innerHTML="";}else{pi=0;img.src=listingPhoto(l,0);drawBars();}};probe(1);}
+  drawBars();
+  const flip=dir=>{if(!img)return;const n=pi+dir;if(n<0)return;if(n>=known&&ended)return;pi=n;img.src=listingPhoto(l,pi);drawBars();};
+  card._flip=flip;
+  let sx=0,sy=0,dx=0,dy=0,t0=0,down=false,moved=false;
+  const up=card.querySelector(".swstamp.up"),dn=card.querySelector(".swstamp.down");
+  card.addEventListener("pointerdown",e=>{if(SW.busy)return;down=true;moved=false;sx=e.clientX;sy=e.clientY;dx=dy=0;t0=performance.now();card.setPointerCapture(e.pointerId);card.style.transition="none";});
+  card.addEventListener("pointermove",e=>{if(!down)return;dx=e.clientX-sx;dy=e.clientY-sy;if(Math.abs(dx)+Math.abs(dy)>8)moved=true;card.style.transform=`translate(${dx}px,${dy*0.25}px) rotate(${dx/18}deg)`;up.style.opacity=Math.max(0,Math.min(1,dx/100));dn.style.opacity=Math.max(0,Math.min(1,-dx/100));});
+  const end=e=>{if(!down)return;down=false;const v=Math.abs(dx)/Math.max(1,performance.now()-t0);
+    if(dx>110||(dx>40&&v>0.6))return swVote(1);
+    if(dx<-110||(dx<-40&&v>0.6))return swVote(-1);
+    card.style.transition="transform .2s";card.style.transform="";up.style.opacity=dn.style.opacity=0;
+    if(!moved){const r=card.getBoundingClientRect();const x=(e.clientX-r.left)/r.width;const y=e.clientY-r.top;if(y<r.height*0.68)flip(x<0.35?-1:1);}};
+  card.addEventListener("pointerup",end);card.addEventListener("pointercancel",()=>{down=false;card.style.transform="";});
+}
+function swVote(v){
+  if(SW.busy||SW.i>=SW.deck.length)return;SW.busy=true;
+  const l=SW.deck[SW.i],card=$("#swDeck .swc.top");const prev=myVoteItems()[l.id];
+  SW.undo.push({id:l.id,prev:prev?prev.v:0});castVote(l.id,v);
+  if(card){card.style.transition="transform .28s ease-in, opacity .28s";card.style.transform=`translate(${v*innerWidth*1.1}px,40px) rotate(${v*24}deg)`;card.style.opacity="0";const st=card.querySelector(v>0?".swstamp.up":".swstamp.down");if(st)st.style.opacity=1;}
+  setTimeout(()=>{SW.i++;SW.busy=false;renderSwipe();},card?260:0);
+}
+function swUndo(){const u=SW.undo.pop();if(!u)return;castVote(u.id,u.prev);SW.i=Math.max(0,SW.i-1);if(SW.deck[SW.i]&&SW.deck[SW.i].id!==u.id){const l=S.listings.get(u.id);if(l)SW.deck.splice(SW.i,0,l);}renderSwipe();}
+function wireSwipe(){
+  $("#swipeBtn").onclick=openSwipe;$("#swClose").onclick=()=>closeSwipe();$("#swHelp").onclick=swipeHelp;
+  $("#swUp").onclick=()=>swVote(1);$("#swDown").onclick=()=>swVote(-1);$("#swUndo").onclick=swUndo;
+  $("#swInfo").onclick=()=>{const l=SW.deck[SW.i];if(!l)return;closeSwipe();setTimeout(()=>{go("map");if(map)map.setView([l.lat,l.lng],15);select(l.id,false);},50);};
+  document.addEventListener("keydown",e=>{if($("#swipe").hidden)return;if(e.key==="ArrowRight"){e.preventDefault();swVote(1);}else if(e.key==="ArrowLeft"){e.preventDefault();swVote(-1);}else if(e.key===" "){e.preventDefault();const c=$("#swDeck .swc.top");if(c&&c._flip)c._flip(1);}else if(e.key==="Backspace"){e.preventDefault();swUndo();}else if(e.key==="Escape"){e.stopPropagation();closeSwipe();}},true);
+  window.addEventListener("popstate",()=>{if(!$("#swipe").hidden&&!(history.state&&history.state.obxSwipe))closeSwipe(true);});
+  window.addEventListener("pagehide",flushVotes);document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="hidden")flushVotes();});
+}
+/* Lists tab: swipe-vote ranking (deliberately low-key) */
+function renderVotes(){
+  const body=$("#listBody");const sb=$("#shareBox");if(sb)sb.innerHTML="";
+  const t=voteTally();const rows=[...t].map(([id,x])=>({id,x,l:S.listings.get(id)})).filter(r=>r.l).sort((a,b)=>b.x.net-a.x.net||b.x.up-a.x.up||(a.l.price||0)-(b.l.price||0));
+  if(!rows.length){body.innerHTML=`<p class="lede">No swipe votes yet. Tap <b>Swipe</b> on the map page to flip through the listings in your filters and vote.</p>`;return;}
+  const mine=myVoteItems();const up=Object.values(mine).filter(v=>v.v>0).length,down=Object.values(mine).filter(v=>v.v<0).length;
+  body.innerHTML=`<p class="lede" style="margin:0">Every listing anyone has swiped on, ranked by net votes (upvotes minus downvotes). Separate from saved lists.${S.user?` You: ${up} up, ${down} down.`:""}</p>
+  <div class="vlist">${rows.map((r,i)=>{const l=r.l,ph=listingPhoto(l,0);return `<div class="vrow">
+    <span class="vrank num">${i+1}</span>${ph?`<img alt="" loading="lazy" referrerpolicy="no-referrer" src="${esc(ph)}" onerror="this.style.visibility='hidden'">`:`<span class="vimg"></span>`}
+    <div class="vmain"><div><b class="num">${money(l.price)}</b> · ${esc(l.address)}</div><div class="m">${esc(l.area||l.town)} · ${esc(factLine(l))}${l.status!=="Active"?" · "+esc(l.status):""}</div>
+      <div class="m">${r.x.voters.map(v=>`${esc(v.name)} ${v.v>0?"👍":"👎"}`).join(", ")}</div></div>
+    <div class="vscore num"><b>${r.x.net>0?"+":""}${r.x.net}</b><small>👍${r.x.up} 👎${r.x.down}</small><button class="btn sm" type="button" data-open="${esc(l.id)}">Map</button></div></div>`;}).join("")}</div>`;
+  body.querySelectorAll("[data-open]").forEach(b=>b.onclick=()=>{go("map");const l=S.listings.get(b.dataset.open);if(map)map.setView([l.lat,l.lng],15);select(l.id,false);});
+}
 /* ---------- address search with autocomplete ---------- */
 const ABBR={dr:"drive",st:"street",rd:"road",ln:"lane",ct:"court",ave:"avenue",av:"avenue",trl:"trail",tr:"trail",hwy:"highway",blvd:"boulevard",cir:"circle",pl:"place",pkwy:"parkway",ter:"terrace",n:"north",s:"south",e:"east",w:"west",kdh:"kill devil hills"};
 const normQ=s=>String(s||"").toLowerCase().replace(/[.,#]/g," ").split(/\s+/).filter(Boolean).map(t=>ABBR[t]||t).join(" ");
@@ -1552,6 +1723,7 @@ function wireSearch(){
   clr.onclick=()=>{inp.value="";clr.hidden=true;close();inp.focus();};
 }
 function wire(){
+  wireSwipe();
   {const kb=$("#keyBtn"),kp=$("#keyPanel");
    const setKey=o=>{kp.hidden=!o;kb.setAttribute("aria-expanded",String(o));kb.setAttribute("aria-pressed",String(o));};
    kb.onclick=e=>{e.stopPropagation();setKey(kp.hidden);};
@@ -1612,7 +1784,7 @@ function makeLocalDb(){
 function makeGitHubDb(token){
   const API="https://api.github.com/repos/obxhunt/obxhunt-data";
   const H={"Authorization":"Bearer "+token,"Accept":"application/vnd.github+json","X-GitHub-Api-Version":"2022-11-28"};
-  const DIR={people:"people",saves:"saves",notes:"notes",listings:"added"};
+  const DIR={people:"people",saves:"saves",notes:"notes",listings:"added",votes:"votes"};
   const cache=new Map(); // path -> {sha,data}
   const base=snapshotSets();
   const subs=[]; let etag=null, polling=false, firstDone=false, failed=false, emptyRepo=false, noBranch=false;
@@ -1641,7 +1813,7 @@ function makeGitHubDb(token){
       if(!r.ok)return;
       etag=r.headers.get("ETag");emptyRepo=false;
       const tree=await r.json();const seen=new Set();
-      const want=(tree.tree||[]).filter(t=>t.type==="blob"&&/^(people|saves|notes|added|patches)\/[^/]+\.json$/.test(t.path));
+      const want=(tree.tree||[]).filter(t=>t.type==="blob"&&/^(people|saves|notes|added|patches|votes)\/[^/]+\.json$/.test(t.path));
       await Promise.all(want.map(async t=>{seen.add(t.path);const cur=cache.get(t.path);if(cur&&cur.sha===t.sha)return;
         const b=await fetch(API+"/git/blobs/"+t.sha,{headers:H});if(!b.ok)return;const j=await b.json();
         try{cache.set(t.path,{sha:t.sha,data:JSON.parse(dec(j.content))});}catch(e){}}));
@@ -1722,6 +1894,7 @@ function subscribe(){
   keep(db.collection("listings").limit(1000).onSnapshot(snap=>{fromDocs=new Map(snap.docs.map(d=>[d.id,Object.assign({},d.data(),{id:d.id,_ref:"listings/"+d.id})]));gotDocs=true;rebuild();},onErr));
   keep(db.collection("people").limit(200).onSnapshot(snap=>{S.people=new Map(snap.docs.map(d=>[d.id,d.data()]));render();},onErr));
   keep(db.collection("saves").limit(200).onSnapshot(snap=>{S.saves=new Map(snap.docs.map(d=>[d.id,d.data()]));render();},onErr));
+  keep(db.collection("votes").limit(200).onSnapshot(snap=>{S.votes=new Map(snap.docs.map(d=>[d.id,d.data()]));if(S.view==="lists")renderLists();},onErr));
   keep(db.collection("notes").limit(1000).onSnapshot(snap=>{S.notes=new Map(snap.docs.map(d=>[d.id,d.data()]));if(S.selected)renderDrawer();},onErr));
   if(SNAP.asOf||SNAP.checkedAt){const b=$(".brand span");b.textContent=`Wanchese to Grandy · listings checked ${checkedLabel(SNAP)}`;}
   keep(db.doc("meta/refresh").onSnapshot(snap=>{S.meta=snap.exists?snap.data():null;const b=$(".brand span");if(S.meta&&S.meta.lastRun)b.textContent=`Wanchese to Grandy · listings checked ${String(S.meta.lastRun).slice(0,10)}`;},onErr));
