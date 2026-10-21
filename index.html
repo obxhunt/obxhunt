@@ -449,7 +449,8 @@ table.matrix td.best{color:var(--accent);font-weight:700}
                 <p class="hint" style="margin:0">School distance is straight-line to the nearest campus; check Dare or Currituck school zoning for the assigned school. Schools appear on the map while a school distance is set.</p>
               </div>
             </details>
-            <details class="fg">
+            <!-- Amenities filter: hidden for now (no amenity data yet). To bring it back, set SHOW_AMENITY_FILTER = true in app.js. -->
+            <details class="fg" id="amenityGroup" hidden>
               <summary>Amenities <span class="sv" id="sv-amen"></span></summary>
               <div class="fbody">
                 <div class="chips" id="tagChips"></div>
@@ -726,7 +727,7 @@ function passes(l){
   if(f.acres && !(l.acres>=f.acres)) return false;
   if(f.elem<15 && l.elem.d>f.elem) return false;
   if(f.high<25 && l.high.d>f.high) return false;
-  if(f.tags.length){const t=l.tags||{};for(const k of f.tags) if(!t[k]) return false;}
+  if(SHOW_AMENITY_FILTER&&f.tags.length){const t=l.tags||{};for(const k of f.tags) if(!t[k]) return false;}
   if(f.favOnly && !isMine(l.id)) return false;
   if(f.savedAny && !saversOf(l.id).length) return false;
   if(f.topPicks && saversOf(l.id).length<2) return false;
@@ -970,6 +971,7 @@ function buildControls(){
   $("#commute").value=Math.min(f.commute,60);$("#commuteVal").textContent="≤ "+f.commute+" min";
   $("#elem").value=f.elem;$("#elemVal").textContent=f.elem>=15?"Any":"≤ "+f.elem+" mi";
   $("#high").value=f.high;$("#highVal").textContent=f.high>=25?"Any":"≤ "+f.high+" mi";
+  const ag=$("#amenityGroup");if(ag)ag.hidden=!SHOW_AMENITY_FILTER;
   const tg=$("#tagChips");tg.innerHTML="";
   TAGS.forEach(([k,n])=>tg.appendChild(chipBtn(n,f.tags.includes(k),()=>{f.tags=f.tags.includes(k)?f.tags.filter(x=>x!==k):[...f.tags,k];changed();})));
   const dc=$("#domChips");if(dc){dc.innerHTML="";DOMS.forEach(([k,n])=>dc.appendChild(chipBtn(n,f.dom===k,()=>{f.dom=f.dom===k?"":k;changed();})));}
@@ -1005,7 +1007,7 @@ function chipsOverlay(){
   if(f.acres) add("Lot",f.acres+"+ ac",()=>{f.acres=0;changed();});
   if(f.elem<15) add("Elem school",`≤ ${f.elem} mi`,()=>{f.elem=15;changed();});
   if(f.high<25) add("High school",`≤ ${f.high} mi`,()=>{f.high=25;changed();});
-  f.tags.forEach(t=>add("Has",TAGNAME[t],()=>{f.tags=f.tags.filter(x=>x!==t);changed();}));
+  if(SHOW_AMENITY_FILTER)f.tags.forEach(t=>add("Has",TAGNAME[t],()=>{f.tags=f.tags.filter(x=>x!==t);changed();}));
   const defSt=["Active","Pending","Unverified"];if(f.statuses.slice().sort().join()!==defSt.slice().sort().join()) add("Status",f.statuses.join(", "),()=>{f.statuses=defSt;changed();});
   if(f.favOnly) add("List",(S.user?S.user.name:"My")+"'s saves",()=>{f.favOnly=false;changed();});
   if(f.savedAny) add("List","Saved by family",()=>{f.savedAny=false;changed();});
@@ -1481,6 +1483,9 @@ async function submitAdd(e){
 }
 
 /* ---------- wiring ---------- */
+// Amenities filter is hidden until amenity data exists (family tags on listings, or a data source).
+// Flip to true to show the filter section again; the tagging buttons on each listing stay either way.
+const SHOW_AMENITY_FILTER = false;
 const DOMS=[["new","New this week",0,7],["30","Under 30 days",0,29],["90","Under 90 days",0,89],["90p","90+ days",90,1e9],["180p","6+ months",180,1e9]];
 function domDays(l){if(!l.listedAt)return null;const t=new Date().toLocaleDateString("en-CA",{timeZone:"America/New_York"});const d=Math.round((Date.parse(t)-Date.parse(l.listedAt))/864e5);return isNaN(d)?null:Math.max(0,d);}
 function domLine(l){
