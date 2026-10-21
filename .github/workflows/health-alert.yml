@@ -1,0 +1,22 @@
+name: Health alert
+# Emails Drew when the listings refresh (in obxhunt-data) reports a problem, an all-clear, or a failed run.
+on:
+  repository_dispatch:
+    types: [health]
+permissions:
+  contents: read
+jobs:
+  send:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm install --no-save --no-package-lock nodemailer@6.9.16
+      - run: node tools/health-alert.mjs
+        env:
+          FAMILY_CODE: ${{ secrets.FAMILY_CODE }}
+          GMAIL_APP_PASSWORD: ${{ secrets.GMAIL_APP_PASSWORD }}
+          ALERT_SUBJECT: ${{ github.event.client_payload.subject }}
+          ALERT_TEXT: ${{ github.event.client_payload.text }}
