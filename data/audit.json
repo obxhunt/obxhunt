@@ -1,10 +1,10 @@
 {
  "note": "Daily spot-check sample for the OBX House Hunt site. Public MLS facts only.",
- "checkedAt": "2026-10-21T16:01:30.774Z",
+ "checkedAt": "2026-10-21T19:01:27.415Z",
  "asOf": "2026-10-21",
  "totals": {
-  "listings": 683,
-  "active": 513,
+  "listings": 687,
+  "active": 517,
   "pending": 162,
   "gone": 0
  },
@@ -15,11 +15,11 @@
   "Harbinger": 3,
   "Kitty Hawk": 71,
   "Southern Shores": 37,
-  "Kill Devil Hills": 226,
+  "Kill Devil Hills": 227,
   "Jarvisburg": 37,
-  "Nags Head": 120,
-  "Duck": 53,
-  "Grandy": 51,
+  "Nags Head": 121,
+  "Duck": 54,
+  "Grandy": 52,
   "Wanchese": 4
  },
  "batch": 1,
@@ -156,7 +156,7 @@
   {
    "address": "805 Harbour View Drive",
    "town": "Kill Devil Hills",
-   "price": 269000,
+   "price": 258000,
    "status": "Active",
    "kind": "lot",
    "beds": null,
@@ -303,7 +303,7 @@
    "baths": 3,
    "sqft": 1216,
    "acres": null,
-   "listedAt": "2025-06-10",
+   "listedAt": "2025-06-09",
    "mls": "129572",
    "url": "https://www.coldwellbanker.com/nc/nags-head/107-w-gray-eagle-st-unit-213/lid-P00800000GtOrFMW6nJGksYqXYdGvWrl6B1SSh7l"
   },
@@ -373,7 +373,7 @@
    "baths": 4,
    "sqft": 1508,
    "acres": null,
-   "listedAt": "2025-07-29",
+   "listedAt": "2025-07-28",
    "mls": "130011",
    "url": "https://www.coldwellbanker.com/nc/kill-devil-hills/1111-cambridge-rd-unit-308-a/lid-P00800000HHLJEGPdjlKLRarewF2TZk56gMv36lC"
   },
@@ -401,7 +401,7 @@
    "baths": 4,
    "sqft": 2137,
    "acres": null,
-   "listedAt": "2025-08-05",
+   "listedAt": "2025-08-04",
    "mls": "130105",
    "url": "https://www.coldwellbanker.com/nc/manteo/2-sailfish-dr/lid-P00800000GwIBfnbh1xkw5uwlwSb6kUlpvEvehiP"
   },
@@ -415,7 +415,7 @@
    "baths": null,
    "sqft": null,
    "acres": 0.51,
-   "listedAt": "2025-08-16",
+   "listedAt": "2025-08-15",
    "mls": "130227",
    "url": "https://www.coldwellbanker.com/nc/nags-head/0-coastal-way-lot-2/lid-P00800000GwrbIE4lKF0NJT2cYRE6orqdXvfT0xl"
   },
@@ -429,7 +429,7 @@
    "baths": null,
    "sqft": null,
    "acres": 0.51,
-   "listedAt": "2025-08-16",
+   "listedAt": "2025-08-15",
    "mls": "130228",
    "url": "https://www.coldwellbanker.com/nc/nags-head/0-coastal-way-lot-3/lid-P00800000GwrbIE4lKF0NJT2cYRE6orqi5APA96X"
   },
@@ -457,7 +457,7 @@
    "baths": 15,
    "sqft": 9893,
    "acres": null,
-   "listedAt": "2025-09-14",
+   "listedAt": "2025-09-13",
    "mls": "130484",
    "url": "https://www.coldwellbanker.com/nc/duck/118-n-baum-trail/lid-P00800000GyMbD6yEZfrGy4IzhZilyGWdpIlP3dI"
   },
@@ -485,7 +485,7 @@
    "baths": 8,
    "sqft": 3525,
    "acres": null,
-   "listedAt": "2025-09-27",
+   "listedAt": "2025-09-26",
    "mls": "130600",
    "url": "https://www.coldwellbanker.com/nc/nags-head/6927-s-virginia-dare-trl/lid-P00800000Gz2Qel5i56EDryeWGmyAsxNHtbvwDvW"
   },
@@ -583,7 +583,7 @@
    "baths": 2,
    "sqft": 888,
    "acres": null,
-   "listedAt": "2025-11-06",
+   "listedAt": "2025-11-05",
    "mls": "130988",
    "url": "https://www.coldwellbanker.com/nc/kill-devil-hills/1701-n-virginia-dare-trl--3c/lid-P00800000H16RNMlD3y08xwfdx2kyW4EZ89sd8RW"
   },
@@ -681,7 +681,7 @@
    "baths": 4,
    "sqft": 2070,
    "acres": null,
-   "listedAt": "2025-12-04",
+   "listedAt": "2025-12-03",
    "mls": "131234",
    "url": "https://www.coldwellbanker.com/nc/kill-devil-hills/1117-cambridge-rd-unit-311f/lid-P00800000HHIoPlVj27j2yRYm5cFUAIg613fp0un"
   },
@@ -695,7 +695,7 @@
    "baths": null,
    "sqft": null,
    "acres": 0.34,
-   "listedAt": "2025-12-10",
+   "listedAt": "2025-12-09",
    "mls": "131266",
    "url": "https://www.coldwellbanker.com/nc/duck/103-duck-landing-ln-lot-49/lid-P00800000H2rU0ZnjY2ArUUTXD3Fo06HxV6vJfI6"
   },
