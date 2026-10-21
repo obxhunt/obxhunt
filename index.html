@@ -1459,10 +1459,10 @@ function renderAlerts(force){
   const pid=S.alertPerson,who=ppl.find(p=>p.id===pid).name,{email,alerts:a}=alertDoc(pid);
   const opt=(arr,val,lab)=>arr.map(v=>`<option value="${v}" ${+val===v?"selected":""}>${lab(v)}</option>`).join("");
   box.innerHTML=`<div class="pcard alerts" style="max-width:620px">
-    <div><b style="font-size:17px">Email alerts</b><p class="hint" style="margin:2px 0 0">After each listings refresh, matching new listings and price drops are emailed to just that person.</p></div>
+    <div><b style="font-size:17px">Email alerts</b><p class="hint" style="margin:2px 0 0">After each listings refresh, matching new listings, plus price drops and status changes on their list, are emailed to just that person.</p></div>
     <div class="chips" id="alPeople">${ppl.map(p=>`<button type="button" class="chip" data-pid="${esc(p.id)}" aria-pressed="${p.id===pid}">${esc(p.name)}${(S.people.get(p.id)||{}).alerts&&(S.people.get(p.id).alerts.on||S.people.get(p.id).alerts.drops)?" ✉":""}</button>`).join("")}</div>
     <label class="f" for="alEmail">${esc(who)}'s email<input type="email" id="alEmail" value="${esc(email)}" placeholder="name@example.com" autocomplete="off"></label>
-    <label class="check"><input type="checkbox" id="alDrops" ${a.drops?"checked":""}> Email ${esc(who)} price drops on anything in their list</label>
+    <label class="check"><input type="checkbox" id="alDrops" ${a.drops?"checked":""}> Email ${esc(who)} price drops and status changes on anything in their list</label>
     <label class="check"><input type="checkbox" id="alOn" ${a.on?"checked":""}> Email ${esc(who)} new listings that match</label>
     <div class="alfields">
       <div class="f">Type<div class="chips" id="alKinds">${KINDS.map(([k,n])=>`<button type="button" class="chip" data-k="${k}" aria-pressed="${a.kinds.includes(k)}">${n}</button>`).join("")}</div></div>
@@ -1479,7 +1479,7 @@ function renderAlerts(force){
       <button class="btn pri" type="button" id="alSave">Save ${esc(who)}'s alerts</button>
       <button class="btn" type="button" id="alCopy">Use my current map filters</button>
     </div>
-    <p class="hint" id="alStatus" style="margin:0">${(a.on||a.drops)&&!email?"Add an email address to turn alerts on.":[a.drops&&email?`Price drops on ${esc(who)}'s list → ${esc(email)}`:"",a.on&&email?`New listings: ${esc(alertSummary(a))} → ${esc(email)}`:""].filter(Boolean).join("<br>")||"Alerts are off."}</p>
+    <p class="hint" id="alStatus" style="margin:0">${(a.on||a.drops)&&!email?"Add an email address to turn alerts on.":[a.drops&&email?`Price drops and status changes on ${esc(who)}'s list → ${esc(email)}`:"",a.on&&email?`New listings: ${esc(alertSummary(a))} → ${esc(email)}`:""].filter(Boolean).join("<br>")||"Alerts are off."}</p>
   </div>`;
   const dirty=()=>{S.alertDirty=true;};
   box.querySelectorAll("#alPeople .chip").forEach(b=>b.onclick=()=>{if(S.alertDirty&&!confirmLeave())return;S.alertDirty=false;S.alertPerson=b.dataset.pid;renderAlerts(true);});
