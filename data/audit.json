@@ -1,30 +1,30 @@
 {
  "note": "Daily spot-check sample for the OBX House Hunt site. Public MLS facts only.",
- "checkedAt": "2026-10-21T19:40:17.945Z",
+ "checkedAt": "2026-10-21T19:57:36.868Z",
  "asOf": "2026-10-21",
  "totals": {
   "listings": 687,
-  "active": 517,
-  "pending": 159,
-  "gone": 0
+  "active": 512,
+  "pending": 153,
+  "gone": 10
  },
  "onMarketByTown": {
   "Point Harbor": 2,
-  "Manteo": 56,
+  "Manteo": 55,
   "Powells Point": 15,
   "Harbinger": 3,
-  "Kitty Hawk": 71,
+  "Kitty Hawk": 64,
   "Southern Shores": 36,
-  "Kill Devil Hills": 227,
+  "Kill Devil Hills": 225,
   "Jarvisburg": 37,
-  "Nags Head": 119,
+  "Nags Head": 118,
   "Duck": 54,
   "Grandy": 52,
   "Wanchese": 4
  },
  "batch": 1,
- "batches": 14,
- "batchSize": 49,
+ "batches": 13,
+ "batchSize": 52,
  "rotationKey": "2026-10-21",
  "sample": [
   {
@@ -350,20 +350,6 @@
    "url": "https://www.coldwellbanker.com/nc/kill-devil-hills/0-w-palmetto-st-lot-21r/lid-P00800000GvJ7KsMkhBChM7FeNba4dlSeAVtRoqI"
   },
   {
-   "address": "4620 Johnston Lane",
-   "town": "Kitty Hawk",
-   "price": 295000,
-   "status": "Active",
-   "kind": "lot",
-   "beds": null,
-   "baths": null,
-   "sqft": null,
-   "acres": 0.46,
-   "listedAt": null,
-   "mls": "129950",
-   "url": "https://www.coldwellbanker.com/city/nc/kitty-hawk"
-  },
-  {
    "address": "1111 Cambridge Road Unit 308-A",
    "town": "Kill Devil Hills",
    "price": 429900,
@@ -443,7 +429,7 @@
    "baths": 5,
    "sqft": 3268,
    "acres": null,
-   "listedAt": "2025-08-28",
+   "listedAt": "2025-08-27",
    "mls": "130335",
    "url": "https://www.coldwellbanker.com/nc/nags-head/6005-n-shore-ct-lot-3/lid-P00800000GxULtN2ZKUpxgj638Ay7oMWLIc2WeSg"
   },
@@ -555,7 +541,7 @@
    "baths": null,
    "sqft": null,
    "acres": 0.2,
-   "listedAt": "2025-10-27",
+   "listedAt": "2025-10-26",
    "mls": "130904",
    "url": "https://www.coldwellbanker.com/nc/kill-devil-hills/0-bay-dr-lot-3/lid-P00800000HHLJEye1kkDGsb5WxIlZ8C1KLvbbRng"
   },
@@ -597,7 +583,7 @@
    "baths": 3,
    "sqft": 1896,
    "acres": null,
-   "listedAt": "2025-11-07",
+   "listedAt": "2025-11-06",
    "mls": "131005",
    "url": "https://www.coldwellbanker.com/nc/kill-devil-hills/702-w-avalon-dr/lid-P00800000H1A3JWSQW3pzQNAGJbUeWyUjt1kqFYJ"
   },
@@ -611,7 +597,7 @@
    "baths": 8,
    "sqft": 4514,
    "acres": null,
-   "listedAt": "2025-11-11",
+   "listedAt": "2025-11-10",
    "mls": "131030",
    "url": "https://www.coldwellbanker.com/nc/kill-devil-hills/1320-water-oak-dr/lid-P00800000H1MsIj9FcnH4DTwG2Otfu2Y7BWOaj5p"
   },
@@ -641,7 +627,7 @@
    "acres": null,
    "listedAt": null,
    "mls": "131079",
-   "url": "https://www.coldwellbanker.com/city/nc/manteo"
+   "url": "https://obxbeachsales.realgeeks.com/property/131079/"
   },
   {
    "address": "1633 N Virginia Dare Trail Unit C2",
@@ -712,6 +698,62 @@
    "listedAt": "2025-12-10",
    "mls": "131268",
    "url": "https://www.coldwellbanker.com/nc/manteo/173-creefs-ridge-rd/lid-P00800000H2sHcPsZ2MU3UFSoWq7wA2EIxzXub9k"
+  },
+  {
+   "address": "101 Captains Way",
+   "town": "Powells Point",
+   "price": 357777,
+   "status": "Active",
+   "kind": "lot",
+   "beds": null,
+   "baths": null,
+   "sqft": null,
+   "acres": 0.43,
+   "listedAt": "2025-12-18",
+   "mls": "131316",
+   "url": "https://www.coldwellbanker.com/nc/powells-point/101-captains-way-lot-135/lid-P00800000HHLJEgx4Xx3hVObBLg4jJDEtJMzxfg3"
+  },
+  {
+   "address": "1327 W Kitty Hawk Road",
+   "town": "Kitty Hawk",
+   "price": 1399000,
+   "status": "Active",
+   "kind": "house",
+   "beds": 3,
+   "baths": 1,
+   "sqft": 1386,
+   "acres": 14.47,
+   "listedAt": "2026-01-06",
+   "mls": "131404",
+   "url": "https://www.coldwellbanker.com/nc/kitty-hawk/1327-w-kitty-hawk-rd/lid-P00800000GtFVUOhkkfc2WkRo3hQAT4bVOu1k87x"
+  },
+  {
+   "address": "105 Charlotte Street",
+   "town": "Kill Devil Hills",
+   "price": 499000,
+   "status": "Active",
+   "kind": "house",
+   "beds": 4,
+   "baths": 2,
+   "sqft": 936,
+   "acres": null,
+   "listedAt": "2026-01-09",
+   "mls": "131439",
+   "url": "https://www.coldwellbanker.com/nc/kill-devil-hills/105-charlotte-st/lid-P00800000H4QNZ8z7oiXwqGoqcpgnYPw0UsLemQK"
+  },
+  {
+   "address": "103 Limulus Drive",
+   "town": "Nags Head",
+   "price": 949000,
+   "status": "Pending",
+   "kind": "house",
+   "beds": 5,
+   "baths": 3,
+   "sqft": 1756,
+   "acres": null,
+   "listedAt": "2026-01-12",
+   "mls": "131464",
+   "url": "https://www.coldwellbanker.com/nc/nags-head/103-limulus-dr/lid-P00800000H4Zz0MExqT7X9OuuctRH27hGCwQ0rMo"
   }
  ]
 }
