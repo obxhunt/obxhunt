@@ -1439,7 +1439,7 @@ function renderUsers(){
     b.onclick=()=>setUser(p);g.appendChild(b);});
 }
 /* ---------- email alerts (per person) ---------- */
-const ALERT_DEFAULT={on:false,kinds:["house","condo"],towns:[],pmin:0,pmax:0,beds:0,baths:0,radius:0};
+const ALERT_DEFAULT={on:false,drops:false,kinds:["house","condo"],towns:[],pmin:0,pmax:0,beds:0,baths:0,radius:0};
 const RADII=[0,3,5,10,15,20,30];
 function alertDoc(pid){const d=S.people.get(pid)||{};return {email:d.email||"",alerts:Object.assign({},ALERT_DEFAULT,d.alerts||{})};}
 function alertSummary(a){
@@ -1459,9 +1459,10 @@ function renderAlerts(force){
   const pid=S.alertPerson,who=ppl.find(p=>p.id===pid).name,{email,alerts:a}=alertDoc(pid);
   const opt=(arr,val,lab)=>arr.map(v=>`<option value="${v}" ${+val===v?"selected":""}>${lab(v)}</option>`).join("");
   box.innerHTML=`<div class="pcard alerts" style="max-width:620px">
-    <div><b style="font-size:17px">Email alerts</b><p class="hint" style="margin:2px 0 0">When the morning refresh finds a new listing that matches, it's emailed to just that person.</p></div>
-    <div class="chips" id="alPeople">${ppl.map(p=>`<button type="button" class="chip" data-pid="${esc(p.id)}" aria-pressed="${p.id===pid}">${esc(p.name)}${(S.people.get(p.id)||{}).alerts&&(S.people.get(p.id).alerts.on)?" ✉":""}</button>`).join("")}</div>
+    <div><b style="font-size:17px">Email alerts</b><p class="hint" style="margin:2px 0 0">After each listings refresh, matching new listings and price drops are emailed to just that person.</p></div>
+    <div class="chips" id="alPeople">${ppl.map(p=>`<button type="button" class="chip" data-pid="${esc(p.id)}" aria-pressed="${p.id===pid}">${esc(p.name)}${(S.people.get(p.id)||{}).alerts&&(S.people.get(p.id).alerts.on||S.people.get(p.id).alerts.drops)?" ✉":""}</button>`).join("")}</div>
     <label class="f" for="alEmail">${esc(who)}'s email<input type="email" id="alEmail" value="${esc(email)}" placeholder="name@example.com" autocomplete="off"></label>
+    <label class="check"><input type="checkbox" id="alDrops" ${a.drops?"checked":""}> Email ${esc(who)} price drops on anything in their list</label>
     <label class="check"><input type="checkbox" id="alOn" ${a.on?"checked":""}> Email ${esc(who)} new listings that match</label>
     <div class="alfields">
       <div class="f">Type<div class="chips" id="alKinds">${KINDS.map(([k,n])=>`<button type="button" class="chip" data-k="${k}" aria-pressed="${a.kinds.includes(k)}">${n}</button>`).join("")}</div></div>
@@ -1478,7 +1479,7 @@ function renderAlerts(force){
       <button class="btn pri" type="button" id="alSave">Save ${esc(who)}'s alerts</button>
       <button class="btn" type="button" id="alCopy">Use my current map filters</button>
     </div>
-    <p class="hint" id="alStatus" style="margin:0">${a.on&&email?`Now: ${esc(alertSummary(a))} → ${esc(email)}`:a.on?"Add an email address to turn alerts on.":"Alerts are off."}</p>
+    <p class="hint" id="alStatus" style="margin:0">${(a.on||a.drops)&&!email?"Add an email address to turn alerts on.":[a.drops&&email?`Price drops on ${esc(who)}'s list → ${esc(email)}`:"",a.on&&email?`New listings: ${esc(alertSummary(a))} → ${esc(email)}`:""].filter(Boolean).join("<br>")||"Alerts are off."}</p>
   </div>`;
   const dirty=()=>{S.alertDirty=true;};
   box.querySelectorAll("#alPeople .chip").forEach(b=>b.onclick=()=>{if(S.alertDirty&&!confirmLeave())return;S.alertDirty=false;S.alertPerson=b.dataset.pid;renderAlerts(true);});
@@ -1497,12 +1498,12 @@ function confirmLeave(){return window.confirm?window.confirm("Discard unsaved al
 async function saveAlerts(pid,who){
   const box=$("#alertsBox");const email=$("#alEmail").value.trim();
   if(email&&!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)){toast("That email address doesn't look right");return;}
-  const on=$("#alOn").checked;if(on&&!email){toast("Add an email address first");return;}
-  const alerts={on,kinds:[...box.querySelectorAll("#alKinds .chip[aria-pressed=true]")].map(b=>b.dataset.k),towns:[...box.querySelectorAll("#alTowns .chip[aria-pressed=true]")].map(b=>b.dataset.t),
+  const on=$("#alOn").checked,drops=$("#alDrops").checked;if((on||drops)&&!email){toast("Add an email address first");return;}
+  const alerts={on,drops,kinds:[...box.querySelectorAll("#alKinds .chip[aria-pressed=true]")].map(b=>b.dataset.k),towns:[...box.querySelectorAll("#alTowns .chip[aria-pressed=true]")].map(b=>b.dataset.t),
     pmin:+$("#alPmin").value,pmax:+$("#alPmax").value,beds:+$("#alBeds").value,baths:+$("#alBaths").value,radius:+$("#alRadius").value};
   if(!alerts.kinds.length){toast("Pick at least one type");return;}
   const cur=S.people.get(pid)||{};
-  const ok=await write(()=>S.db.doc("people/"+pid).set(Object.assign({},cur,{name:cur.name||who,email,alerts,updatedAt:new Date().toISOString(),updatedBy:S.user?S.user.name:""})),on?`Alerts on for ${who}`:`Saved ${who}'s settings`);
+  const ok=await write(()=>S.db.doc("people/"+pid).set(Object.assign({},cur,{name:cur.name||who,email,alerts,updatedAt:new Date().toISOString(),updatedBy:S.user?S.user.name:""})),on||drops?`Alerts on for ${who}`:`Saved ${who}'s settings`);
   if(ok){S.alertDirty=false;renderAlerts(true);}
 }
 function familyLinkBox(){
