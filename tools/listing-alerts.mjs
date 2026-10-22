@@ -77,7 +77,7 @@ const SEED_DATE = process.env.SEED_DATE || "2026-10-19"; // the first full load 
 const today = new Date().toLocaleDateString("en-CA", { timeZone: "America/New_York" });
 const since = new Date(Date.now() - 3 * 864e5).toLocaleDateString("en-CA", { timeZone: "America/New_York" });
 const fresh = Object.entries(snap.items).map(([id, l]) => Object.assign({ id }, l))
-  .filter(l => { const d = String(l.addedAt || "").slice(0, 10); return d >= since && d > SEED_DATE && (l.addedBy || "Claude") === "Claude" && (l.status || "Active") === "Active"; });
+  .filter(l => { const d = String(l.addedAt || "").slice(0, 10); return !l.dupOf && d >= since && d > SEED_DATE && (l.addedBy || "Claude") === "Claude" && (l.status || "Active") === "Active"; });
 
 const people = [];
 for (const f of await listDir("people")) { const d = await getJson("people/" + f); if (d) people.push(Object.assign({ id: f.slice(0, -5) }, d.data)); }

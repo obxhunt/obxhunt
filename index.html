@@ -794,7 +794,7 @@ function passes(l){
   if(f.topPicks && saversOf(l.id).length<2) return false;
   if(f.familyAdded && (l.addedBy||"Claude")==="Claude") return false;
   if(f.dom){const d=domDays(l);if(d==null)return false;const r=DOMS.find(x=>x[0]===f.dom);if(r&&!(d>=r[2]&&d<=r[3]))return false;}
-  if(f.q){const q=f.q.toLowerCase();if(!((l.address||"").toLowerCase().includes(q)||(l.area||"").toLowerCase().includes(q)||String(l.mls||"").includes(q)))return false;}
+  if(f.q){const q=f.q.toLowerCase();if(!((l.address||"").toLowerCase().includes(q)||(l.area||"").toLowerCase().includes(q)||String(l.mls||"").includes(q)||(l.otherMls||[]).some(m=>String(m).includes(q))))return false;}
   return true;
 }
 function sorted(arr){
@@ -2040,13 +2040,13 @@ function searchListings(q){
   const toks=normQ(q).split(" ").filter(Boolean);if(!toks.length)return [];
   const out=[];
   for(const l of S.listings.values()){
-    const words=normQ([l.address,l.area,l.town,l.zip,l.mls].join(" ")).split(" ");
+    const words=normQ([l.address,l.area,l.town,l.zip,l.mls].concat(l.otherMls||[]).join(" ")).split(" ");
     if(!toks.every(t=>words.some(w=>w.startsWith(t))))continue;
     const addr=normQ(l.address);let score=0;const aw=addr.split(" ");
     if(toks.every(t=>aw.some(w=>w.startsWith(t))))score-=2; // whole query is in the street address
     if(addr.startsWith(toks.join(" ")))score-=3;
     if(words[0]===toks[0])score-=2;
-    if(String(l.mls||"")===q.trim())score-=5;
+    if(String(l.mls||"")===q.trim()||(l.otherMls||[]).includes(q.trim()))score-=5;
     if(l.status==="Gone"||l.status==="Sold")score+=4;
     out.push([score,l]);
   }
@@ -2119,7 +2119,8 @@ function wire(){
 /* ---------- data ---------- */
 const SNAP = window.__SNAPSHOT || {asOf:null, items:{}};
 function areaSlug(a){return String(a||"").toLowerCase().replace(/[^a-z0-9]+/g,"-");}
-function snapshotSets(){const sets={};for(const id in SNAP.items){const it=SNAP.items[id];const k=areaSlug(it.area);(sets[k]=sets[k]||{area:it.area,items:{}}).items[id]=it;}return sets;}
+function snapshotSets(){const sets={};for(const id in SNAP.items){const it=SNAP.items[id];if(it.dupOf)continue; // a repeat of another listing (two MLS numbers, relisted, house + land)
+const k=areaSlug(it.area);(sets[k]=sets[k]||{area:it.area,items:{}}).items[id]=it;}return sets;}
 /* A small stand-in for the shared database, kept in this browser, used when the viewer isn't signed in. */
 function makeLocalDb(){
   const KEY="obx.local.v1";let saved={};try{saved=JSON.parse(localStorage.getItem(KEY)||"{}")||{};}catch(e){}

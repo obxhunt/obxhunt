@@ -84,7 +84,7 @@ if (TEST_IDS.length) {
 const SEED_DATE = process.env.SEED_DATE || "2026-10-19";
 const weekAgoDay = weekAgo.slice(0, 10);
 const fresh = [...listings].map(([id, l]) => Object.assign({ id }, l))
-  .filter(l => l.addedAt && String(l.addedAt).slice(0, 10) >= weekAgoDay && String(l.addedAt).slice(0, 10) > SEED_DATE && !["Gone", "Sold"].includes(l.status))
+  .filter(l => !l.dupOf && l.addedAt && String(l.addedAt).slice(0, 10) >= weekAgoDay && String(l.addedAt).slice(0, 10) > SEED_DATE && !["Gone", "Sold"].includes(l.status))
   .sort((a, b) => ({ house: 0, condo: 1, lot: 2 }[a.kind] ?? 0) - ({ house: 0, condo: 1, lot: 2 }[b.kind] ?? 0) || (a.price || 0) - (b.price || 0));
 const NEW_CAP = 30;
 // Most upvoted in swipe mode (net = upvotes minus downvotes), top 8 with at least one upvote
