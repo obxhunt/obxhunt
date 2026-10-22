@@ -1432,6 +1432,10 @@ function loadLib(k){return libLoads[k]||(libLoads[k]=new Promise((ok,no)=>{const
    Drive times use the site's road model (main highways and bridges; local streets at ~25 mph x 1.35 detour).
    Stops are ordered nearest-first from the start, then improved with 2-opt. Legs hold 10 stops (Google Maps' URL limit). */
 const LEG_STOPS=10, OFFROAD=1.35/25*60;
+// PDF route links and QR codes open in this app (listing pages keep both). Switch to "google" / "Google Maps" to change.
+const PDF_MAPS="apple", PDF_MAPS_NAME="Apple Maps";
+// Starting near Edenton means coming in on US-64 (the southern route), so the route starts where US-64 reaches Roanoke Island.
+const EDENTON={lat:36.0579,lng:-76.6077}, US64_IN={lat:35.923,lng:-75.72,area:"Manteo"};
 function landAt(p){if(p.area&&LANDOF[p.area])return LANDOF[p.area];let b=null,bd=Infinity;for(const v of G.V){const d=hav(p,v);if(d<bd){bd=d;b=v;}}return b?b.land:"bar";}
 function driveFrom(p){ // minutes from p to every road-model vertex
   const V=G.V,D=new Array(V.length).fill(Infinity),done=new Array(V.length).fill(false);
@@ -1458,6 +1462,14 @@ function planRoute(start,stops){
     for(let i=1;i<path.length-1;i++)for(let j=i+1;j<path.length;j++){
       const delta=d(path[i-1],path[j])+d(path[i],path[j+1])-d(path[i-1],path[i])-d(path[j],path[j+1]);
       if(delta<-0.01){path.splice(i,j-i+1,...path.slice(i,j+1).reverse());improved=true;}}}
+  // or-opt: move runs of 1-3 stops (either direction) to wherever they fit best; repeat with 2-opt until nothing improves
+  const cost=pa=>{let t=0;for(let i=0;i+1<pa.length;i++)t+=M[pa[i]][pa[i+1]];return t;};
+  const twoOpt=()=>{for(let improved=true,g=0;improved&&g<200;g++){improved=false;for(let i=1;i<path.length-1;i++)for(let j=i+1;j<path.length;j++){
+    const delta=d(path[i-1],path[j])+d(path[i],path[j+1])-d(path[i-1],path[i])-d(path[j],path[j+1]);if(delta<-0.01){path.splice(i,j-i+1,...path.slice(i,j+1).reverse());improved=true;}}}};
+  for(let round=0;round<30;round++){let best=cost(path),bestPath=null;
+    for(let len=1;len<=3;len++)for(let i=1;i+len<=path.length;i++){const seg=path.slice(i,i+len),rest=path.slice(0,i).concat(path.slice(i+len));
+      for(const sg of [seg,seg.slice().reverse()])for(let j=1;j<=rest.length;j++){if(j===i)continue;const cand=rest.slice(0,j).concat(sg,rest.slice(j));const c=cost(cand);if(c<best-0.01){best=c;bestPath=cand;}}}
+    if(!bestPath)break;path.splice(0,path.length,...bestPath);twoOpt();}
   const order=path.slice(1).map(k=>k-1),legMins=[];
   for(let s=0;s<n;s+=LEG_STOPS){let t=0;for(let k=s;k<Math.min(n,s+LEG_STOPS);k++)t+=M[k===0?0:path[k]][path[k+1]]+3;legMins.push(Math.round(t));} // +3 min per stop for parking/looking
   return {order,legMins,mins:legMins.reduce((a,b)=>a+b,0)};
@@ -1568,17 +1580,20 @@ async function exportPdf(pid,who){
   toast("Planning the route and making the PDF…");
   const libs=Promise.all([loadLib("jspdf").then(()=>loadLib("autotable")),loadLib("qr")]);
   // route: on-market listings with a map spot, in driving order from where you are now (or the FRF pier)
-  const here=await hereNow();const useHere=here&&hav(here,FRF)<60;
-  const start=useHere?here:{lat:FRF.lat,lng:FRF.lng},startLabel=useHere?"Start (you)":"Start (FRF)";
+  const here=await hereNow();let start,startLabel,startWhy;
+  if(here&&hav(here,EDENTON)<20){start=US64_IN;startLabel="Start (US-64 into Manteo)";startWhy="US-64 coming onto Roanoke Island from Edenton (the southern route)";}
+  else if(here&&hav(here,FRF)<35){start=here;startLabel="Start (you)";startWhy="where you were when this PDF was made";}
+  else if(false){start=US64_IN;startLabel="Start (US-64 into Manteo)";startWhy="US-64 coming onto Roanoke Island from Edenton (the southern route)";}
+  else{start={lat:FRF.lat,lng:FRF.lng};startLabel="Start (FRF)";startWhy="the FRF pier"+(here?" (you weren't near the Outer Banks or Edenton)":" (your location wasn't available)");}
   const onRoute=rows.filter(r=>r.lat!=null&&!["Sold","Gone"].includes(r.status)),offRoute=rows.filter(r=>!onRoute.includes(r));
   const plan=onRoute.length?planRoute(start,onRoute.map(r=>({lat:r.lat,lng:r.lng,area:r.area}))):{order:[],legMins:[],mins:0};
   const routed=plan.order.map(i=>onRoute[i]);
   rows=routed.concat(offRoute);rows.forEach((r,i)=>{r.n=i+1;r.leg=i<routed.length?Math.floor(i/LEG_STOPS)+1:null;r.dir=r.lat!=null||r.address?dirLinks(Object.assign({zip:""},r,{kind:r.kindKey})):null;});
-  const legs=[];for(let s=0;s<routed.length;s+=LEG_STOPS){const st=routed.slice(s,s+LEG_STOPS);legs.push(Object.assign({from:s+1,to:s+st.length,mins:plan.legMins[legs.length]},routeLinks(st)));}
+  const legs=[];for(let s=0;s<routed.length;s+=LEG_STOPS){const st=routed.slice(s,s+LEG_STOPS);legs.push({from:s+1,to:s+st.length,mins:plan.legMins[legs.length],url:routeLinks(st)[PDF_MAPS]});}
   try{await libs;}catch(e){toast("Couldn't load the PDF tools. Check your connection and try again.");return;}
   const {jsPDF}=window.jspdf;const doc=new jsPDF({orientation:"landscape",unit:"pt",format:"letter"});
   const PW=doc.internal.pageSize.getWidth(),PH=doc.internal.pageSize.getHeight(),M=30,mapW=PW-2*M;
-  const PER_ROW=4,CARD_H=124,legRows=Math.ceil(legs.length/PER_ROW),routeH=legs.length?30+legRows*(CARD_H+8):0;
+  const PER_ROW=4,CARD_H=132,legRows=Math.ceil(legs.length/PER_ROW),routeH=legs.length?30+legRows*(CARD_H+8):0;
   const mapH=Math.max(230,Math.min(390,PH-2*M-36-12-routeH));
   const canvas=await exportMap(rows,Math.round(mapW*2),Math.round(mapH*2),{start,startLabel,stops:routed});
   const when=new Date().toLocaleDateString("en-US",{timeZone:"America/New_York",month:"long",day:"numeric",year:"numeric"});
@@ -1598,16 +1613,15 @@ async function exportPdf(pid,who){
   if(legs.length){let y=mapY+mapH+12;
     doc.setFont("helvetica","bold");doc.setFontSize(11);doc.setTextColor(23,38,58);doc.text("Driving route",M,y+8);
     doc.setFont("helvetica","normal");doc.setFontSize(8.5);doc.setTextColor(91,102,117);
-    doc.text(`Stop numbers are the driving order from ${useHere?"where you were when this PDF was made":"the FRF pier (location wasn't available)"}. Tap a leg's link, or scan its code with your phone camera: each leg opens in the app starting from where you are, so start leg 2 from your last stop.`,M+82,y+8,{maxWidth:mapW-82});
-    y+=22;const cw=(mapW-(PER_ROW-1)*8)/PER_ROW,qs=80;
+    doc.text(`Stop numbers are the driving order from ${startWhy}. Tap a leg, or scan its code with your iPhone camera: it opens in ${PDF_MAPS_NAME} starting from where you are, so open leg 2 when you finish leg 1.`,M+82,y+8,{maxWidth:mapW-82});
+    y+=22;const cw=(mapW-(PER_ROW-1)*8)/PER_ROW,qs=90;
     legs.forEach((L,i)=>{const cx=M+(i%PER_ROW)*(cw+8),cy=y+Math.floor(i/PER_ROW)*(CARD_H+8);
       doc.setDrawColor(227,221,208);doc.setFillColor(250,248,243);doc.roundedRect(cx,cy,cw,CARD_H,6,6,"FD");
       doc.setFont("helvetica","bold");doc.setFontSize(10);doc.setTextColor(23,38,58);doc.text(`Leg ${i+1} · stops ${L.from}–${L.to}`,cx+8,cy+14);
       doc.setFont("helvetica","normal");doc.setFontSize(8);doc.setTextColor(91,102,117);doc.text(`~${L.mins} min with stops`,cx+cw-8,cy+14,{align:"right"});
-      const gx=cx+(cw-2*qs-14)/2,qy=cy+22;qrBox(L.google,gx,qy,qs);qrBox(L.apple,gx+qs+14,qy,qs);
-      doc.setFont("helvetica","bold");doc.setFontSize(8.5);doc.setTextColor(179,21,124);
-      doc.textWithLink("Google Maps",gx+qs/2-doc.getTextWidth("Google Maps")/2,qy+qs+12,{url:L.google});
-      doc.textWithLink("Apple Maps",gx+qs+14+qs/2-doc.getTextWidth("Apple Maps")/2,qy+qs+12,{url:L.apple});});
+      const qx=cx+(cw-qs)/2,qy=cy+22;qrBox(L.url,qx,qy,qs);
+      doc.setFont("helvetica","bold");doc.setFontSize(8.5);doc.setTextColor(179,21,124);const lt="Open in "+PDF_MAPS_NAME;
+      doc.textWithLink(lt,cx+cw/2-doc.getTextWidth(lt)/2,qy+qs+13,{url:L.url});doc.link(cx,cy,cw,CARD_H,{url:L.url});});
   }
   const noCoords=rows.filter(r=>r.lat==null).length;
   const body=rows.map(r=>[r.n,r.address+(r.leg?"":`\n(not on route${r.lat==null?": no map spot":": "+r.status.toLowerCase()})`)+(r.inFeed?"":"\n(no longer in the feed)"),r.area,r.kind==="Condo / townhome"?"Condo":r.kind,r.status,
@@ -1615,14 +1629,14 @@ async function exportPdf(pid,who){
     r.beds??"",r.baths??"",r.sqft?r.sqft.toLocaleString("en-US"):(r.acres?r.acres+" ac":""),r.ppsf?money(r.ppsf):"",r.dom??"",r.commute!=null?r.commute+" min":"",r.mls,{content:"",dir:r.dir},r.note]);
   if(legs.length)doc.addPage();
   doc.autoTable({startY:legs.length?M:mapY+mapH+14,margin:{left:M,right:M,top:M,bottom:M},
-    head:[["#","Address","Area","Type","Status","Price","Bd","Ba","Sq ft","$/sq ft","Days on mkt","To FRF","MLS #","Go to","Note"]],body,
+    head:[["#","Address","Area","Type","Status","Price","Bd","Ba","Sq ft","$/sq ft","Days on mkt","To FRF","MLS #","Directions","Note"]],body,
     styles:{font:"helvetica",fontSize:8.5,cellPadding:4,textColor:[23,38,58],lineColor:[227,221,208],lineWidth:.5,valign:"middle"},
     headStyles:{fillColor:[23,38,58],textColor:255,fontStyle:"bold"},alternateRowStyles:{fillColor:[247,245,240]},
-    columnStyles:{0:{halign:"center",fontStyle:"bold",cellWidth:24},1:{cellWidth:112,fontStyle:"bold"},2:{cellWidth:70},3:{cellWidth:40},4:{cellWidth:44},5:{cellWidth:74,halign:"right"},6:{halign:"center",cellWidth:20},7:{halign:"center",cellWidth:20},8:{halign:"right",cellWidth:42},9:{halign:"right",cellWidth:38},10:{halign:"center",cellWidth:34},11:{halign:"right",cellWidth:38},12:{cellWidth:50},13:{cellWidth:42,minCellHeight:24},14:{cellWidth:"auto",fontSize:8}},
+    columnStyles:{0:{halign:"center",fontStyle:"bold",cellWidth:24},1:{cellWidth:112,fontStyle:"bold"},2:{cellWidth:70},3:{cellWidth:40},4:{cellWidth:44},5:{cellWidth:74,halign:"right"},6:{halign:"center",cellWidth:20},7:{halign:"center",cellWidth:20},8:{halign:"right",cellWidth:42},9:{halign:"right",cellWidth:38},10:{halign:"center",cellWidth:34},11:{halign:"right",cellWidth:38},12:{cellWidth:50},13:{cellWidth:56},14:{cellWidth:"auto",fontSize:8}},
     didParseCell:d=>{if(d.section==="body"&&d.column.index===0){const r=rows[d.row.index];d.cell.styles.textColor=rgb(STATUS_COLOR[r&&r.status]||"#17263a");}},
     didDrawCell:d=>{if(d.section!=="body"||d.column.index!==13)return;const dir=d.cell.raw&&d.cell.raw.dir;if(!dir)return;
       doc.setFont("helvetica","bold");doc.setFontSize(8);doc.setTextColor(179,21,124);const cy=d.cell.y+d.cell.height/2;
-      doc.textWithLink("Apple",d.cell.x+5,cy-2,{url:dir.apple});doc.textWithLink("Google",d.cell.x+5,cy+8,{url:dir.google});},
+      doc.textWithLink(PDF_MAPS_NAME,d.cell.x+5,cy+3,{url:dir[PDF_MAPS]});},
     didDrawPage:()=>{doc.setFont("helvetica","normal");doc.setFontSize(8);doc.setTextColor(122,131,144);
       doc.text(`Prices and status: Outer Banks MLS via Coldwell Banker. Drive times are estimates from the site's road model.${noCoords?` ${noCoords} listing(s) without a map spot aren't on the map.`:""}`,M,PH-14);
       doc.text(`Page ${doc.internal.getNumberOfPages()}`,PW-M,PH-14,{align:"right"});}});
