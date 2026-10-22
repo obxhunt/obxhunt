@@ -1435,7 +1435,7 @@ const LEG_STOPS=10, OFFROAD=1.35/25*60;
 // PDF route links and QR codes open in this app (listing pages keep both). Switch to "google" / "Google Maps" to change.
 const PDF_MAPS="apple", PDF_MAPS_NAME="Apple Maps";
 // Starting near Edenton means coming in on US-64 (the southern route), so the route starts where US-64 reaches Roanoke Island.
-const EDENTON={lat:36.0579,lng:-76.6077}, US64_IN={lat:35.923,lng:-75.72,area:"Manteo"};
+const EDENTON={lat:36.0579,lng:-76.6077}, US64_IN={lat:35.923,lng:-75.72,area:"Manteo"}, US158_OUT={lat:36.295,lng:-75.9,area:"Grandy"};
 function landAt(p){if(p.area&&LANDOF[p.area])return LANDOF[p.area];let b=null,bd=Infinity;for(const v of G.V){const d=hav(p,v);if(d<bd){bd=d;b=v;}}return b?b.land:"bar";}
 function driveFrom(p){ // minutes from p to every road-model vertex
   const V=G.V,D=new Array(V.length).fill(Infinity),done=new Array(V.length).fill(false);
@@ -1453,24 +1453,25 @@ function driveMatrix(pts){
   return M;
 }
 /* start: {lat,lng}; stops: [{lat,lng,area}] -> {order (indexes into stops), legMins, mins} */
-function planRoute(start,stops){
-  const M=driveMatrix([start].concat(stops)),n=stops.length;
+function planRoute(start,stops,end){ // end (optional): a fixed finish, e.g. heading home over the US-158 bridge
+  const M=driveMatrix([start].concat(stops,end?[end]:[])),n=stops.length,FIX=end?1:0;
   const left=new Set(stops.map((_,i)=>i+1)),path=[0];
-  while(left.size){const u=path[path.length-1];let b=-1,bd=Infinity;for(const v of left)if(M[u][v]<bd){bd=M[u][v];b=v;}path.push(b);left.delete(b);}
+  while(left.size){const u=path[path.length-1];let b=-1,bd=Infinity;for(const v of left){const c=M[u][v]+(end?0.35*M[v][n+1]:0);if(c<bd){bd=c;b=v;}}path.push(b);left.delete(b);}
+  if(end)path.push(n+1);
   const d=(a,b)=>b===undefined?0:M[a][b];
   for(let improved=true,guard=0;improved&&guard<200;guard++){improved=false;
-    for(let i=1;i<path.length-1;i++)for(let j=i+1;j<path.length;j++){
+    for(let i=1;i<path.length-1-FIX;i++)for(let j=i+1;j<path.length-FIX;j++){
       const delta=d(path[i-1],path[j])+d(path[i],path[j+1])-d(path[i-1],path[i])-d(path[j],path[j+1]);
       if(delta<-0.01){path.splice(i,j-i+1,...path.slice(i,j+1).reverse());improved=true;}}}
   // or-opt: move runs of 1-3 stops (either direction) to wherever they fit best; repeat with 2-opt until nothing improves
   const cost=pa=>{let t=0;for(let i=0;i+1<pa.length;i++)t+=M[pa[i]][pa[i+1]];return t;};
-  const twoOpt=()=>{for(let improved=true,g=0;improved&&g<200;g++){improved=false;for(let i=1;i<path.length-1;i++)for(let j=i+1;j<path.length;j++){
+  const twoOpt=()=>{for(let improved=true,g=0;improved&&g<200;g++){improved=false;for(let i=1;i<path.length-1-FIX;i++)for(let j=i+1;j<path.length-FIX;j++){
     const delta=d(path[i-1],path[j])+d(path[i],path[j+1])-d(path[i-1],path[i])-d(path[j],path[j+1]);if(delta<-0.01){path.splice(i,j-i+1,...path.slice(i,j+1).reverse());improved=true;}}}};
   for(let round=0;round<30;round++){let best=cost(path),bestPath=null;
-    for(let len=1;len<=3;len++)for(let i=1;i+len<=path.length;i++){const seg=path.slice(i,i+len),rest=path.slice(0,i).concat(path.slice(i+len));
-      for(const sg of [seg,seg.slice().reverse()])for(let j=1;j<=rest.length;j++){if(j===i)continue;const cand=rest.slice(0,j).concat(sg,rest.slice(j));const c=cost(cand);if(c<best-0.01){best=c;bestPath=cand;}}}
+    for(let len=1;len<=3;len++)for(let i=1;i+len<=path.length-FIX;i++){const seg=path.slice(i,i+len),rest=path.slice(0,i).concat(path.slice(i+len));
+      for(const sg of [seg,seg.slice().reverse()])for(let j=1;j<=rest.length-FIX;j++){if(j===i)continue;const cand=rest.slice(0,j).concat(sg,rest.slice(j));const c=cost(cand);if(c<best-0.01){best=c;bestPath=cand;}}}
     if(!bestPath)break;path.splice(0,path.length,...bestPath);twoOpt();}
-  const order=path.slice(1).map(k=>k-1),legMins=[];
+  const order=path.slice(1,end?-1:undefined).map(k=>k-1),legMins=[];
   for(let s=0;s<n;s+=LEG_STOPS){let t=0;for(let k=s;k<Math.min(n,s+LEG_STOPS);k++)t+=M[k===0?0:path[k]][path[k+1]]+3;legMins.push(Math.round(t));} // +3 min per stop for parking/looking
   return {order,legMins,mins:legMins.reduce((a,b)=>a+b,0)};
 }
@@ -1525,89 +1526,104 @@ async function exportExcel(pid,who){
   toast("Spreadsheet downloaded");
 }
 /* Draws the listings on a street map, zoomed to fit, with numbered markers. Returns a canvas. */
-async function exportMap(rows,W,H,route){
-  const pts=rows.filter(r=>r.lat!=null&&r.lng!=null);const allPts=route&&route.start?pts.concat([route.start]):pts;
+/* Draws the listings on a street map fitted to them, with numbered markers. Returns a canvas.
+   If it fits better, the map is turned so the Outer Banks run left to right (ocean along the top, north arrow shown).
+   When markers would crowd, the numbers line up out over the ocean with a line to each spot. */
+async function exportMap(rows,W,H){
+  const pts=rows.filter(r=>r.lat!=null&&r.lng!=null);
   const c=document.createElement("canvas");c.width=W;c.height=H;const g=c.getContext("2d");
-  const wx=(lng,z)=>(lng+180)/360*256*2**z, wy=(lat,z)=>{const s=Math.sin(lat*Math.PI/180);return (0.5-Math.log((1+s)/(1-s))/(4*Math.PI))*256*2**z;};
-  let lat0=Math.min(...allPts.map(p=>p.lat)),lat1=Math.max(...allPts.map(p=>p.lat)),lng0=Math.min(...allPts.map(p=>p.lng)),lng1=Math.max(...allPts.map(p=>p.lng));
-  if(!pts.length){lat0=35.85;lat1=36.25;lng0=-75.85;lng1=-75.6;}
-  // exact (fractional) zoom that fits everything into a box Wfit wide; tiles come from the next whole zoom level up, drawn slightly smaller
-  const pad=60,R=17,GAP=5,spanX=Math.max(1e-9,wx(lng1,0)-wx(lng0,0)),spanY=Math.max(1e-9,wy(lat0,0)-wy(lat1,0));
-  let z,k,x0,y0;
-  const fit=Wfit=>{const zf=Math.min(16,Math.log2(Math.min((Wfit-2*pad)/spanX,(H-2*pad)/spanY)));z=Math.max(5,Math.ceil(zf));k=2**(zf-z);
-    const cx=(wx(lng0,z)+wx(lng1,z))/2*k,cy=(wy(lat0,z)+wy(lat1,z))/2*k;x0=cx-Wfit/2;y0=cy-H/2;};
-  const P=(lat,lng)=>[wx(lng,z)*k-x0,wy(lat,z)*k-y0];
-  fit(W);
-  // crowded? then the numbers go in a column (or two) out over the ocean to the east, with lines to each spot
+  const w0=(lat,lng)=>{const sn=Math.sin(lat*Math.PI/180);return [(lng+180)/360*256,(0.5-Math.log((1+sn)/(1-sn))/(4*Math.PI))*256];};
+  const fr=pts.length?pts:[{lat:35.85,lng:-75.85},{lat:36.25,lng:-75.6}];
+  // the islands' lie: Duck to Nags Head
+  const [dx1,dy1]=w0(36.18,-75.75),[dx2,dy2]=w0(35.93,-75.60),OBX=-Math.atan2(dy2-dy1,dx2-dx1);
+  const pad=60,R=17;
+  let th=0,s=1,rc=[0,0],O=[W/2,H/2];
+  const rot=(p,t)=>[p[0]*Math.cos(t)-p[1]*Math.sin(t),p[0]*Math.sin(t)+p[1]*Math.cos(t)];
+  const fit=(t,Wf,Hf)=>{const r=fr.map(p=>rot(w0(p.lat,p.lng),t));const xs=r.map(q=>q[0]),ys=r.map(q=>q[1]);
+    const sx=Math.max(1e-9,Math.max(...xs)-Math.min(...xs)),sy=Math.max(1e-9,Math.max(...ys)-Math.min(...ys));
+    return {t,s:Math.min(2**16,(Wf-2*pad)/sx,(Hf-2*pad)/sy),rc:[(Math.max(...xs)+Math.min(...xs))/2,(Math.max(...ys)+Math.min(...ys))/2],O:[Wf/2,Hf/2]};};
+  const use=f=>{th=f.t;s=f.s;rc=f.rc;O=f.O.slice();};
+  const P=(lat,lng)=>{const q=rot(w0(lat,lng),th);return [s*(q[0]-rc[0])+O[0],s*(q[1]-rc[1])+O[1]];};
+  {const a=fit(0,W,H),b=fit(OBX,W,H);use(pts.length>1&&b.s>a.s*1.15?b:a);}
+  const turned=th!==0;
+  // local frame for the number callouts: u points out to sea, v runs along the coast
+  const o=turned?[0,-1]:[1,0],al=turned?[1,0]:[0,1],uEdge=turned?0:W,Lv=turned?W:H;
+  const U=([x,y])=>x*o[0]+y*o[1],V=([x,y])=>x*al[0]+y*al[1],XY=(u,v)=>[u*o[0]+v*al[0],u*o[1]+v*al[1]];
   const crowded=(()=>{const xy=pts.map(p=>P(p.lat,p.lng));for(let i=0;i<xy.length;i++)for(let j=i+1;j<xy.length;j++)if(Math.hypot(xy[i][0]-xy[j][0],xy[i][1]-xy[j][1])<2*R+3)return true;return false;})();
-  // crowded layout: numbers zig-zag between two x positions (consecutive numbers half a slot apart), sized to fit the height
-  const CR=crowded?Math.max(11,Math.min(R,Math.floor((H-24)/Math.max(1,pts.length)-4))):R,HALF=CR+4,COLW=2*CR+8,ELB=36,RES=crowded?ELB+14+2*CR+COLW+24:0;
-  if(crowded){fit(W-RES);const maxX=Math.max(...pts.map(p=>P(p.lat,p.lng)[0]));x0-=(W-RES-12)-maxX;} // slide the land left so the beach sits next to the numbers
+  const CR=crowded?Math.max(11,Math.min(R,Math.floor((Lv-24)/Math.max(1,pts.length)-4))):R,HALF=CR+4,COLW=2*CR+8,ELB=36,RES=crowded?ELB+14+2*CR+COLW+24:0;
+  if(crowded){use(fit(th,turned?W:W-RES,turned?H-RES:H));
+    const maxU=Math.max(...pts.map(p=>U(P(p.lat,p.lng)))),du=(uEdge-RES-12)-maxU; // slide the land so the beach sits next to the numbers
+    O[0]+=du*o[0];O[1]+=du*o[1];}
   // fallback base drawn first: water, the site's own coastline and roads (covered by map tiles when they load)
   g.fillStyle="#cfe0ea";g.fillRect(0,0,W,H);
   g.fillStyle="#f2efe6";g.strokeStyle="#c9c2b0";g.lineWidth=1;
   const ring=r=>{g.beginPath();r.forEach(([lng,lat],i)=>{const [x,y]=P(lat,lng);i?g.lineTo(x,y):g.moveTo(x,y);});g.closePath();};
   (LAND.type==="FeatureCollection"?LAND.features.map(f=>f.geometry):[LAND.geometry||LAND]).forEach(gm=>{if(!gm)return;const polys=gm.type==="Polygon"?[gm.coordinates]:gm.type==="MultiPolygon"?gm.coordinates:[];polys.forEach(pl=>{ring(pl[0]);g.fill();g.stroke();});});
   g.strokeStyle="#b9b2a2";for(const k in ROADS){const r=ROADS[k];g.lineWidth=r.speed>=45?3:1.6;g.beginPath();r.pts.forEach(([lat,lng],i)=>{const [x,y]=P(lat,lng);i?g.lineTo(x,y):g.moveTo(x,y);});g.stroke();}
-  // Esri street map tiles
-  const tiles=[];
-  const TS=256*k;for(let tx=Math.floor(x0/TS);tx<=Math.floor((x0+W)/TS);tx++)for(let ty=Math.floor(y0/TS);ty<=Math.floor((y0+H)/TS);ty++)tiles.push([tx,ty]);
+  // Esri street map tiles, drawn through the same turn/scale as everything else
+  const z=Math.max(5,Math.min(17,Math.ceil(Math.log2(s)-1e-9))),UT=256/2**z;
+  const inv=([x,y])=>{const q=rot([(x-O[0])/s+rc[0],(y-O[1])/s+rc[1]],-th);return q;};
+  const cs=[[0,0],[W,0],[0,H],[W,H]].map(inv),txs=cs.map(q=>q[0]/UT),tys=cs.map(q=>q[1]/UT),tiles=[];
+  for(let tx=Math.floor(Math.min(...txs));tx<=Math.floor(Math.max(...txs));tx++)for(let ty=Math.floor(Math.min(...tys));ty<=Math.floor(Math.max(...tys));ty++)tiles.push([tx,ty]);
+  const ca=Math.cos(th)*s,sa=Math.sin(th)*s,te=O[0]-s*rc[0],tf=O[1]-s*rc[1];
   let got=0;
   await Promise.all(tiles.map(([tx,ty])=>new Promise(res=>{const im=new Image();im.crossOrigin="anonymous";im.referrerPolicy="no-referrer";
     const t=setTimeout(()=>res(),9000);
-    im.onload=()=>{clearTimeout(t);try{g.drawImage(im,tx*TS-x0,ty*TS-y0,TS+0.5,TS+0.5);got++;}catch(e){}res();};im.onerror=()=>{clearTimeout(t);res();};
+    im.onload=()=>{clearTimeout(t);try{g.save();g.setTransform(ca,sa,-sa,ca,te,tf);g.drawImage(im,tx*UT,ty*UT,UT*1.004,UT*1.004);g.restore();got++;}catch(e){g.restore();}res();};im.onerror=()=>{clearTimeout(t);res();};
     im.src=`https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/${z}/${ty}/${tx}`;})));
   try{c.toDataURL();}catch(e){ // a tile tainted the canvas: redraw without tiles
-    return exportMapBare(rows,W,H,route);}
-  // the driving route: dashed line from the start through the stops in order
-  if(route&&route.stops.length){const seq=[route.start].concat(route.stops).map(p=>P(p.lat,p.lng));
-    g.save();g.setLineDash([12,9]);g.lineCap="round";g.strokeStyle="rgba(255,255,255,.85)";g.lineWidth=7;g.beginPath();seq.forEach(([x,y],i)=>i?g.lineTo(x,y):g.moveTo(x,y));g.stroke();
-    g.strokeStyle="#b3157c";g.lineWidth=3.5;g.beginPath();seq.forEach(([x,y],i)=>i?g.lineTo(x,y):g.moveTo(x,y));g.stroke();g.restore();
-    const [sx,sy]=seq[0];g.fillStyle="#b3157c";g.strokeStyle="#fff";g.lineWidth=3.5;g.beginPath();g.rect(sx-11,sy-11,22,22);g.fill();g.stroke();
-    g.font="bold 20px Helvetica,Arial,sans-serif";g.textAlign=crowded?"right":"left";g.textBaseline="middle";const tx=crowded?sx-16:sx+16;g.lineWidth=5;g.strokeStyle="#fff";g.strokeText(route.startLabel,tx,sy);g.fillStyle="#b3157c";g.fillText(route.startLabel,tx,sy);g.textAlign="left";}
+    return exportMapBare(rows,W,H);}
   // FRF pier
   {const [fx,fy]=P(FRF.lat,FRF.lng);if(fx>-20&&fx<W+20&&fy>-20&&fy<H+20){g.fillStyle="#17263a";g.beginPath();g.moveTo(fx,fy-11);g.lineTo(fx+9,fy+6);g.lineTo(fx-9,fy+6);g.closePath();g.fill();
-    g.font="bold 20px Helvetica,Arial,sans-serif";g.lineWidth=4;g.strokeStyle="#fff";g.strokeText("FRF",fx+12,fy+7);g.fillText("FRF",fx+12,fy+7);}}
-  // numbered markers: on the spot when there's room; otherwise stacked out over the ocean, each as close to its own latitude as it fits
+    g.font="bold 20px Helvetica,Arial,sans-serif";g.textAlign="left";g.textBaseline="alphabetic";g.lineWidth=4;g.strokeStyle="#fff";g.strokeText("FRF",fx+12,fy+7);g.fillText("FRF",fx+12,fy+7);}}
+  // numbered markers: on the spot when there's room; otherwise lined up out over the ocean, each as close to its own spot along the coast as it fits
   const ms=pts.map(p=>{const [x,y]=P(p.lat,p.lng);return {p,x,y,lx:x,ly:y};});
-  if(crowded){const byY=ms.slice().sort((a,b)=>a.y-b.y),n=byY.length;
-    const elbX=Math.max(...ms.map(m=>m.x))+ELB,inX=elbX+14+CR,outX=inX+COLW;
-    byY.forEach((m,i)=>{m.lx=i%2?outX:inX;m.ly=Math.max(m.y,i?byY[i-1].ly+HALF:CR+6);});
-    for(let i=n-1;i>=0;i--){const lim=i===n-1?H-CR-6:byY[i+1].ly-HALF;if(byY[i].ly>lim)byY[i].ly=lim;}
-    for(let i=0;i<n;i++){const lim=i?byY[i-1].ly+HALF:CR+6;if(byY[i].ly<lim)byY[i].ly=lim;}
-    // each line: from the spot out to the elbow at its number's height, then straight across to the number
-    const path=m=>{g.beginPath();g.moveTo(m.x,m.y);g.lineTo(elbX,m.ly);g.lineTo(m.lx-CR,m.ly);};
+  if(crowded){ms.forEach(m=>{m.u=U([m.x,m.y]);m.v=V([m.x,m.y]);});
+    const byV=ms.slice().sort((a,b)=>a.v-b.v),n=byV.length,lo=Math.min(0,Lv*(al[0]+al[1]<0?-1:0));
+    const elbU=Math.max(...ms.map(m=>m.u))+ELB,inU=elbU+14+CR,outU=inU+COLW;
+    byV.forEach((m,i)=>{m.lu=i%2?outU:inU;m.lv=Math.max(m.v,i?byV[i-1].lv+HALF:CR+6);});
+    for(let i=n-1;i>=0;i--){const lim=i===n-1?Lv-CR-6:byV[i+1].lv-HALF;if(byV[i].lv>lim)byV[i].lv=lim;}
+    for(let i=0;i<n;i++){const lim=i?byV[i-1].lv+HALF:CR+6;if(byV[i].lv<lim)byV[i].lv=lim;}
+    ms.forEach(m=>{[m.lx,m.ly]=XY(m.lu,m.lv);m.e=XY(elbU,m.lv);m.f=XY(m.lu-CR,m.lv);});
+    // each line: from the spot out to the elbow level with its number, then straight out to the number
+    const path=m=>{g.beginPath();g.moveTo(m.x,m.y);g.lineTo(m.e[0],m.e[1]);g.lineTo(m.f[0],m.f[1]);};
     ms.forEach(m=>{g.strokeStyle="rgba(255,255,255,.9)";g.lineWidth=4.5;path(m);g.stroke();});
     ms.forEach(m=>{g.strokeStyle="#17263a";g.lineWidth=1.6;path(m);g.stroke();});
     ms.forEach(m=>{g.fillStyle=STATUS_COLOR[m.p.status]||"#17263a";g.strokeStyle="#fff";g.lineWidth=2.5;g.beginPath();g.arc(m.x,m.y,6,0,7);g.fill();g.stroke();});}
   ms.slice().reverse().forEach(m=>{g.fillStyle=STATUS_COLOR[m.p.status]||"#17263a";g.strokeStyle="#fff";g.lineWidth=3;g.beginPath();g.arc(m.lx,m.ly,CR,0,7);g.fill();g.stroke();
     g.fillStyle="#fff";g.font=`bold ${Math.round(CR*(m.p.n>99?0.85:1.05))}px Helvetica,Arial,sans-serif`;g.textAlign="center";g.textBaseline="middle";g.fillText(String(m.p.n),m.lx,m.ly+1);});
+  // north arrow when the map is turned
+  if(turned){const cx=46,cy=H-58,[nx,ny]=rot([0,-1],th);g.save();g.translate(cx,cy);
+    g.fillStyle="rgba(255,255,255,.88)";g.beginPath();g.arc(0,0,30,0,7);g.fill();g.strokeStyle="#17263a";g.lineWidth=1.5;g.stroke();
+    g.rotate(Math.atan2(ny,nx)+Math.PI/2);g.fillStyle="#17263a";g.beginPath();g.moveTo(0,-22);g.lineTo(9,6);g.lineTo(0,1);g.lineTo(-9,6);g.closePath();g.fill();
+    g.font="bold 15px Helvetica,Arial,sans-serif";g.textAlign="center";g.textBaseline="middle";g.fillText("N",0,17);g.restore();}
   g.textAlign="right";g.textBaseline="bottom";g.font="15px Helvetica,Arial,sans-serif";const att=got?"Map © Esri, HERE, Garmin, USGS":"Coastline and roads: OBX House Hunt";
-  {const tw=g.measureText(att).width,ax=crowded?tw+6:W-6;g.fillStyle="rgba(255,255,255,.8)";g.fillRect(ax-tw-6,H-24,tw+12,24);g.fillStyle="#333";g.fillText(att,ax,H-4);}
+  {const tw=g.measureText(att).width,ax=crowded&&!turned?tw+6:W-6;g.fillStyle="rgba(255,255,255,.8)";g.fillRect(ax-tw-6,H-24,tw+12,24);g.fillStyle="#333";g.fillText(att,ax,H-4);}
   return c;
 }
-async function exportMapBare(rows,W,H,route){const keep=window.Image;window.Image=function(){const o={};setTimeout(()=>o.onerror&&o.onerror(),0);return o;};try{return await exportMap(rows,W,H,route);}finally{window.Image=keep;}}
+async function exportMapBare(rows,W,H){const keep=window.Image;window.Image=function(){const o={};setTimeout(()=>o.onerror&&o.onerror(),0);return o;};try{return await exportMap(rows,W,H);}finally{window.Image=keep;}}
 async function exportPdf(pid,who){
   let rows=exportRows(pid);if(!rows.length)return;
   toast("Planning the route and making the PDF…");
   const libs=Promise.all([loadLib("jspdf").then(()=>loadLib("autotable")),loadLib("qr")]);
   // route: on-market listings with a map spot, in driving order from where you are now (or the FRF pier)
-  const here=await hereNow();let start,startLabel,startWhy;
-  if(here&&hav(here,EDENTON)<20){start=US64_IN;startLabel="Start (US-64 into Manteo)";startWhy="US-64 coming onto Roanoke Island from Edenton (the southern route)";}
-  else if(here&&hav(here,FRF)<35){start=here;startLabel="Start (you)";startWhy="where you were when this PDF was made";}
-  else if(false){start=US64_IN;startLabel="Start (US-64 into Manteo)";startWhy="US-64 coming onto Roanoke Island from Edenton (the southern route)";}
-  else{start={lat:FRF.lat,lng:FRF.lng};startLabel="Start (FRF)";startWhy="the FRF pier"+(here?" (you weren't near the Outer Banks or Edenton)":" (your location wasn't available)");}
+  const here=await hereNow();let start,finish=null,startWhy;
+  if(here&&hav(here,EDENTON)<20){start=US64_IN;finish=US158_OUT;startWhy="coming in from Edenton on US-64 (Manns Harbor, then Manteo), working south to north and finishing up north for the US-158 bridge home";}
+  else if(here&&hav(here,FRF)<35)start=here,startWhy="from where you were when this PDF was made";
+  else{start={lat:FRF.lat,lng:FRF.lng};startWhy="from the FRF pier"+(here?" (you weren't near the Outer Banks or Edenton)":" (your location wasn't available)");}
   const onRoute=rows.filter(r=>r.lat!=null&&!["Sold","Gone"].includes(r.status)),offRoute=rows.filter(r=>!onRoute.includes(r));
-  const plan=onRoute.length?planRoute(start,onRoute.map(r=>({lat:r.lat,lng:r.lng,area:r.area}))):{order:[],legMins:[],mins:0};
+  const plan=onRoute.length?planRoute(start,onRoute.map(r=>({lat:r.lat,lng:r.lng,area:r.area})),finish):{order:[],legMins:[],mins:0};
   const routed=plan.order.map(i=>onRoute[i]);
   rows=routed.concat(offRoute);rows.forEach((r,i)=>{r.n=i+1;r.leg=i<routed.length?Math.floor(i/LEG_STOPS)+1:null;r.dir=r.lat!=null||r.address?dirLinks(Object.assign({zip:""},r,{kind:r.kindKey})):null;});
   const legs=[];for(let s=0;s<routed.length;s+=LEG_STOPS){const st=routed.slice(s,s+LEG_STOPS);legs.push({from:s+1,to:s+st.length,mins:plan.legMins[legs.length],url:routeLinks(st)[PDF_MAPS]});}
   try{await libs;}catch(e){toast("Couldn't load the PDF tools. Check your connection and try again.");return;}
   const {jsPDF}=window.jspdf;const doc=new jsPDF({orientation:"landscape",unit:"pt",format:"letter"});
   const PW=doc.internal.pageSize.getWidth(),PH=doc.internal.pageSize.getHeight(),M=30,mapW=PW-2*M;
-  const PER_ROW=4,CARD_H=132,legRows=Math.ceil(legs.length/PER_ROW),routeH=legs.length?30+legRows*(CARD_H+8):0;
+  doc.setFont("helvetica","normal");doc.setFontSize(8.5);
+  const introLines=doc.splitTextToSize(`Stop numbers are the driving order ${startWhy}. Tap a leg or scan its code to open it in ${PDF_MAPS_NAME} from where you are; open the next leg when you finish one.`,PW-2*M-82);
+  const PER_ROW=4,CARD_H=132,legRows=Math.ceil(legs.length/PER_ROW),routeH=legs.length?20+introLines.length*10+legRows*(CARD_H+8):0;
   const mapH=Math.max(230,Math.min(390,PH-2*M-36-12-routeH));
-  const canvas=await exportMap(rows,Math.round(mapW*2),Math.round(mapH*2),{start,startLabel,stops:routed});
+  const canvas=await exportMap(rows,Math.round(mapW*2),Math.round(mapH*2));
   const when=new Date().toLocaleDateString("en-US",{timeZone:"America/New_York",month:"long",day:"numeric",year:"numeric"});
   const rgb=h=>h.match(/\w\w/g).map(x=>parseInt(x,16));
   doc.setFont("helvetica","bold");doc.setFontSize(18);doc.setTextColor(23,38,58);doc.text(`${who}'s list`,M,M+10);
@@ -1625,8 +1641,8 @@ async function exportPdf(pid,who){
   if(legs.length){let y=mapY+mapH+12;
     doc.setFont("helvetica","bold");doc.setFontSize(11);doc.setTextColor(23,38,58);doc.text("Driving route",M,y+8);
     doc.setFont("helvetica","normal");doc.setFontSize(8.5);doc.setTextColor(91,102,117);
-    doc.text(`Stop numbers are the driving order from ${startWhy}. Tap a leg, or scan its code with your iPhone camera: it opens in ${PDF_MAPS_NAME} starting from where you are, so open leg 2 when you finish leg 1.`,M+82,y+8,{maxWidth:mapW-82});
-    y+=22;const cw=(mapW-(PER_ROW-1)*8)/PER_ROW,qs=90;
+    doc.text(introLines,M+82,y+8);
+    y+=10+introLines.length*10;const cw=(mapW-(PER_ROW-1)*8)/PER_ROW,qs=90;
     legs.forEach((L,i)=>{const cx=M+(i%PER_ROW)*(cw+8),cy=y+Math.floor(i/PER_ROW)*(CARD_H+8);
       doc.setDrawColor(227,221,208);doc.setFillColor(250,248,243);doc.roundedRect(cx,cy,cw,CARD_H,6,6,"FD");
       doc.setFont("helvetica","bold");doc.setFontSize(10);doc.setTextColor(23,38,58);doc.text(`Leg ${i+1} · stops ${L.from}–${L.to}`,cx+8,cy+14);
