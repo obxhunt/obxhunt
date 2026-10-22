@@ -1611,8 +1611,12 @@ async function exportPdf(pid,who){
   const here=await hereNow();let start,finish=null,startWhy;
   if(here&&hav(here,EDENTON)<20){start=US64_IN;finish=US158_OUT;startWhy="coming in from Edenton on US-64 (Manns Harbor, then Manteo), working south to north and finishing up north for the US-158 bridge home";}
   else if(here&&hav(here,FRF)<35)start=here,startWhy="from where you were when this PDF was made";
-  else{start={lat:FRF.lat,lng:FRF.lng};startWhy="from the FRF pier"+(here?" (you weren't near the Outer Banks or Edenton)":" (your location wasn't available)");}
   const onRoute=rows.filter(r=>r.lat!=null&&!["Sold","Gone"].includes(r.status)),offRoute=rows.filter(r=>!onRoute.includes(r));
+  if(!start){ // not near the beach or Edenton (or no location): start from the middle of the list's listings
+    const n=onRoute.length||1,mid={lat:onRoute.reduce((a,r)=>a+r.lat,0)/n||FRF.lat,lng:onRoute.reduce((a,r)=>a+r.lng,0)/n||FRF.lng};
+    const near=onRoute.slice().sort((a,b)=>hav(a,mid)-hav(b,mid))[0]; // the listing closest to the middle, so the start is on land
+    start=near?{lat:near.lat,lng:near.lng,area:near.area}:mid;
+    startWhy="from the middle of the list"+(here?" (you weren't near the Outer Banks or Edenton)":" (your location wasn't available)");}
   const plan=onRoute.length?planRoute(start,onRoute.map(r=>({lat:r.lat,lng:r.lng,area:r.area})),finish):{order:[],legMins:[],mins:0};
   const routed=plan.order.map(i=>onRoute[i]);
   rows=routed.concat(offRoute);rows.forEach((r,i)=>{r.n=i+1;r.leg=i<routed.length?Math.floor(i/LEG_STOPS)+1:null;r.dir=r.lat!=null||r.address?dirLinks(Object.assign({zip:""},r,{kind:r.kindKey})):null;});
