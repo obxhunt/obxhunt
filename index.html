@@ -1374,8 +1374,13 @@ function topPicks(){
     const at=a.map(x=>String(x.it.savedAt||"")).sort();return {id,savers:a,cur,x:cur||snap,since:at[1]||at[0]||""};})
     .sort((a,b)=>b.savers.length-a.savers.length||(a.x.price||0)-(b.x.price||0));
 }
+function exportButtons(pid,who){
+  const row=document.createElement("div");row.className="exportrow";row.innerHTML=`<span class="hint">Export ${pid==="__top"?"Top picks":esc(who)+"'s list"}:</span><button class="btn sm" type="button" data-x="xlsx">Excel</button><button class="btn sm" type="button" data-x="pdf">PDF with map</button>`;
+  row.querySelectorAll("button").forEach(b=>b.onclick=async()=>{if(b.disabled)return;b.disabled=true;try{await (b.dataset.x==="xlsx"?exportExcel:exportPdf)(pid,who);}catch(e){console.error(e);toast("Couldn't make the file. Try again.");}finally{b.disabled=false;}});
+  return row;
+}
 function renderTopPicks(picks){
-  const body=$("#listBody");const sb=$("#shareBox");if(sb)sb.innerHTML="";
+  const body=$("#listBody");const sb=$("#shareBox");if(sb){sb.innerHTML="";if(picks.length)sb.appendChild(exportButtons("__top","Top picks"));}
   if(!picks.length){body.innerHTML=`<p class="lede">No overlaps yet. When two or more people save the same listing, it shows up here, and in the weekly Top Picks email.</p>`;return;}
   const wk=new Date(Date.now()-7*864e5).toISOString();
   body.innerHTML=`<p class="lede" style="margin:0">Listings saved by two or more people, most-shared first. This list goes out by email every week.</p>`+KINDS.map(([k,n])=>{const g=picks.filter(t=>(t.x.kind||"house")===k);if(!g.length)return"";
@@ -1404,8 +1409,7 @@ function renderLists(){
   const body=$("#listBody");
   const shareBox=$("#shareBox");
   if(shareBox){shareBox.innerHTML="";if(S.localMode&&items.length){const b=document.createElement("button");b.className="btn";b.type="button";b.textContent=`Share ${who}'s list`;b.onclick=()=>shareList(who,items);shareBox.appendChild(b);}
-    if(items.length){const row=document.createElement("div");row.className="exportrow";row.innerHTML=`<span class="hint">Export ${esc(who)}'s list:</span><button class="btn sm" type="button" data-x="xlsx">Excel</button><button class="btn sm" type="button" data-x="pdf">PDF with map</button>`;
-      const pid=S.listPerson;row.querySelectorAll("button").forEach(b=>b.onclick=async()=>{if(b.disabled)return;b.disabled=true;try{await (b.dataset.x==="xlsx"?exportExcel:exportPdf)(pid,who);}catch(e){console.error(e);toast("Couldn't make the file. Try again.");}finally{b.disabled=false;}});shareBox.appendChild(row);}}
+    if(items.length)shareBox.appendChild(exportButtons(S.listPerson,who));}
   if(!items.length){body.innerHTML=`<p class="lede">${esc(who)} hasn't saved anything yet. Tap ♡ on any listing on the map to start a list.</p>`;return;}
   const groups={house:[],condo:[],lot:[]};
   items.forEach(([id,it])=>{const cur=S.listings.get(id);const snap=it.snapshot||{};const k=(cur&&cur.kind)||snap.kind||"house";(groups[k]||groups.house).push({id,it,cur,snap});});
@@ -1486,7 +1490,10 @@ function hereNow(){return new Promise(res=>{if(!navigator.geolocation)return res
   navigator.geolocation.getCurrentPosition(p=>{if(done)return;done=true;clearTimeout(t);res({lat:p.coords.latitude,lng:p.coords.longitude});},()=>{if(done)return;done=true;clearTimeout(t);res(null);},{enableHighAccuracy:false,timeout:9000,maximumAge:600000});});}
 const STATUS_COLOR={Active:"#2e7d4f",Pending:"#a86b00",Contingent:"#a86b00",Sold:"#b23a3a",Gone:"#6b7480"};
 function exportRows(pid){
-  const items=Object.entries(savesOf(pid)),rows=[];
+  // Top picks: one row per shared listing, with who saved it and everyone's notes
+  const items=pid==="__top"?topPicks().map(t=>[t.id,{savedAt:t.since,snapshot:(t.savers[0].it||{}).snapshot||{},
+      note:t.savers.filter(v=>v.it.note).map(v=>`${v.p.name}: ${v.it.note}`).join(" · "),savedBy:t.savers.map(v=>v.p.name).join(", ")}])
+    :Object.entries(savesOf(pid)),rows=[];
   items.forEach(([id,it])=>{const cur=S.listings.get(id);const snap=it.snapshot||{};const x=cur?derive(cur):snap;rows.push({id,it,cur,snap,x});});
   const ko={house:0,condo:1,lot:2};
   rows.sort((a,b)=>(ko[a.x.kind]??0)-(ko[b.x.kind]??0)||(a.x.price||0)-(b.x.price||0)); // same order as the list page
@@ -1497,10 +1504,11 @@ function exportRows(pid){
       price:x.price||null,savedP,chg,prevPrice:x.prevPrice||null,soldPrice:x.soldPrice||null,
       beds:x.beds??null,baths:x.baths??null,sqft:x.sqft||null,acres:x.acres||null,ppsf:x.price&&x.sqft?Math.round(x.price/x.sqft):null,
       dom:cur?domDays(cur):null,listed:x.listedAt||"",commute:cur?cur.commute:(snap.commute??null),frfMi:frfMi!=null?Math.round(frfMi*10)/10:null,
-      mls:x.mls||"",saved:(it.savedAt||"").slice(0,10),note:it.note||"",loan:it.loan?loanSummary(it.loan):"",
+      mls:x.mls||"",saved:(it.savedAt||"").slice(0,10),savedBy:it.savedBy||"",note:it.note||"",loan:it.loan?loanSummary(it.loan):"",
       lat:x.lat??null,lng:x.lng??null,url:(cur&&cur.source&&cur.source.url)||"",zillow:linksFor(Object.assign({zip:""},x))[1][1],gdir:dirLinks(x).google,adir:dirLinks(x).apple,inFeed:!!cur};});
 }
-function exportName(who,ext){return `${who}'s OBX list ${new Date().toLocaleDateString("en-CA",{timeZone:"America/New_York"})}.${ext}`;}
+const exportTitle=(pid,who)=>pid==="__top"?"Family top picks":`${who}'s list`;
+function exportName(pid,who,ext){return `${pid==="__top"?"OBX top picks":who+"'s OBX list"} ${new Date().toLocaleDateString("en-CA",{timeZone:"America/New_York"})}.${ext}`;}
 async function exportExcel(pid,who){
   const rows=exportRows(pid);if(!rows.length)return;
   toast("Making the spreadsheet…");
@@ -1509,7 +1517,7 @@ async function exportExcel(pid,who){
     ["Price","price",12,"$#,##0"],["Price when saved","savedP",14,"$#,##0"],["Change since saved","chg",14,"+$#,##0;-$#,##0;$0"],["Previous list price","prevPrice",14,"$#,##0"],["Sold price","soldPrice",12,"$#,##0"],
     ["Beds","beds",6],["Baths","baths",6],["Sq ft","sqft",8,"#,##0"],["Acres","acres",7],["$ per sq ft","ppsf",10,"$#,##0"],
     ["Days on market","dom",9],["Listed","listed",11],["Drive to FRF (min)","commute",10],["Miles to FRF","frfMi",9],["MLS #","mls",9],
-    ["Saved on","saved",11],["Note","note",40],["Loan scenario","loan",40],["Latitude","lat",10],["Longitude","lng",11],["Listing page","url",16],["Zillow","zillow",12],["Google Maps directions","gdir",14],["Apple Maps directions","adir",14]];
+    ...(pid==="__top"?[["Saved by","savedBy",22]]:[]),["Saved on","saved",11],["Note"+(pid==="__top"?"s":""),"note",40],["Loan scenario","loan",40],["Latitude","lat",10],["Longitude","lng",11],["Listing page","url",16],["Zillow","zillow",12],["Google Maps directions","gdir",14],["Apple Maps directions","adir",14]];
   const aoa=[cols.map(c=>c[0])].concat(rows.map(r=>cols.map(c=>{const v=r[c[1]];return v==null?"":v;})));
   const ws=XLSX.utils.aoa_to_sheet(aoa);
   rows.forEach((r,i)=>cols.forEach((c,j)=>{const ref=XLSX.utils.encode_cell({r:i+1,c:j});const cell=ws[ref];if(!cell)return;
@@ -1517,13 +1525,13 @@ async function exportExcel(pid,who){
     const LBL={url:"Coldwell Banker",zillow:"Zillow",gdir:"Google Maps",adir:"Apple Maps"};if(LBL[c[1]]&&cell.v){cell.l={Target:cell.v};cell.v=LBL[c[1]];cell.t="s";}}));
   ws["!cols"]=cols.map(c=>({wch:c[2]}));
   ws["!autofilter"]={ref:XLSX.utils.encode_range({s:{r:0,c:0},e:{r:rows.length,c:cols.length-1}})};
-  const about=XLSX.utils.aoa_to_sheet([[`${who}'s OBX House Hunt list`],[`Exported ${new Date().toLocaleString("en-US",{timeZone:"America/New_York",dateStyle:"medium",timeStyle:"short"})} Eastern`],
+  const about=XLSX.utils.aoa_to_sheet([[`OBX House Hunt: ${exportTitle(pid,who)}`],[`Exported ${new Date().toLocaleString("en-US",{timeZone:"America/New_York",dateStyle:"medium",timeStyle:"short"})} Eastern`],
     [`Listings last checked ${typeof SNAP!=="undefined"&&SNAP?checkedLabel(SNAP):""} Eastern`],[""],
     ["Prices and status come from the Outer Banks MLS (via Coldwell Banker). Drive time to FRF is an estimate."],
     [rows.some(r=>!r.inFeed)?"Listings no longer in the feed show the details from when they were saved.":""]]);
   about["!cols"]=[{wch:90}];
   const wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,ws,"List");XLSX.utils.book_append_sheet(wb,about,"About");
-  XLSX.writeFile(wb,exportName(who,"xlsx"));
+  XLSX.writeFile(wb,exportName(pid,who,"xlsx"));
   toast("Spreadsheet downloaded");
 }
 /* Draws the listings on a street map, zoomed to fit, with numbered markers. Returns a canvas. */
@@ -1668,7 +1676,7 @@ async function exportPdf(pid,who){
   const canvas=await exportMap(rows,Math.round(mapW*2),Math.round(mapH*2));
   const when=new Date().toLocaleDateString("en-US",{timeZone:"America/New_York",month:"long",day:"numeric",year:"numeric"});
   const rgb=h=>h.match(/\w\w/g).map(x=>parseInt(x,16));
-  doc.setFont("helvetica","bold");doc.setFontSize(18);doc.setTextColor(23,38,58);doc.text(`${who}'s list`,M,M+10);
+  doc.setFont("helvetica","bold");doc.setFontSize(18);doc.setTextColor(23,38,58);doc.text(exportTitle(pid,who),M,M+10);
   doc.setFont("helvetica","normal");doc.setFontSize(10);doc.setTextColor(91,102,117);
   doc.text(`${rows.length} listing${rows.length===1?"":"s"} · OBX House Hunt · exported ${when}${routed.length?` · driving route ~${Math.round(plan.mins/60*10)/10} hr with stops`:""}`,M,M+26);
   let lx=PW-M;doc.setFontSize(9);
@@ -1696,7 +1704,7 @@ async function exportPdf(pid,who){
   const noCoords=rows.filter(r=>r.lat==null).length;
   const body=rows.map(r=>[r.n,r.address+(r.leg?"":`\n(not on route${r.lat==null?": no map spot":": "+r.status.toLowerCase()})`)+(r.inFeed?"":"\n(no longer in the feed)"),r.area,r.kind==="Condo / townhome"?"Condo":r.kind,r.status,
     r.status==="Sold"&&r.soldPrice?"Sold "+money(r.soldPrice):money(r.price)+(r.chg?`\n${r.chg<0?"down":"up"} ${money(Math.abs(r.chg))} since saved`:""),
-    r.beds??"",r.baths??"",r.sqft?r.sqft.toLocaleString("en-US"):(r.acres?r.acres+" ac":""),r.ppsf?money(r.ppsf):"",r.dom??"",r.commute!=null?r.commute+" min":"",r.mls,r.note]);
+    r.beds??"",r.baths??"",r.sqft?r.sqft.toLocaleString("en-US"):(r.acres?r.acres+" ac":""),r.ppsf?money(r.ppsf):"",r.dom??"",r.commute!=null?r.commute+" min":"",r.mls,(r.savedBy?"Saved by "+r.savedBy+(r.note?"\n":""):"")+r.note]);
   if(legs.length)doc.addPage();
   doc.autoTable({startY:legs.length?M:mapY+mapH+14,margin:{left:M,right:M,top:M,bottom:M},
     head:[["#","Address","Area","Type","Status","Price","Bd","Ba","Sq ft","$/sq ft","Days on mkt","To FRF","MLS #","Note"]],body,
@@ -1711,7 +1719,7 @@ async function exportPdf(pid,who){
   // footer on page 1 (the table starts on page 2 when there's a route)
   doc.setPage(1);doc.setFont("helvetica","normal");doc.setFontSize(8);doc.setTextColor(122,131,144);
   if(legs.length){doc.text("Prices and status: Outer Banks MLS via Coldwell Banker. The table with every listing's details starts on page 2; tap an address there for directions.",M,PH-14);doc.text("Page 1",PW-M,PH-14,{align:"right"});}
-  doc.save(exportName(who,"pdf"));
+  doc.save(exportName(pid,who,"pdf"));
   toast("PDF downloaded");
 }
 function shareList(who,items){
