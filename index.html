@@ -742,10 +742,11 @@ const S = {
     // the old "Radius from FRF" mode became "Commute to FRF"; the old separate drive-time slider is gone
     if(f.mode==="radius"){f.mode="commute";f.commute=f.commute<60?f.commute:20;}
     if(f.mode!=="commute"&&f.commute<60)f.commute=60;
+    if(!(f.fv>=2)){f.kinds=["house"];f.fv=2;} // Oct 2026: the map opens on houses only; switched once for browsers that remembered all types
     return f;})(),
   listPerson:null, schools:false
 };
-function defaultFilters(){return {mode:"town", towns:[], radius:10, kinds:["house","condo","lot"], pmin:0, pmax:0, beds:0, baths:0, sqft:0, acres:0, commute:60, elem:15, high:25, tags:[], statuses:["Active","Pending","Unverified"], favOnly:false, savedAny:false, topPicks:false, familyAdded:false, dom:"", q:"", sort:"price-asc"};}
+function defaultFilters(){return {fv:2, mode:"town", towns:[], radius:10, kinds:["house"], pmin:0, pmax:0, beds:0, baths:0, sqft:0, acres:0, commute:60, elem:15, high:25, tags:[], statuses:["Active","Pending","Unverified"], favOnly:false, savedAny:false, topPicks:false, familyAdded:false, dom:"", q:"", sort:"price-asc"};}
 function saveFilters(){store.set("obx.filters",S.f);}
 
 function peopleList(){
