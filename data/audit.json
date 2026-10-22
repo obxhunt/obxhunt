@@ -1,24 +1,24 @@
 {
  "note": "Daily spot-check sample for the OBX House Hunt site. Public MLS facts only.",
- "checkedAt": "2026-10-22T16:02:50.913Z",
+ "checkedAt": "2026-10-22T19:03:05.471Z",
  "asOf": "2026-10-22",
  "totals": {
-  "listings": 694,
-  "active": 516,
-  "pending": 154,
+  "listings": 696,
+  "active": 519,
+  "pending": 152,
   "gone": 10
  },
  "onMarketByTown": {
   "Point Harbor": 2,
   "Manteo": 55,
-  "Powells Point": 15,
+  "Powells Point": 16,
   "Harbinger": 3,
   "Kitty Hawk": 66,
   "Southern Shores": 36,
-  "Kill Devil Hills": 229,
+  "Kill Devil Hills": 230,
   "Jarvisburg": 37,
   "Nags Head": 118,
-  "Duck": 53,
+  "Duck": 52,
   "Grandy": 52,
   "Wanchese": 4
  },
