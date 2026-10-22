@@ -1128,12 +1128,20 @@ function render(){
 }
 
 /* ---------- drawer ---------- */
+/* Driving directions. Lots and "0 Street" addresses don't geocode, so those go by map coordinates. */
+function dirDest(l){const a=String(l.address||"");const useXY=l.lat!=null&&(l.kind==="lot"||/^0\s|\blots?\b/i.test(a)||!/^\d/.test(a));
+  return useXY?`${(+l.lat).toFixed(6)},${(+l.lng).toFixed(6)}`:`${a}, ${l.town}, NC ${l.zip||""}`.trim();}
+function dirLinks(l){const d=encodeURIComponent(dirDest(l));
+  return {google:`https://www.google.com/maps/dir/?api=1&destination=${d}&travelmode=driving`,apple:`https://maps.apple.com/directions?destination=${d}&mode=driving`};}
+const APPLE_DEVICE=/iPhone|iPad|iPod|Macintosh/.test(navigator.userAgent);
 function linksFor(l){
   const full=`${l.address}, ${l.town}, NC ${l.zip||""}`.trim();
   const q=encodeURIComponent(full);
   const z=(l.address.replace(/\s+Unit\s+/i," UNIT ").replace(/#/g,"")+" "+l.town+" NC "+(l.zip||"")).replace(/[^A-Za-z0-9 ]/g,"").trim().replace(/\s+/g,"-");
-  const out=[["Navigate",`https://www.google.com/maps/dir/?api=1&destination=${q}`],
+  const d=dirLinks(l);
+  const out=[["Google Maps directions",d.google],
     ["Zillow photos",`https://www.zillow.com/homes/${z}_rb/`],
+    ["Apple Maps directions",d.apple],
     ["Redfin",`https://www.google.com/search?q=${encodeURIComponent(full+" site:redfin.com")}`],
     ["Realtor.com",`https://www.google.com/search?q=${encodeURIComponent(full+" site:realtor.com")}`],
     ["Google",`https://www.google.com/search?q=${encodeURIComponent(full+" for sale")}`]];
@@ -1186,7 +1194,7 @@ function renderDrawer(){
      <div class="actions">
        <button class="btn ${mine?"ink":"pri"}" type="button" id="dSave">${mine?"♥ Saved to "+esc(S.user.name)+"'s list":"♡ Save to "+(S.user?esc(S.user.name)+"'s":"my")+" list"}</button>
        <button class="btn" type="button" id="dLoan">Loan calculator</button>
-       <a class="btn" target="_blank" rel="noopener" href="${linksFor(l)[0][1]}">Navigate</a>
+       ${(()=>{const d=dirLinks(l),g=`<a class="btn" target="_blank" rel="noopener" href="${esc(d.google)}">Google Maps</a>`,a=`<a class="btn" target="_blank" rel="noopener" href="${esc(d.apple)}">Apple Maps</a>`;return APPLE_DEVICE?a+g:g+a;})()}
      </div>
      ${mine?`<div class="sec"><h3>${esc(S.user.name)}'s note</h3><textarea id="dMyNote" rows="2" placeholder="Why you like it, questions to ask…">${esc(mine.note||"")}</textarea><div style="margin-top:6px"><button class="btn sm" type="button" id="dSaveNote">Save note</button></div>${mine.loan?`<p class="hint">Saved loan: ${esc(loanSummary(mine.loan))}</p>`:""}</div>`:""}
      <dl class="facts">
@@ -1433,7 +1441,7 @@ function exportRows(pid){
       beds:x.beds??null,baths:x.baths??null,sqft:x.sqft||null,acres:x.acres||null,ppsf:x.price&&x.sqft?Math.round(x.price/x.sqft):null,
       dom:cur?domDays(cur):null,listed:x.listedAt||"",commute:cur?cur.commute:(snap.commute??null),frfMi:frfMi!=null?Math.round(frfMi*10)/10:null,
       mls:x.mls||"",saved:(it.savedAt||"").slice(0,10),note:it.note||"",loan:it.loan?loanSummary(it.loan):"",
-      lat:x.lat??null,lng:x.lng??null,url:(cur&&cur.source&&cur.source.url)||"",zillow:linksFor(Object.assign({zip:""},x))[1][1],inFeed:!!cur};});
+      lat:x.lat??null,lng:x.lng??null,url:(cur&&cur.source&&cur.source.url)||"",zillow:linksFor(Object.assign({zip:""},x))[1][1],gdir:dirLinks(x).google,adir:dirLinks(x).apple,inFeed:!!cur};});
 }
 function exportName(who,ext){return `${who}'s OBX list ${new Date().toLocaleDateString("en-CA",{timeZone:"America/New_York"})}.${ext}`;}
 async function exportExcel(pid,who){
@@ -1444,12 +1452,12 @@ async function exportExcel(pid,who){
     ["Price","price",12,"$#,##0"],["Price when saved","savedP",14,"$#,##0"],["Change since saved","chg",14,"+$#,##0;-$#,##0;$0"],["Previous list price","prevPrice",14,"$#,##0"],["Sold price","soldPrice",12,"$#,##0"],
     ["Beds","beds",6],["Baths","baths",6],["Sq ft","sqft",8,"#,##0"],["Acres","acres",7],["$ per sq ft","ppsf",10,"$#,##0"],
     ["Days on market","dom",9],["Listed","listed",11],["Drive to FRF (min)","commute",10],["Miles to FRF","frfMi",9],["MLS #","mls",9],
-    ["Saved on","saved",11],["Note","note",40],["Loan scenario","loan",40],["Latitude","lat",10],["Longitude","lng",11],["Listing page","url",16],["Zillow","zillow",12]];
+    ["Saved on","saved",11],["Note","note",40],["Loan scenario","loan",40],["Latitude","lat",10],["Longitude","lng",11],["Listing page","url",16],["Zillow","zillow",12],["Google Maps directions","gdir",14],["Apple Maps directions","adir",14]];
   const aoa=[cols.map(c=>c[0])].concat(rows.map(r=>cols.map(c=>{const v=r[c[1]];return v==null?"":v;})));
   const ws=XLSX.utils.aoa_to_sheet(aoa);
   rows.forEach((r,i)=>cols.forEach((c,j)=>{const ref=XLSX.utils.encode_cell({r:i+1,c:j});const cell=ws[ref];if(!cell)return;
     if(c[3]&&typeof cell.v==="number")cell.z=c[3];
-    if((c[1]==="url"||c[1]==="zillow")&&cell.v){cell.l={Target:cell.v};cell.v=c[1]==="url"?"Coldwell Banker":"Zillow";cell.t="s";}}));
+    const LBL={url:"Coldwell Banker",zillow:"Zillow",gdir:"Google Maps",adir:"Apple Maps"};if(LBL[c[1]]&&cell.v){cell.l={Target:cell.v};cell.v=LBL[c[1]];cell.t="s";}}));
   ws["!cols"]=cols.map(c=>({wch:c[2]}));
   ws["!autofilter"]={ref:XLSX.utils.encode_range({s:{r:0,c:0},e:{r:rows.length,c:cols.length-1}})};
   const about=XLSX.utils.aoa_to_sheet([[`${who}'s OBX House Hunt list`],[`Exported ${new Date().toLocaleString("en-US",{timeZone:"America/New_York",dateStyle:"medium",timeStyle:"short"})} Eastern`],
