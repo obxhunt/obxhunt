@@ -1534,10 +1534,10 @@ async function exportMap(rows,W,H){
   const pts=rows.filter(r=>r.lat!=null&&r.lng!=null);
   const c=document.createElement("canvas");c.width=W;c.height=H;const g=c.getContext("2d");
   const w0=(lat,lng)=>{const sn=Math.sin(lat*Math.PI/180);return [(lng+180)/360*256,(0.5-Math.log((1+sn)/(1-sn))/(4*Math.PI))*256];};
-  const fr=pts.length?pts:[{lat:35.85,lng:-75.85},{lat:36.25,lng:-75.6}];
+  let fr=pts.length?pts:[{lat:35.85,lng:-75.85},{lat:36.25,lng:-75.6}];
   // the islands' lie: Duck to Nags Head
   const [dx1,dy1]=w0(36.18,-75.75),[dx2,dy2]=w0(35.93,-75.60),OBX=-Math.atan2(dy2-dy1,dx2-dx1);
-  const pad=60,R=17;
+  const R=17;let pad=60;
   let th=0,s=1,rc=[0,0],O=[W/2,H/2];
   const rot=(p,t)=>[p[0]*Math.cos(t)-p[1]*Math.sin(t),p[0]*Math.sin(t)+p[1]*Math.cos(t)];
   const fit=(t,Wf,Hf)=>{const r=fr.map(p=>rot(w0(p.lat,p.lng),t));const xs=r.map(q=>q[0]),ys=r.map(q=>q[1]);
@@ -1545,16 +1545,19 @@ async function exportMap(rows,W,H){
     return {t,s:Math.min(2**16,(Wf-2*pad)/sx,(Hf-2*pad)/sy),rc:[(Math.max(...xs)+Math.min(...xs))/2,(Math.max(...ys)+Math.min(...ys))/2],O:[Wf/2,Hf/2]};};
   const use=f=>{th=f.t;s=f.s;rc=f.rc;O=f.O.slice();};
   const P=(lat,lng)=>{const q=rot(w0(lat,lng),th);return [s*(q[0]-rc[0])+O[0],s*(q[1]-rc[1])+O[1]];};
-  {const a=fit(0,W,H),b=fit(OBX,W,H);use(pts.length>1&&b.s>a.s*1.15?b:a);}
+  // one or two far-off listings that would shrink everything else: leave them out of the framing and point to them from the edge
+  const scaleOf=set=>{const k=fr;fr=set;const v=Math.max(fit(0,W,H).s,fit(OBX,W,H).s);fr=k;return v;};
+  let outl=[];
+  if(pts.length>=5){let inF=pts.slice();for(let round=0;round<2;round++){const base=scaleOf(inF);let best=null;
+      for(const p of inF){const v=scaleOf(inF.filter(q=>q!==p));if(!best||v>best.v)best={p,v};}
+      if(best&&best.v>base*1.4){outl.push(best.p);inF=inF.filter(q=>q!==best.p);}else break;}
+    fr=inF;}
+  {const a=fit(0,W,H),b=fit(OBX,W,H);use(fr.length>1&&b.s>a.s*1.15?b:a);}
   const turned=th!==0;
-  // local frame for the number callouts: u points out to sea, v runs along the coast
-  const o=turned?[0,-1]:[1,0],al=turned?[1,0]:[0,1],uEdge=turned?0:W,Lv=turned?W:H;
-  const U=([x,y])=>x*o[0]+y*o[1],V=([x,y])=>x*al[0]+y*al[1],XY=(u,v)=>[u*o[0]+v*al[0],u*o[1]+v*al[1]];
-  const crowded=(()=>{const xy=pts.map(p=>P(p.lat,p.lng));for(let i=0;i<xy.length;i++)for(let j=i+1;j<xy.length;j++)if(Math.hypot(xy[i][0]-xy[j][0],xy[i][1]-xy[j][1])<2*R+3)return true;return false;})();
-  const CR=crowded?Math.max(11,Math.min(R,Math.floor((Lv-24)/Math.max(1,pts.length)-4))):R,HALF=CR+4,COLW=2*CR+8,ELB=36,RES=crowded?ELB+14+2*CR+COLW+24:0;
-  if(crowded){use(fit(th,turned?W:W-RES,turned?H-RES:H));
-    const maxU=Math.max(...pts.map(p=>U(P(p.lat,p.lng)))),du=(uEdge-RES-12)-maxU; // slide the land so the beach sits next to the numbers
-    O[0]+=du*o[0];O[1]+=du*o[1];}
+  const onMap=pts.filter(p=>!outl.includes(p));
+  const crowded=(()=>{const xy=onMap.map(p=>P(p.lat,p.lng));for(let i=0;i<xy.length;i++)for(let j=i+1;j<xy.length;j++)if(Math.hypot(xy[i][0]-xy[j][0],xy[i][1]-xy[j][1])<2*R+3)return true;return false;})();
+  const CR=crowded?(onMap.length>30?15:R):R;
+  if(crowded){pad=60+3*CR;use(fit(th,W,H));} // a wider margin leaves water around the edges for the numbers
   // fallback base drawn first: water, the site's own coastline and roads (covered by map tiles when they load)
   g.fillStyle="#cfe0ea";g.fillRect(0,0,W,H);
   g.fillStyle="#f2efe6";g.strokeStyle="#c9c2b0";g.lineWidth=1;
@@ -1578,28 +1581,62 @@ async function exportMap(rows,W,H){
   {const [fx,fy]=P(FRF.lat,FRF.lng);if(fx>-20&&fx<W+20&&fy>-20&&fy<H+20){g.fillStyle="#17263a";g.beginPath();g.moveTo(fx,fy-11);g.lineTo(fx+9,fy+6);g.lineTo(fx-9,fy+6);g.closePath();g.fill();
     g.font="bold 20px Helvetica,Arial,sans-serif";g.textAlign="left";g.textBaseline="alphabetic";g.lineWidth=4;g.strokeStyle="#fff";g.strokeText("FRF",fx+12,fy+7);g.fillText("FRF",fx+12,fy+7);}}
   // numbered markers: on the spot when there's room; otherwise lined up out over the ocean, each as close to its own spot along the coast as it fits
-  const ms=pts.map(p=>{const [x,y]=P(p.lat,p.lng);return {p,x,y,lx:x,ly:y};});
-  if(crowded){ms.forEach(m=>{m.u=U([m.x,m.y]);m.v=V([m.x,m.y]);});
-    const byV=ms.slice().sort((a,b)=>a.v-b.v),n=byV.length,lo=Math.min(0,Lv*(al[0]+al[1]<0?-1:0));
-    const elbU=Math.max(...ms.map(m=>m.u))+ELB,inU=elbU+14+CR,outU=inU+COLW;
-    byV.forEach((m,i)=>{m.lu=i%2?outU:inU;m.lv=Math.max(m.v,i?byV[i-1].lv+HALF:CR+6);});
-    for(let i=n-1;i>=0;i--){const lim=i===n-1?Lv-CR-6:byV[i+1].lv-HALF;if(byV[i].lv>lim)byV[i].lv=lim;}
-    for(let i=0;i<n;i++){const lim=i?byV[i-1].lv+HALF:CR+6;if(byV[i].lv<lim)byV[i].lv=lim;}
-    ms.forEach(m=>{[m.lx,m.ly]=XY(m.lu,m.lv);m.e=XY(elbU,m.lv);m.f=XY(m.lu-CR,m.lv);});
-    // each line: from the spot out to the elbow level with its number, then straight out to the number
-    const path=m=>{g.beginPath();g.moveTo(m.x,m.y);g.lineTo(m.e[0],m.e[1]);g.lineTo(m.f[0],m.f[1]);};
+  const ms=onMap.map(p=>{const [x,y]=P(p.lat,p.lng);return {p,x,y,lx:x,ly:y};});
+  // off-map listings: a numbered marker at the edge, an arrow pointing their way, and how far
+  const geoOf=([x,y])=>{const q=inv([x,y]);return {lng:q[0]/256*360-180,lat:Math.atan(Math.sinh(Math.PI*(1-2*q[1]/256)))*180/Math.PI};};
+  const offs=outl.map(p=>{const [ox,oy]=P(p.lat,p.lng),cx=W/2,cy=H/2,dx=ox-cx,dy=oy-cy,m=46;
+    const t=Math.min(dx>0?(W-m-cx)/dx:dx<0?(m-cx)/dx:Infinity,dy>0?(H-m-24-cy)/dy:dy<0?(m-cy)/dy:Infinity);
+    const ex=cx+dx*t,ey=cy+dy*t,d=Math.hypot(dx,dy)||1;return {p,ex,ey,ux:dx/d,uy:dy/d,mi:hav(geoOf([ex,ey]),p)};});
+  if(crowded){
+    // where's land? (the site's own coastline, drawn into a hidden mask)
+    const mk=document.createElement("canvas");mk.width=W;mk.height=H;const mg=mk.getContext("2d");mg.fillStyle="#000";
+    (LAND.type==="FeatureCollection"?LAND.features.map(f=>f.geometry):[LAND.geometry||LAND]).forEach(gm=>{if(!gm)return;(gm.type==="Polygon"?[gm.coordinates]:gm.type==="MultiPolygon"?gm.coordinates:[]).forEach(pl=>{mg.beginPath();pl[0].forEach(([lng,lat],i)=>{const [x,y]=P(lat,lng);i?mg.lineTo(x,y):mg.moveTo(x,y);});mg.closePath();mg.fill();});});
+    const md=mg.getImageData(0,0,W,H).data,isLand=(x,y)=>{x|=0;y|=0;return x<0||y<0||x>=W||y>=H?1:(md[(y*W+x)*4+3]>0?1:0);};
+    const RING=[[0,0],[1,0],[-1,0],[0,1],[0,-1],[.7,.7],[-.7,.7],[.7,-.7],[-.7,-.7]];
+    const landFrac=(x,y)=>RING.reduce((t,[a,b])=>t+isLand(x+a*(CR+3),y+b*(CR+3)),0)/RING.length;
+    const segD=(px,py,ax,ay,bx,by)=>{const dx=bx-ax,dy=by-ay,L=dx*dx+dy*dy||1;let t=((px-ax)*dx+(py-ay)*dy)/L;t=Math.max(0,Math.min(1,t));return Math.hypot(px-ax-t*dx,py-ay-t*dy);};
+    const keepOut=[];if(turned)keepOut.push({x:46,y:H-58,r:40});
+    {const [fx,fy]=P(FRF.lat,FRF.lng);keepOut.push({x:fx+20,y:fy,r:36});}
+    offs.forEach(o=>keepOut.push({x:o.ex-o.ux*20,y:o.ey-o.uy*20,r:70}));
+    const placed=[],near=m=>ms.filter(q=>Math.hypot(q.x-m.x,q.y-m.y)<6*CR).length;
+    // crowded spots pick first; each number takes the closest open water spot that covers no house dot and no other number
+    ms.slice().sort((a,b)=>near(b)-near(a)).forEach(m=>{let best=null;
+      for(let d=CR+16;d<900;d+=10){if(best&&d>best.sc)break;
+        for(let a=0;a<28;a++){const an=a*Math.PI*2/28+d*0.011,x=m.x+d*Math.cos(an),y=m.y+d*Math.sin(an);
+          if(x<CR+6||x>W-CR-6||y<CR+6||y>H-CR-30)continue;
+          if(ms.some(q=>Math.hypot(q.x-x,q.y-y)<CR+9))continue;
+          if(placed.some(q=>Math.hypot(q.lx-x,q.ly-y)<2*CR+5))continue;
+          if(keepOut.some(k=>Math.hypot(k.x-x,k.y-y)<CR+k.r))continue;
+          let sc=d+500*landFrac(x,y);
+          for(const q of placed){if(segD(q.lx,q.ly,m.x,m.y,x,y)<CR+3)sc+=260;if(segD(x,y,q.x,q.y,q.lx,q.ly)<CR+3)sc+=260;}
+          for(const q of ms)if(q!==m&&segD(q.x,q.y,m.x,m.y,x,y)<8)sc+=40;
+          if(!best||sc<best.sc)best={sc,x,y};}}
+      if(!best)best={x:m.x,y:m.y};m.lx=best.x;m.ly=best.y;placed.push(m);});
+    // untangle: if two lines cross, swap their numbers' spots (always shorter, and every spot stays legal)
+    const cross=(a,b)=>{const o=(p,q,r)=>Math.sign((q[0]-p[0])*(r[1]-p[1])-(q[1]-p[1])*(r[0]-p[0]));const A=[a.x,a.y],B=[a.lx,a.ly],C=[b.x,b.y],D=[b.lx,b.ly];return o(A,B,C)*o(A,B,D)<0&&o(C,D,A)*o(C,D,B)<0;};
+    for(let pass=0;pass<8;pass++){let sw=false;for(let i=0;i<ms.length;i++)for(let j=i+1;j<ms.length;j++){const a=ms[i],b=ms[j];if(cross(a,b)){[a.lx,b.lx]=[b.lx,a.lx];[a.ly,b.ly]=[b.ly,a.ly];sw=true;}}if(!sw)break;}
+    const edge=m=>{const d=Math.hypot(m.lx-m.x,m.ly-m.y)||1;return [m.lx-(m.lx-m.x)/d*CR,m.ly-(m.ly-m.y)/d*CR];};
+    const path=m=>{const e=edge(m);g.beginPath();g.moveTo(m.x,m.y);g.lineTo(e[0],e[1]);};
     ms.forEach(m=>{g.strokeStyle="rgba(255,255,255,.9)";g.lineWidth=4.5;path(m);g.stroke();});
     ms.forEach(m=>{g.strokeStyle="#17263a";g.lineWidth=1.6;path(m);g.stroke();});
     ms.forEach(m=>{g.fillStyle=STATUS_COLOR[m.p.status]||"#17263a";g.strokeStyle="#fff";g.lineWidth=2.5;g.beginPath();g.arc(m.x,m.y,6,0,7);g.fill();g.stroke();});}
   ms.slice().reverse().forEach(m=>{g.fillStyle=STATUS_COLOR[m.p.status]||"#17263a";g.strokeStyle="#fff";g.lineWidth=3;g.beginPath();g.arc(m.lx,m.ly,CR,0,7);g.fill();g.stroke();
     g.fillStyle="#fff";g.font=`bold ${Math.round(CR*(m.p.n>99?0.85:1.05))}px Helvetica,Arial,sans-serif`;g.textAlign="center";g.textBaseline="middle";g.fillText(String(m.p.n),m.lx,m.ly+1);});
+  offs.forEach(o=>{const {ex,ey,ux,uy}=o,col=STATUS_COLOR[o.p.status]||"#17263a",bx=ex-ux*(CR+20),by=ey-uy*(CR+20);
+    g.save();g.translate(ex,ey);g.rotate(Math.atan2(uy,ux));g.fillStyle="#17263a";g.strokeStyle="#fff";g.lineWidth=3;
+    g.beginPath();g.moveTo(16,0);g.lineTo(-6,-13);g.lineTo(-1,0);g.lineTo(-6,13);g.closePath();g.stroke();g.fill();g.restore();
+    g.fillStyle=col;g.strokeStyle="#fff";g.lineWidth=3;g.beginPath();g.arc(bx,by,CR,0,7);g.fill();g.stroke();
+    g.fillStyle="#fff";g.font=`bold ${Math.round(CR*1.05)}px Helvetica,Arial,sans-serif`;g.textAlign="center";g.textBaseline="middle";g.fillText(String(o.p.n),bx,by+1);
+    const txt=`${o.p.area||o.p.town||""} · ${Math.round(o.mi)} mi this way`;g.font="bold 17px Helvetica,Arial,sans-serif";
+    const tw=g.measureText(txt).width,left=ux>0.3,tx=left?bx-CR-8:bx+CR+8,tx0=left?tx-tw:tx,ty=Math.max(14,Math.min(H-40,by));
+    g.fillStyle="rgba(255,255,255,.88)";g.fillRect(tx0-5,ty-13,tw+10,26);g.fillStyle="#17263a";g.textAlign=left?"right":"left";g.fillText(txt,tx,ty+1);});
   // north arrow when the map is turned
   if(turned){const cx=46,cy=H-58,[nx,ny]=rot([0,-1],th);g.save();g.translate(cx,cy);
     g.fillStyle="rgba(255,255,255,.88)";g.beginPath();g.arc(0,0,30,0,7);g.fill();g.strokeStyle="#17263a";g.lineWidth=1.5;g.stroke();
     g.rotate(Math.atan2(ny,nx)+Math.PI/2);g.fillStyle="#17263a";g.beginPath();g.moveTo(0,-22);g.lineTo(9,6);g.lineTo(0,1);g.lineTo(-9,6);g.closePath();g.fill();
     g.font="bold 15px Helvetica,Arial,sans-serif";g.textAlign="center";g.textBaseline="middle";g.fillText("N",0,17);g.restore();}
   g.textAlign="right";g.textBaseline="bottom";g.font="15px Helvetica,Arial,sans-serif";const att=got?"Map © Esri, HERE, Garmin, USGS":"Coastline and roads: OBX House Hunt";
-  {const tw=g.measureText(att).width,ax=crowded&&!turned?tw+6:W-6;g.fillStyle="rgba(255,255,255,.8)";g.fillRect(ax-tw-6,H-24,tw+12,24);g.fillStyle="#333";g.fillText(att,ax,H-4);}
+  {const tw=g.measureText(att).width,ax=W-6;g.fillStyle="rgba(255,255,255,.8)";g.fillRect(ax-tw-6,H-24,tw+12,24);g.fillStyle="#333";g.fillText(att,ax,H-4);}
   return c;
 }
 async function exportMapBare(rows,W,H){const keep=window.Image;window.Image=function(){const o={};setTimeout(()=>o.onerror&&o.onerror(),0);return o;};try{return await exportMap(rows,W,H);}finally{window.Image=keep;}}
