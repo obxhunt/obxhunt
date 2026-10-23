@@ -1,21 +1,21 @@
 {
  "note": "Daily spot-check sample for the OBX House Hunt site. Public MLS facts only.",
- "checkedAt": "2026-10-23T16:11:42.150Z",
+ "checkedAt": "2026-10-23T19:03:12.937Z",
  "asOf": "2026-10-23",
  "totals": {
-  "listings": 702,
-  "active": 520,
-  "pending": 152,
+  "listings": 703,
+  "active": 519,
+  "pending": 150,
   "gone": 13
  },
  "onMarketByTown": {
   "Point Harbor": 2,
   "Manteo": 53,
   "Powells Point": 16,
-  "Harbinger": 3,
+  "Harbinger": 2,
   "Kitty Hawk": 66,
-  "Southern Shores": 35,
-  "Kill Devil Hills": 232,
+  "Southern Shores": 34,
+  "Kill Devil Hills": 231,
   "Jarvisburg": 37,
   "Nags Head": 118,
   "Duck": 52,
@@ -27,20 +27,6 @@
  "batchSize": 50,
  "rotationKey": "2026-10-23",
  "sample": [
-  {
-   "address": "101 Nash Road",
-   "town": "Duck",
-   "price": 299900,
-   "status": "Active",
-   "kind": "lot",
-   "beds": null,
-   "baths": null,
-   "sqft": null,
-   "acres": 0.34,
-   "listedAt": "2026-04-03",
-   "mls": "132408",
-   "url": "https://www.coldwellbanker.com/nc/duck/101-nash-rd--1/lid-P00800000HHLJEgx4Xx3hVObBLg4jJDEIQut0FzY"
-  },
   {
    "address": "200 E Martin Street Unit 309",
    "town": "Kill Devil Hills",
@@ -726,6 +712,20 @@
    "listedAt": "2026-05-16",
    "mls": "132888",
    "url": "https://www.coldwellbanker.com/nc/nags-head/4611-s-cobia-way/lid-P00800000HB2bmoPZ6LxNAHbBMsfUnhU2tRmrHgg"
+  },
+  {
+   "address": "219 Cobbs Way",
+   "town": "Nags Head",
+   "price": 629000,
+   "status": "Active",
+   "kind": "house",
+   "beds": 4,
+   "baths": 3,
+   "sqft": 1725,
+   "acres": null,
+   "listedAt": "2026-05-19",
+   "mls": "132902",
+   "url": "https://www.coldwellbanker.com/nc/nags-head/219-w-cobbs-way/lid-P00800000HBBMcq6L7qSgvJmcPKnxZ8tCGikqojA"
   }
  ]
 }
