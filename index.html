@@ -1253,7 +1253,7 @@ function renderDrawer(){
        <span>County</span><span>${TOWN[l.area]?esc(TOWN[l.area].county):"—"}</span>
        <span>Added</span><span>${esc(l.addedAt||"—")} by ${esc(l.addedBy||"Claude")}</span>
        <span>Last confirmed</span><span>${esc(l.seenAt||"—")}</span>
-       ${l.prevPrice?`<span>Previous price</span><span>${money(l.prevPrice)}</span>`:""}
+       ${l.prevPrice?`<span>Previous price</span><span>${money(l.prevPrice)}${l.prevPrice>l.price?` <small class="drop">▼ ${money(l.prevPrice-l.price)}</small>`:""}${l.priceChangedAt?` <small class="hint">changed ${new Date(l.priceChangedAt+"T12:00:00").toLocaleDateString("en-US",{month:"short",day:"numeric"})}</small>`:""}</span>`:""}
        <span>Source</span><span>${l.source&&l.source.url?`<a href="${esc(l.source.url)}" target="_blank" rel="noopener">${esc(l.source.name||"Link")}</a>`:"—"}</span>
        <span>Map pin</span><span>${l.geo==="approx"?'<span class="approx">Approximate. The exact pin is filled in by the next refresh.</span>':"Exact address match"}</span>
        ${l.statusBy?`<span>Status set by</span><span>${esc(l.statusBy)} on ${esc(l.statusAt||"")}</span>`:""}
