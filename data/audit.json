@@ -1,23 +1,23 @@
 {
  "note": "Daily spot-check sample for the OBX House Hunt site. Public MLS facts only.",
- "checkedAt": "2026-10-24T13:03:06.087Z",
+ "checkedAt": "2026-10-24T15:59:48.278Z",
  "asOf": "2026-10-24",
  "totals": {
-  "listings": 707,
-  "active": 523,
-  "pending": 145,
+  "listings": 709,
+  "active": 524,
+  "pending": 146,
   "gone": 16
  },
  "onMarketByTown": {
   "Point Harbor": 2,
   "Manteo": 53,
-  "Powells Point": 19,
+  "Powells Point": 20,
   "Harbinger": 2,
   "Kitty Hawk": 66,
   "Southern Shores": 35,
   "Kill Devil Hills": 226,
   "Jarvisburg": 37,
-  "Nags Head": 118,
+  "Nags Head": 119,
   "Duck": 52,
   "Grandy": 52,
   "Wanchese": 6
@@ -39,7 +39,8 @@
    "acres": null,
    "listedAt": "2026-05-19",
    "mls": "132903",
-   "url": "https://www.coldwellbanker.com/nc/kill-devil-hills/1117-cambridge-rd--311h/lid-P00800000HHLJFPBSYvwcwOp3Mjnorf8FbjryDug"
+   "url": "https://www.coldwellbanker.com/nc/kill-devil-hills/1117-cambridge-rd--311h/lid-P00800000HHLJFPBSYvwcwOp3Mjnorf8FbjryDug",
+   "cbUpdated": "2026-09-17T01:05"
   },
   {
    "address": "407 Da Vinci Lane",
@@ -53,7 +54,8 @@
    "acres": null,
    "listedAt": "2026-05-20",
    "mls": "132914",
-   "url": "https://www.coldwellbanker.com/nc/kitty-hawk/407-da-vinci-ln/lid-P00800000HBEu8kzrI2xEl9sKbBaOOXPqiuNcgi8"
+   "url": "https://www.coldwellbanker.com/nc/kitty-hawk/407-da-vinci-ln/lid-P00800000HBEu8kzrI2xEl9sKbBaOOXPqiuNcgi8",
+   "cbUpdated": "2026-10-21T15:49"
   },
   {
    "address": "500 W Fifth Street",
@@ -67,7 +69,8 @@
    "acres": null,
    "listedAt": "2026-05-21",
    "mls": "132923",
-   "url": "https://www.coldwellbanker.com/nc/kill-devil-hills/500-w-5th-st/lid-P00800000HBIF7cL4bQ7AbT55Ml2pE9HSis4DHY5"
+   "url": "https://www.coldwellbanker.com/nc/kill-devil-hills/500-w-5th-st/lid-P00800000HBIF7cL4bQ7AbT55Ml2pE9HSis4DHY5",
+   "cbUpdated": "2026-10-21T15:49"
   },
   {
    "address": "5613 S Virginia Dare Trail Unit V",
@@ -81,7 +84,8 @@
    "acres": null,
    "listedAt": "2026-05-22",
    "mls": "132934",
-   "url": "https://www.coldwellbanker.com/nc/nags-head/5613-s-virginia-dare-trl--v/lid-P00800000HHLJF7UVM8n3ZCKhl76z2gJiP1xMlKA"
+   "url": "https://www.coldwellbanker.com/nc/nags-head/5613-s-virginia-dare-trl--v/lid-P00800000HHLJF7UVM8n3ZCKhl76z2gJiP1xMlKA",
+   "cbUpdated": "2026-09-29T11:00"
   },
   {
    "address": "101 Settlers Lane",
@@ -95,7 +99,8 @@
    "acres": null,
    "listedAt": "2026-05-22",
    "mls": "132939",
-   "url": "https://www.coldwellbanker.com/nc/duck/101-settlers-ln-lot-6/lid-P00800000HBM7YOGJxYc5ZGfXq5ckHtGxXAtFXXG"
+   "url": "https://www.coldwellbanker.com/nc/duck/101-settlers-ln-lot-6/lid-P00800000HBM7YOGJxYc5ZGfXq5ckHtGxXAtFXXG",
+   "cbUpdated": "2026-10-21T15:49"
   },
   {
    "address": "5313 S Sand Wedge Lane",
@@ -109,7 +114,8 @@
    "acres": null,
    "listedAt": "2026-05-23",
    "mls": "132945",
-   "url": "https://www.coldwellbanker.com/nc/nags-head/5313-s-sand-wedge-ln/lid-P00800000HBOvZRcFUoDjGq8MQEqs8jXdv6VVB23"
+   "url": "https://www.coldwellbanker.com/nc/nags-head/5313-s-sand-wedge-ln/lid-P00800000HBOvZRcFUoDjGq8MQEqs8jXdv6VVB23",
+   "cbUpdated": "2026-10-21T15:49"
   },
   {
    "address": "1704 Soble Drive",
@@ -123,7 +129,8 @@
    "acres": null,
    "listedAt": "2026-05-27",
    "mls": "132980",
-   "url": "https://www.coldwellbanker.com/nc/kill-devil-hills/1704-soble-dr/lid-P00800000HBbDDaLxVo1VvIH10FiT1BOq3AL18iH"
+   "url": "https://www.coldwellbanker.com/nc/kill-devil-hills/1704-soble-dr/lid-P00800000HBbDDaLxVo1VvIH10FiT1BOq3AL18iH",
+   "cbUpdated": "2026-10-01T17:23"
   },
   {
    "address": "8509 S Old Oregon Inlet Road",
@@ -137,7 +144,8 @@
    "acres": null,
    "listedAt": "2026-05-28",
    "mls": "132988",
-   "url": "https://www.coldwellbanker.com/nc/nags-head/8509-s-old-oregon-inlet-rd/lid-P00800000HBeGrSpuYehB5lYyo2YHQBJAbplZCu5"
+   "url": "https://www.coldwellbanker.com/nc/nags-head/8509-s-old-oregon-inlet-rd/lid-P00800000HBeGrSpuYehB5lYyo2YHQBJAbplZCu5",
+   "cbUpdated": "2026-10-21T15:49"
   },
   {
    "address": "3215 N Virginia Dare Trail",
@@ -151,7 +159,8 @@
    "acres": null,
    "listedAt": "2026-05-28",
    "mls": "132991",
-   "url": "https://www.coldwellbanker.com/nc/kill-devil-hills/3215-n-virginia-dare-trl/lid-P00800000HBfUnKA354oMEZxJdkgb39CyrmnVPte"
+   "url": "https://www.coldwellbanker.com/nc/kill-devil-hills/3215-n-virginia-dare-trl/lid-P00800000HBfUnKA354oMEZxJdkgb39CyrmnVPte",
+   "cbUpdated": "2026-09-24T15:10"
   },
   {
    "address": "815 S Virginia Dare Trail Unit 202",
@@ -165,7 +174,8 @@
    "acres": null,
    "listedAt": "2026-05-29",
    "mls": "132993",
-   "url": "https://www.coldwellbanker.com/nc/kill-devil-hills/815-s-virginia-dare-trl--202/lid-P00800000HHLJEPG7L9u88C6pk3NtUETaY8PuiNH"
+   "url": "https://www.coldwellbanker.com/nc/kill-devil-hills/815-s-virginia-dare-trl--202/lid-P00800000HHLJEPG7L9u88C6pk3NtUETaY8PuiNH",
+   "cbUpdated": "2026-09-15T15:38"
   },
   {
    "address": "102 Acorn Lane",
@@ -179,7 +189,8 @@
    "acres": null,
    "listedAt": "2026-05-29",
    "mls": "133002",
-   "url": "https://www.coldwellbanker.com/nc/point-harbor/102-acorn-ln/lid-P00800000HBiZ9ZsUiCzF5sMTJ4xNoUZOFADuxLO"
+   "url": "https://www.coldwellbanker.com/nc/point-harbor/102-acorn-ln/lid-P00800000HBiZ9ZsUiCzF5sMTJ4xNoUZOFADuxLO",
+   "cbUpdated": "2026-10-21T15:49"
   },
   {
    "address": "8028 Caratoke Highway",
@@ -193,7 +204,8 @@
    "acres": 9.9,
    "listedAt": "2026-06-04",
    "mls": "133050",
-   "url": "https://www.coldwellbanker.com/nc/powells-point/8028-caratoke-hwy/lid-P00800000HC0sV2UoKQjhmipyn4jtHYdDhyNXVMi"
+   "url": "https://www.coldwellbanker.com/nc/powells-point/8028-caratoke-hwy/lid-P00800000HC0sV2UoKQjhmipyn4jtHYdDhyNXVMi",
+   "cbUpdated": "2026-08-08T16:10"
   },
   {
    "address": "103 E West Hawks Nest Court",
@@ -207,7 +219,8 @@
    "acres": null,
    "listedAt": "2026-06-05",
    "mls": "133056",
-   "url": "https://www.coldwellbanker.com/nc/nags-head/103-w-hawks-nest-ct--e/lid-P00800000HC3cWFdNA7mJyqB7pjv5VVk5NbFtudh"
+   "url": "https://www.coldwellbanker.com/nc/nags-head/103-w-hawks-nest-ct--e/lid-P00800000HC3cWFdNA7mJyqB7pjv5VVk5NbFtudh",
+   "cbUpdated": "2026-10-22T16:01"
   },
   {
    "address": "300 E Fresh Pond Drive",
@@ -221,7 +234,8 @@
    "acres": null,
    "listedAt": "2026-06-05",
    "mls": "133058",
-   "url": "https://www.coldwellbanker.com/nc/kill-devil-hills/300-e-fresh-pond-dr/lid-P00800000HC3sQ3UDRtWnDE80f0dVTxbsE6OVYTk"
+   "url": "https://www.coldwellbanker.com/nc/kill-devil-hills/300-e-fresh-pond-dr/lid-P00800000HC3sQ3UDRtWnDE80f0dVTxbsE6OVYTk",
+   "cbUpdated": "2026-10-21T15:49"
   },
   {
    "address": "101 Tower Lane",
@@ -235,7 +249,8 @@
    "acres": null,
    "listedAt": "2026-06-05",
    "mls": "133067",
-   "url": "https://www.coldwellbanker.com/nc/kill-devil-hills/101-tower-ln-lot-1/lid-P00800000HHLJEye1kkDGsb5WxIlZ8BvtLd5LISM"
+   "url": "https://www.coldwellbanker.com/nc/kill-devil-hills/101-tower-ln-lot-1/lid-P00800000HHLJEye1kkDGsb5WxIlZ8BvtLd5LISM",
+   "cbUpdated": "2026-10-21T15:49"
   },
   {
    "address": "5022 S Virginia Dare Trail",
@@ -249,7 +264,8 @@
    "acres": null,
    "listedAt": "2026-06-05",
    "mls": "133069",
-   "url": "https://www.coldwellbanker.com/nc/nags-head/5022-s-virginia-dare-trl/lid-P00800000HC5988QezmInh6vfDpjFqBkfz55ZQMY"
+   "url": "https://www.coldwellbanker.com/nc/nags-head/5022-s-virginia-dare-trl/lid-P00800000HC5988QezmInh6vfDpjFqBkfz55ZQMY",
+   "cbUpdated": "2026-10-21T15:49"
   },
   {
    "address": "889 Emeline Lane",
@@ -263,7 +279,8 @@
    "acres": null,
    "listedAt": "2026-06-06",
    "mls": "133072",
-   "url": "https://www.coldwellbanker.com/nc/kitty-hawk/889-emeline-ln/lid-P00800000HC75RwTlogWb62jjc2Z1N6PgCY9qRR8"
+   "url": "https://www.coldwellbanker.com/nc/kitty-hawk/889-emeline-ln/lid-P00800000HC75RwTlogWb62jjc2Z1N6PgCY9qRR8",
+   "cbUpdated": "2026-10-21T15:49"
   },
   {
    "address": "815 S Virginia Dare Trail Unit 318",
@@ -277,7 +294,8 @@
    "acres": null,
    "listedAt": "2026-06-07",
    "mls": "133081",
-   "url": "https://www.coldwellbanker.com/nc/kill-devil-hills/815-s-virginia-dare-trl--318/lid-P00800000HCAd4qqgXJIcbJozAgGvqV7FVhbKMcP"
+   "url": "https://www.coldwellbanker.com/nc/kill-devil-hills/815-s-virginia-dare-trl--318/lid-P00800000HCAd4qqgXJIcbJozAgGvqV7FVhbKMcP",
+   "cbUpdated": "2026-09-15T15:38"
   },
   {
    "address": "6924 S Virginia Dare Trail",
@@ -291,7 +309,8 @@
    "acres": null,
    "listedAt": "2026-06-08",
    "mls": "133085",
-   "url": "https://www.coldwellbanker.com/nc/nags-head/6924-s-virginia-dare-trl/lid-P00800000HCDVMIbMk6QNW1ngUVcT13Zn1k6tfUD"
+   "url": "https://www.coldwellbanker.com/nc/nags-head/6924-s-virginia-dare-trl/lid-P00800000HCDVMIbMk6QNW1ngUVcT13Zn1k6tfUD",
+   "cbUpdated": "2026-10-21T15:49"
   },
   {
    "address": "3 Little Tim Island",
@@ -305,7 +324,8 @@
    "acres": null,
    "listedAt": "2026-06-08",
    "mls": "133087",
-   "url": "https://www.coldwellbanker.com/nc/wanchese/3-little-tim-is--3/lid-P00800000HCE7aHU9MPPoO11xIDY8peE1wU2MxrT"
+   "url": "https://www.coldwellbanker.com/nc/wanchese/3-little-tim-is--3/lid-P00800000HCE7aHU9MPPoO11xIDY8peE1wU2MxrT",
+   "cbUpdated": "2026-10-16T08:37"
   },
   {
    "address": "205 Old Holly Lane",
@@ -319,7 +339,8 @@
    "acres": 0.52,
    "listedAt": "2026-06-09",
    "mls": "133106",
-   "url": "https://www.coldwellbanker.com/nc/kill-devil-hills/205-old-holly-ln--45/lid-P00800000HHLJEgx4Xx3hVObBLg4jJDExiVkO3a2"
+   "url": "https://www.coldwellbanker.com/nc/kill-devil-hills/205-old-holly-ln--45/lid-P00800000HHLJEgx4Xx3hVObBLg4jJDExiVkO3a2",
+   "cbUpdated": "2026-10-21T15:50"
   },
   {
    "address": "112 Old Holly Lane",
@@ -333,7 +354,8 @@
    "acres": 0.65,
    "listedAt": "2026-06-09",
    "mls": "133107",
-   "url": "https://www.coldwellbanker.com/nc/kill-devil-hills/112-old-holly-ln-lot-64/lid-P00800000HHLJEPG7L9u88C6pk3NtUERDEkPwmbP"
+   "url": "https://www.coldwellbanker.com/nc/kill-devil-hills/112-old-holly-ln-lot-64/lid-P00800000HHLJEPG7L9u88C6pk3NtUERDEkPwmbP",
+   "cbUpdated": "2026-10-21T15:49"
   },
   {
    "address": "256 Tower Lane",
@@ -347,7 +369,8 @@
    "acres": 0.64,
    "listedAt": "2026-06-09",
    "mls": "133108",
-   "url": "https://www.coldwellbanker.com/nc/kill-devil-hills/256-tower-ln-lot-14/lid-P00800000HHLJFPBSYvwcwOp3Mjnorf2xsuYRPDy"
+   "url": "https://www.coldwellbanker.com/nc/kill-devil-hills/256-tower-ln-lot-14/lid-P00800000HHLJFPBSYvwcwOp3Mjnorf2xsuYRPDy",
+   "cbUpdated": "2026-10-21T15:49"
   },
   {
    "address": "207-10 W Martin Street",
@@ -361,7 +384,8 @@
    "acres": null,
    "listedAt": "2026-06-09",
    "mls": "133110",
-   "url": "https://www.coldwellbanker.com/nc/kill-devil-hills/20710-w-martin-st/lid-P00800000HCHZgbcesGNO8xTpqBpcgtDsSgJCQcw"
+   "url": "https://www.coldwellbanker.com/nc/kill-devil-hills/20710-w-martin-st/lid-P00800000HCHZgbcesGNO8xTpqBpcgtDsSgJCQcw",
+   "cbUpdated": "2026-08-08T16:10"
   },
   {
    "address": "207-1 W Martin Street",
@@ -375,7 +399,8 @@
    "acres": null,
    "listedAt": "2026-06-09",
    "mls": "133111",
-   "url": "https://www.coldwellbanker.com/nc/kill-devil-hills/2071-w-martin-st/lid-P00800000HCHi8gUPJGMhtPQqnkfeG9P4dN3gqQU"
+   "url": "https://www.coldwellbanker.com/nc/kill-devil-hills/2071-w-martin-st/lid-P00800000HCHi8gUPJGMhtPQqnkfeG9P4dN3gqQU",
+   "cbUpdated": "2026-08-08T16:10"
   },
   {
    "address": "207-2 W Martin Street",
@@ -389,7 +414,8 @@
    "acres": null,
    "listedAt": "2026-06-09",
    "mls": "133112",
-   "url": "https://www.coldwellbanker.com/nc/kill-devil-hills/2072-w-martin-st/lid-P00800000HCHi8pKsuewUa0g1bZ14AdfKujxNsLz"
+   "url": "https://www.coldwellbanker.com/nc/kill-devil-hills/2072-w-martin-st/lid-P00800000HCHi8pKsuewUa0g1bZ14AdfKujxNsLz",
+   "cbUpdated": "2026-08-08T16:10"
   },
   {
    "address": "224 Old Holly Lane",
@@ -403,7 +429,8 @@
    "acres": 0.61,
    "listedAt": "2026-06-09",
    "mls": "133113",
-   "url": "https://www.coldwellbanker.com/nc/kill-devil-hills/224-old-holly-ln-lot-57/lid-P00800000HHLJEye1kkDGsb5WxIlZ8Bw007GJaeD"
+   "url": "https://www.coldwellbanker.com/nc/kill-devil-hills/224-old-holly-ln-lot-57/lid-P00800000HHLJEye1kkDGsb5WxIlZ8Bw007GJaeD",
+   "cbUpdated": "2026-10-21T15:49"
   },
   {
    "address": "233 Old Holly Lane",
@@ -417,7 +444,8 @@
    "acres": 0.44,
    "listedAt": "2026-06-10",
    "mls": "133116",
-   "url": "https://www.coldwellbanker.com/nc/kill-devil-hills/233-old-holly-ln-lot-52/lid-P00800000HHLJFY1wAKWPd04EAY9Em9PbYGfJfv5"
+   "url": "https://www.coldwellbanker.com/nc/kill-devil-hills/233-old-holly-ln-lot-52/lid-P00800000HHLJFY1wAKWPd04EAY9Em9PbYGfJfv5",
+   "cbUpdated": "2026-10-21T15:49"
   },
   {
    "address": "212 Old Holly Lane",
@@ -431,7 +459,8 @@
    "acres": 0.35,
    "listedAt": "2026-06-10",
    "mls": "133117",
-   "url": "https://www.coldwellbanker.com/nc/kill-devil-hills/212-old-holly-ln-lot-60/lid-P00800000HHLJEPG7L9u88C6pk3NtUES5TBmhI8O"
+   "url": "https://www.coldwellbanker.com/nc/kill-devil-hills/212-old-holly-ln-lot-60/lid-P00800000HHLJEPG7L9u88C6pk3NtUES5TBmhI8O",
+   "cbUpdated": "2026-10-21T15:49"
   },
   {
    "address": "124 Dolphin Court",
@@ -445,7 +474,8 @@
    "acres": null,
    "listedAt": "2026-06-10",
    "mls": "133128",
-   "url": "https://www.coldwellbanker.com/nc/grandy/124-dolphin-ct/lid-P00800000HCKO3mAatxRkLdsexCbWlezjdNHljdS"
+   "url": "https://www.coldwellbanker.com/nc/grandy/124-dolphin-ct/lid-P00800000HCKO3mAatxRkLdsexCbWlezjdNHljdS",
+   "cbUpdated": "2026-10-21T15:49"
   },
   {
    "address": "9315 E Eagle Street",
@@ -459,7 +489,8 @@
    "acres": null,
    "listedAt": "2026-06-10",
    "mls": "133129",
-   "url": "https://www.coldwellbanker.com/nc/nags-head/9315-eagle-st/lid-P00800000HCKW0kWFqXbsJ8Tglk8Ri8EJS6zFEKN"
+   "url": "https://www.coldwellbanker.com/nc/nags-head/9315-eagle-st/lid-P00800000HCKW0kWFqXbsJ8Tglk8Ri8EJS6zFEKN",
+   "cbUpdated": "2026-10-16T21:52"
   },
   {
    "address": "1239 A S Virginia Dare Trail",
@@ -473,7 +504,8 @@
    "acres": null,
    "listedAt": "2026-06-10",
    "mls": "133131",
-   "url": "https://www.coldwellbanker.com/nc/kill-devil-hills/1239-s-virginia-dare-trl--a/lid-P00800000HCKmlLXlIyutlmz2rSfUnpRrpLfjCvS"
+   "url": "https://www.coldwellbanker.com/nc/kill-devil-hills/1239-s-virginia-dare-trl--a/lid-P00800000HCKmlLXlIyutlmz2rSfUnpRrpLfjCvS",
+   "cbUpdated": "2026-10-22T04:59"
   },
   {
    "address": "110 Sir Richard West",
@@ -487,7 +519,8 @@
    "acres": null,
    "listedAt": "2026-06-12",
    "mls": "133151",
-   "url": "https://www.coldwellbanker.com/nc/kill-devil-hills/110-sir-richard-w/lid-P00800000HCQvgPSfe83lxFKgtZbqVczexY9WdEz"
+   "url": "https://www.coldwellbanker.com/nc/kill-devil-hills/110-sir-richard-w/lid-P00800000HCQvgPSfe83lxFKgtZbqVczexY9WdEz",
+   "cbUpdated": "2026-10-21T15:49"
   },
   {
    "address": "107 First Flight Run",
@@ -501,7 +534,8 @@
    "acres": null,
    "listedAt": "2026-06-12",
    "mls": "133152",
-   "url": "https://www.coldwellbanker.com/nc/kitty-hawk/107-first-flight-run/lid-P00800000HCQvgYJ9FWdYdqZrhNxGQ7LfOmBB4qg"
+   "url": "https://www.coldwellbanker.com/nc/kitty-hawk/107-first-flight-run/lid-P00800000HCQvgYJ9FWdYdqZrhNxGQ7LfOmBB4qg",
+   "cbUpdated": "2026-10-21T01:55"
   },
   {
    "address": "405 Sextant Court Unit 405",
@@ -515,7 +549,8 @@
    "acres": null,
    "listedAt": "2026-06-12",
    "mls": "133154",
-   "url": "https://www.coldwellbanker.com/nc/manteo/405-sextant-ct/lid-P00800000HCQvgYJ9FWdYdqZrhNxGQ7Mre9oShG9"
+   "url": "https://www.coldwellbanker.com/nc/manteo/405-sextant-ct/lid-P00800000HCQvgYJ9FWdYdqZrhNxGQ7Mre9oShG9",
+   "cbUpdated": "2026-10-19T22:11"
   },
   {
    "address": "7024 S Virginia Dare Trail",
@@ -529,7 +564,8 @@
    "acres": null,
    "listedAt": "2026-06-12",
    "mls": "133157",
-   "url": "https://www.coldwellbanker.com/nc/nags-head/7024-s-virginia-dare-trl/lid-P00800000HCRSqlvyV8PAYqbxmSEvfVMODvzk04m"
+   "url": "https://www.coldwellbanker.com/nc/nags-head/7024-s-virginia-dare-trl/lid-P00800000HCRSqlvyV8PAYqbxmSEvfVMODvzk04m",
+   "cbUpdated": "2026-10-21T15:49"
   },
   {
    "address": "41 Skyline Road",
@@ -543,7 +579,8 @@
    "acres": null,
    "listedAt": "2026-06-15",
    "mls": "133173",
-   "url": "https://www.coldwellbanker.com/nc/southern-shores/41-skyline-rd/lid-P00800000HCXLWd2Q53DmRoIaTUeAjNILcrPRm21"
+   "url": "https://www.coldwellbanker.com/nc/southern-shores/41-skyline-rd/lid-P00800000HCXLWd2Q53DmRoIaTUeAjNILcrPRm21",
+   "cbUpdated": "2026-10-24T12:10"
   },
   {
    "address": "213 E Aycock Street",
@@ -557,7 +594,8 @@
    "acres": null,
    "listedAt": "2026-06-14",
    "mls": "133174",
-   "url": "https://www.coldwellbanker.com/nc/kill-devil-hills/213-e-aycock-st/lid-P00800000HCXkTtW6pgBJS2K8l4i6zQahoSlZXZw"
+   "url": "https://www.coldwellbanker.com/nc/kill-devil-hills/213-e-aycock-st/lid-P00800000HCXkTtW6pgBJS2K8l4i6zQahoSlZXZw",
+   "cbUpdated": "2026-09-29T20:57"
   },
   {
    "address": "1015 N Virginia Dare Trail",
@@ -571,7 +609,8 @@
    "acres": null,
    "listedAt": "2026-06-15",
    "mls": "133175",
-   "url": "https://www.coldwellbanker.com/nc/kill-devil-hills/1015-n-virginia-dare-trl/lid-P00800000HCYQ0U9aOQqpdSWHfE15MTrBl0Mwv2I"
+   "url": "https://www.coldwellbanker.com/nc/kill-devil-hills/1015-n-virginia-dare-trl/lid-P00800000HCYQ0U9aOQqpdSWHfE15MTrBl0Mwv2I",
+   "cbUpdated": "2026-10-21T15:49"
   },
   {
    "address": "12 Carolina Cays",
@@ -585,7 +624,8 @@
    "acres": null,
    "listedAt": "2026-06-15",
    "mls": "133178",
-   "url": "https://www.coldwellbanker.com/nc/wanchese/12-carolina-cays/lid-P00800000HCa9f6PAyuqFscUSprq1xgqTp9NBftq"
+   "url": "https://www.coldwellbanker.com/nc/wanchese/12-carolina-cays/lid-P00800000HCa9f6PAyuqFscUSprq1xgqTp9NBftq",
+   "cbUpdated": "2026-08-08T16:10"
   },
   {
    "address": "418 W Hayman Boulevard",
@@ -599,7 +639,8 @@
    "acres": null,
    "listedAt": "2026-06-15",
    "mls": "133183",
-   "url": "https://www.coldwellbanker.com/nc/kill-devil-hills/418-w-hayman-blvd/lid-P00800000HCaoyqrgFzZ6DyevQw3OKehd2VY8xZn"
+   "url": "https://www.coldwellbanker.com/nc/kill-devil-hills/418-w-hayman-blvd/lid-P00800000HCaoyqrgFzZ6DyevQw3OKehd2VY8xZn",
+   "cbUpdated": "2026-10-01T17:23"
   },
   {
    "address": "4229 Johnston Lane",
@@ -613,7 +654,8 @@
    "acres": 0.46,
    "listedAt": "2026-06-16",
    "mls": "133194",
-   "url": "https://www.coldwellbanker.com/nc/kitty-hawk/4229-johnston-ln-lot-419/lid-P00800000HHLJF7UVM8n3ZCKhl76z2gIwrrlVcI4"
+   "url": "https://www.coldwellbanker.com/nc/kitty-hawk/4229-johnston-ln-lot-419/lid-P00800000HHLJF7UVM8n3ZCKhl76z2gIwrrlVcI4",
+   "cbUpdated": "2026-10-21T15:49"
   },
   {
    "address": "4928 Lunar Drive",
@@ -627,7 +669,8 @@
    "acres": null,
    "listedAt": "2026-06-17",
    "mls": "133207",
-   "url": "https://www.coldwellbanker.com/nc/kitty-hawk/4928-lunar-dr/lid-P00800000HChMRM3rB1CN2vjaKeX2NqHAAzCNgEz"
+   "url": "https://www.coldwellbanker.com/nc/kitty-hawk/4928-lunar-dr/lid-P00800000HChMRM3rB1CN2vjaKeX2NqHAAzCNgEz",
+   "cbUpdated": "2026-10-21T15:49"
   },
   {
    "address": "615 W Aycock Street",
@@ -641,7 +684,8 @@
    "acres": null,
    "listedAt": "2026-06-18",
    "mls": "133212",
-   "url": "https://www.coldwellbanker.com/nc/kill-devil-hills/615-w-aycock-st/lid-P00800000HCi2Md7w5Lik6HGsEHbJNdmQ3vRDFLP"
+   "url": "https://www.coldwellbanker.com/nc/kill-devil-hills/615-w-aycock-st/lid-P00800000HCi2Md7w5Lik6HGsEHbJNdmQ3vRDFLP",
+   "cbUpdated": "2026-10-08T20:01"
   },
   {
    "address": "201 Eagle Drive",
@@ -655,7 +699,8 @@
    "acres": 0.2,
    "listedAt": "2026-06-19",
    "mls": "133225",
-   "url": "https://www.coldwellbanker.com/nc/kill-devil-hills/201-eagle-dr-lot-41/lid-P00800000HHLJFPBSYvwcwOp3Mjnorf6tHNWZV3y"
+   "url": "https://www.coldwellbanker.com/nc/kill-devil-hills/201-eagle-dr-lot-41/lid-P00800000HHLJFPBSYvwcwOp3Mjnorf6tHNWZV3y",
+   "cbUpdated": "2026-10-21T15:49"
   },
   {
    "address": "703 Teakwood Lane",
@@ -669,7 +714,8 @@
    "acres": null,
    "listedAt": "2026-06-19",
    "mls": "133226",
-   "url": "https://www.coldwellbanker.com/nc/kill-devil-hills/703-teakwood-ln/lid-P00800000HCnFfsqKKGGntrtYG0spqkXL84IN04K"
+   "url": "https://www.coldwellbanker.com/nc/kill-devil-hills/703-teakwood-ln/lid-P00800000HCnFfsqKKGGntrtYG0spqkXL84IN04K",
+   "cbUpdated": "2026-10-21T01:55"
   },
   {
    "address": "103 Binnacle Lane",
@@ -683,7 +729,8 @@
    "acres": null,
    "listedAt": "2026-06-20",
    "mls": "133234",
-   "url": "https://www.coldwellbanker.com/nc/grandy/103-binnacle-ln/lid-P00800000HCoBKP7ut1pXL9GpWp6bOkPvVcht0QT"
+   "url": "https://www.coldwellbanker.com/nc/grandy/103-binnacle-ln/lid-P00800000HCoBKP7ut1pXL9GpWp6bOkPvVcht0QT",
+   "cbUpdated": "2026-10-21T15:49"
   },
   {
    "address": "9309 S Old Oregon Inlet Road",
@@ -697,7 +744,8 @@
    "acres": null,
    "listedAt": "2026-06-20",
    "mls": "133235",
-   "url": "https://www.coldwellbanker.com/nc/nags-head/9309-s-old-oregon-inlet-rd/lid-P00800000HCoJgURbzNZsEMwWkHR4hQssFTFrn5e"
+   "url": "https://www.coldwellbanker.com/nc/nags-head/9309-s-old-oregon-inlet-rd/lid-P00800000HCoJgURbzNZsEMwWkHR4hQssFTFrn5e",
+   "cbUpdated": "2026-10-21T15:49"
   },
   {
    "address": "1319 N Virginia Dare Trail Unit 4F",
@@ -711,7 +759,8 @@
    "acres": null,
    "listedAt": "2026-06-20",
    "mls": "133239",
-   "url": "https://www.coldwellbanker.com/nc/kill-devil-hills/1319-n-virginia-dare-trl--4f/lid-P00800000HHLJEpnY9LdUBzqM9UQ9DhZHdMz3eax"
+   "url": "https://www.coldwellbanker.com/nc/kill-devil-hills/1319-n-virginia-dare-trl--4f/lid-P00800000HHLJEpnY9LdUBzqM9UQ9DhZHdMz3eax",
+   "cbUpdated": "2026-10-22T16:01"
   },
   {
    "address": "504 Suffolk Street",
@@ -725,7 +774,8 @@
    "acres": null,
    "listedAt": "2026-06-20",
    "mls": "133243",
-   "url": "https://www.coldwellbanker.com/nc/kill-devil-hills/504-suffolk-st/lid-P00800000HCr75jV0gaEPqkYAQF7S6SmTuMgqhlv"
+   "url": "https://www.coldwellbanker.com/nc/kill-devil-hills/504-suffolk-st/lid-P00800000HCr75jV0gaEPqkYAQF7S6SmTuMgqhlv",
+   "cbUpdated": "2026-10-21T15:49"
   }
  ]
 }
