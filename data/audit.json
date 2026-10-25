@@ -1,6 +1,6 @@
 {
  "note": "Daily spot-check sample for the OBX House Hunt site. Public MLS facts only.",
- "checkedAt": "2026-10-25T19:03:16.231Z",
+ "checkedAt": "2026-10-25T22:02:49.633Z",
  "asOf": "2026-10-25",
  "totals": {
   "listings": 709,
@@ -55,7 +55,7 @@
    "listedAt": "2026-06-23",
    "mls": "133253",
    "url": "https://www.coldwellbanker.com/nc/grandy/105-n-mallard-ct-lot-17/lid-P00800000HHLJEye1kkDGsb5WxIlZ8BxagzkZdaM",
-   "cbUpdated": "2026-10-25T18:58"
+   "cbUpdated": "2026-10-25T20:55"
   },
   {
    "address": "1318 Duck Road Unit E",
@@ -70,7 +70,7 @@
    "listedAt": "2026-06-23",
    "mls": "133256",
    "url": "https://www.coldwellbanker.com/nc/duck/1318-duck-rd-unit-e/lid-P00800000HHKSrCdqRkOouyBHW1cq3yUNA1d950H",
-   "cbUpdated": "2026-10-19T12:40"
+   "cbUpdated": "2026-10-25T19:49"
   },
   {
    "address": "417 Cooke Place",
