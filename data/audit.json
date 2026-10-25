@@ -1,11 +1,11 @@
 {
  "note": "Daily spot-check sample for the OBX House Hunt site. Public MLS facts only.",
- "checkedAt": "2026-10-25T13:03:12.329Z",
+ "checkedAt": "2026-10-25T16:03:01.103Z",
  "asOf": "2026-10-25",
  "totals": {
   "listings": 709,
-  "active": 519,
-  "pending": 149,
+  "active": 518,
+  "pending": 150,
   "gone": 18
  },
  "onMarketByTown": {
@@ -355,7 +355,7 @@
    "listedAt": "2026-07-03",
    "mls": "133350",
    "url": "https://www.coldwellbanker.com/nc/manteo/134-joclar-ln/lid-P00800000HDWI28n0RGCVdxMunqRRBb9JHxK1Liq",
-   "cbUpdated": "2026-10-24T15:29"
+   "cbUpdated": "2026-10-25T15:54"
   },
   {
    "address": "7545 S Virginia Dare Trail",
