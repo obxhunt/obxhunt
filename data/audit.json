@@ -1,23 +1,23 @@
 {
  "note": "Daily spot-check sample for the OBX House Hunt site. Public MLS facts only.",
- "checkedAt": "2026-10-26T19:02:59.228Z",
+ "checkedAt": "2026-10-26T22:02:50.097Z",
  "asOf": "2026-10-26",
  "totals": {
-  "listings": 717,
-  "active": 519,
+  "listings": 723,
+  "active": 525,
   "pending": 154,
   "gone": 18
  },
  "onMarketByTown": {
   "Point Harbor": 3,
-  "Manteo": 55,
+  "Manteo": 56,
   "Powells Point": 19,
   "Harbinger": 2,
   "Kitty Hawk": 66,
   "Southern Shores": 35,
-  "Kill Devil Hills": 225,
+  "Kill Devil Hills": 229,
   "Jarvisburg": 37,
-  "Nags Head": 121,
+  "Nags Head": 122,
   "Duck": 52,
   "Grandy": 52,
   "Wanchese": 6
@@ -190,7 +190,7 @@
    "listedAt": "2026-07-21",
    "mls": "133519",
    "url": "https://www.coldwellbanker.com/nc/nags-head/412-w-barracuda-dr/lid-P00800000HERjpx746HQVxkBHupFYIY0AHP2JCdt",
-   "cbUpdated": "2026-10-26T17:53"
+   "cbUpdated": "2026-10-26T20:55"
   },
   {
    "address": "2038 N Virginia Dare Trail",
@@ -205,7 +205,7 @@
    "listedAt": "2026-07-21",
    "mls": "133523",
    "url": "https://www.coldwellbanker.com/nc/kill-devil-hills/2038-n-virginia-dare-trl/lid-P00800000HES0T87kC6ihh9xaEJos0m0GmlEhJFW",
-   "cbUpdated": "2026-10-26T15:33"
+   "cbUpdated": "2026-10-26T20:55"
   },
   {
    "address": "118 Weir Point Drive",
@@ -505,7 +505,7 @@
    "listedAt": "2026-08-05",
    "mls": "133645",
    "url": "https://www.coldwellbanker.com/nc/duck/116-buffell-head-rd/lid-P00800000HFEmVOFNDJY8du0Z2XrcTvwx49UuQjp",
-   "cbUpdated": "2026-10-26T17:53"
+   "cbUpdated": "2026-10-26T20:55"
   },
   {
    "address": "1707 Sioux Street",
@@ -520,7 +520,7 @@
    "listedAt": "2026-08-06",
    "mls": "133646",
    "url": "https://www.coldwellbanker.com/nc/kill-devil-hills/1707-sioux-st/lid-P00800000HFGpmFIvClRFncC2YsIvWibLuPz3MTF",
-   "cbUpdated": "2026-10-26T17:53"
+   "cbUpdated": "2026-10-26T20:55"
   },
   {
    "address": "108 Bridge View Drive S",
@@ -535,7 +535,7 @@
    "listedAt": "2026-08-06",
    "mls": "133649",
    "url": "https://www.coldwellbanker.com/nc/grandy/108-bridge-view-dr-s/lid-P00800000HFHJfr1jxTbm1aghms38yVIzDcLk2Uq",
-   "cbUpdated": "2026-10-26T17:53"
+   "cbUpdated": "2026-10-26T20:55"
   },
   {
    "address": "2016 S Virginia Dare Trail Unit 202",
