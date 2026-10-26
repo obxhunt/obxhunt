@@ -1,23 +1,23 @@
 {
  "note": "Daily spot-check sample for the OBX House Hunt site. Public MLS facts only.",
- "checkedAt": "2026-10-26T13:03:15.633Z",
+ "checkedAt": "2026-10-26T16:02:54.801Z",
  "asOf": "2026-10-26",
  "totals": {
-  "listings": 710,
-  "active": 514,
-  "pending": 154,
+  "listings": 716,
+  "active": 520,
+  "pending": 155,
   "gone": 18
  },
  "onMarketByTown": {
-  "Point Harbor": 2,
-  "Manteo": 53,
+  "Point Harbor": 3,
+  "Manteo": 54,
   "Powells Point": 19,
   "Harbinger": 2,
   "Kitty Hawk": 66,
   "Southern Shores": 35,
-  "Kill Devil Hills": 225,
+  "Kill Devil Hills": 228,
   "Jarvisburg": 37,
-  "Nags Head": 119,
+  "Nags Head": 121,
   "Duck": 52,
   "Grandy": 52,
   "Wanchese": 6
@@ -27,6 +27,36 @@
  "batchSize": 50,
  "rotationKey": "2026-10-26",
  "sample": [
+  {
+   "address": "833 Lindbergh Berry Road",
+   "town": "Manteo",
+   "price": 215000,
+   "status": "Pending",
+   "kind": "house",
+   "beds": 3,
+   "baths": 2,
+   "sqft": 840,
+   "acres": null,
+   "listedAt": "2026-07-17",
+   "mls": "133481",
+   "url": "https://www.coldwellbanker.com/nc/manteo/833-lindbergh-berry-rd/lid-P00800000HEClqkeGiRUlnj36xZa15QmyZRizqw7",
+   "cbUpdated": "2026-10-26T08:49"
+  },
+  {
+   "address": "3736 Hallett Street",
+   "town": "Kitty Hawk",
+   "price": 825000,
+   "status": "Active",
+   "kind": "house",
+   "beds": 4,
+   "baths": 4,
+   "sqft": 1596,
+   "acres": null,
+   "listedAt": "2026-07-17",
+   "mls": "133486",
+   "url": "https://www.coldwellbanker.com/nc/kitty-hawk/3736-hallett-st/lid-P00800000HEExQGi3KjHNMF26Ps3lZ93TLPw2ZJ2",
+   "cbUpdated": "2026-10-26T15:33"
+  },
   {
    "address": "131 Seabreeze Drive",
    "town": "Duck",
@@ -40,7 +70,7 @@
    "listedAt": "2026-07-17",
    "mls": "133487",
    "url": "https://www.coldwellbanker.com/nc/duck/131-seabreeze-dr/lid-P00800000HEFa94PyEewQdz80kybiBXzS6LVGpOL",
-   "cbUpdated": "2026-10-21T15:49"
+   "cbUpdated": "2026-10-26T15:33"
   },
   {
    "address": "4127 W Vansciver Drive",
@@ -55,7 +85,7 @@
    "listedAt": "2026-07-17",
    "mls": "133488",
    "url": "https://www.coldwellbanker.com/nc/nags-head/4127-w-vansciver-dr/lid-P00800000HEFa94PyEewQdz80kybiBXxywVFsPMf",
-   "cbUpdated": "2026-10-21T15:49"
+   "cbUpdated": "2026-10-26T15:33"
   },
   {
    "address": "1233 S Memorial Boulevard",
@@ -70,7 +100,7 @@
    "listedAt": "2026-07-17",
    "mls": "133489",
    "url": "https://www.coldwellbanker.com/nc/kill-devil-hills/1233-s-memorial-blvd/lid-P00800000HEFi9bvZG9XBmUqOeom4uGN1T85qGAE",
-   "cbUpdated": "2026-10-21T15:49"
+   "cbUpdated": "2026-10-26T15:33"
   },
   {
    "address": "200 E Martin Street Unit 310",
@@ -85,7 +115,7 @@
    "listedAt": "2026-07-18",
    "mls": "133495",
    "url": "https://www.coldwellbanker.com/nc/kill-devil-hills/200-e-martin-st-unit-310/lid-P00800000HHLJEpnY9LdUBzqM9UQ9Dhd34asHOBP",
-   "cbUpdated": "2026-09-15T15:38"
+   "cbUpdated": "2026-10-26T15:33"
   },
   {
    "address": "500 W Villa Dunes Drive Unit S-6",
@@ -100,7 +130,7 @@
    "listedAt": "2026-07-19",
    "mls": "133496",
    "url": "https://www.coldwellbanker.com/nc/nags-head/500-w-villa-dunes-dr--s6/lid-P00800000HEKrKAwzOvjXTOAbKialG6vFk9TB8OC",
-   "cbUpdated": "2026-09-15T15:38"
+   "cbUpdated": "2026-10-26T15:33"
   },
   {
    "address": "104 Cliffs of Colington Trail",
@@ -115,7 +145,7 @@
    "listedAt": "2026-07-19",
    "mls": "133497",
    "url": "https://www.coldwellbanker.com/nc/kill-devil-hills/104-cliffs-of-colington-trl--29/lid-P00800000HHLJFGKyxXMqFnZsYvSOxAjMvfVBW62",
-   "cbUpdated": "2026-10-21T15:49"
+   "cbUpdated": "2026-10-26T15:33"
   },
   {
    "address": "207 W Albacore Drive",
@@ -130,7 +160,7 @@
    "listedAt": "2026-07-20",
    "mls": "133506",
    "url": "https://www.coldwellbanker.com/nc/nags-head/207-albacore-dr/lid-P00800000HEOnIFo6pLMQWUvsf881illaQwYxXHB",
-   "cbUpdated": "2026-10-21T15:49"
+   "cbUpdated": "2026-10-26T15:33"
   },
   {
    "address": "1710 Virginia Avenue",
@@ -160,7 +190,7 @@
    "listedAt": "2026-07-21",
    "mls": "133519",
    "url": "https://www.coldwellbanker.com/nc/nags-head/412-w-barracuda-dr/lid-P00800000HERjpx746HQVxkBHupFYIY0AHP2JCdt",
-   "cbUpdated": "2026-10-21T15:49"
+   "cbUpdated": "2026-10-26T15:33"
   },
   {
    "address": "2038 N Virginia Dare Trail",
@@ -175,7 +205,7 @@
    "listedAt": "2026-07-21",
    "mls": "133523",
    "url": "https://www.coldwellbanker.com/nc/kill-devil-hills/2038-n-virginia-dare-trl/lid-P00800000HES0T87kC6ihh9xaEJos0m0GmlEhJFW",
-   "cbUpdated": "2026-10-25T18:58"
+   "cbUpdated": "2026-10-26T15:33"
   },
   {
    "address": "118 Weir Point Drive",
@@ -190,7 +220,7 @@
    "listedAt": "2026-07-22",
    "mls": "133529",
    "url": "https://www.coldwellbanker.com/nc/manteo/118-weir-point-dr-lot-26/lid-P00800000HHKSrLUK38ybbZQSJpyFySqLRYdMAEw",
-   "cbUpdated": "2026-10-21T15:49"
+   "cbUpdated": "2026-10-26T15:33"
   },
   {
    "address": "5002 Brassie Court",
@@ -220,7 +250,7 @@
    "listedAt": "2026-07-22",
    "mls": "133538",
    "url": "https://www.coldwellbanker.com/nc/manteo/1051-driftwood-dr/lid-P00800000HEVU5U2uCC2mFyhIEPklIpoDpQKudw3",
-   "cbUpdated": "2026-08-08T16:10"
+   "cbUpdated": "2026-10-26T15:33"
   },
   {
    "address": "124 Sea Gull Court",
@@ -235,7 +265,7 @@
    "listedAt": "2026-07-23",
    "mls": "133543",
    "url": "https://www.coldwellbanker.com/nc/kill-devil-hills/124-seagull-ct/lid-P00800000HEY1YmYIYgI4KxgR1vXS443OupDpmf8",
-   "cbUpdated": "2026-10-21T15:49"
+   "cbUpdated": "2026-10-26T15:33"
   },
   {
    "address": "1014 S Virginia Dare Trail Unit 301",
@@ -250,7 +280,7 @@
    "listedAt": "2026-07-23",
    "mls": "133545",
    "url": "https://www.coldwellbanker.com/nc/kill-devil-hills/1014-s-virginia-dare-trl-apt-301/lid-P00800000HHLJEGPdjlKLRarewF2TZk62MnrIFig",
-   "cbUpdated": "2026-10-21T00:58"
+   "cbUpdated": "2026-10-26T15:33"
   },
   {
    "address": "3836 N Virginia Dare Trail",
@@ -265,7 +295,7 @@
    "listedAt": "2026-07-24",
    "mls": "133551",
    "url": "https://www.coldwellbanker.com/nc/kitty-hawk/3836-virginia-dare-trl-n/lid-P00800000HEc1TqhEciwH9VftpaDHvoahnT4ppvT",
-   "cbUpdated": "2026-09-17T03:14"
+   "cbUpdated": "2026-10-26T15:33"
   },
   {
    "address": "103 Saber Court",
@@ -295,7 +325,7 @@
    "listedAt": "2026-07-29",
    "mls": "133578",
    "url": "https://www.coldwellbanker.com/nc/kill-devil-hills/2007-phoebus-st/lid-P00800000HErnP0aBXmYwBzIvO7Sslw1aAY3ouOp",
-   "cbUpdated": "2026-10-21T15:49"
+   "cbUpdated": "2026-10-26T15:33"
   },
   {
    "address": "203 Calvin Street",
@@ -310,7 +340,7 @@
    "listedAt": "2026-07-29",
    "mls": "133580",
    "url": "https://www.coldwellbanker.com/nc/kill-devil-hills/203-calvin-st/lid-P00800000HEs422kO2DHLEnq2tngmZfe7ue9kHGE",
-   "cbUpdated": "2026-10-21T15:49"
+   "cbUpdated": "2026-10-26T15:33"
   },
   {
    "address": "607 Angler Way",
@@ -325,7 +355,7 @@
    "listedAt": "2026-07-30",
    "mls": "133582",
    "url": "https://www.coldwellbanker.com/nc/kitty-hawk/607-angler-way/lid-P00800000HEsao9KWLpVF2HVhCdaoqGt9I8faqOQ",
-   "cbUpdated": "2026-10-23T01:05"
+   "cbUpdated": "2026-10-26T15:33"
   },
   {
    "address": "1223 Duck Road",
@@ -340,7 +370,7 @@
    "listedAt": "2026-07-30",
    "mls": "133585",
    "url": "https://www.coldwellbanker.com/nc/duck/1223-duck-rd/lid-P00800000HEvX1IkilgSFX1W0lOyADVfOWATjl6e",
-   "cbUpdated": "2026-10-21T15:49"
+   "cbUpdated": "2026-10-26T15:33"
   },
   {
    "address": "3 Redbay Lane",
@@ -370,7 +400,7 @@
    "listedAt": "2026-08-01",
    "mls": "133603",
    "url": "https://www.coldwellbanker.com/nc/powells-point/108-n-spot-rd/lid-P00800000HF0Y4uB3k85VAN6zNv4fqb23NTOhchB",
-   "cbUpdated": "2026-10-21T15:49"
+   "cbUpdated": "2026-10-26T15:33"
   },
   {
    "address": "117 Sea Colony Drive Unit 129 D",
@@ -385,7 +415,7 @@
    "listedAt": "2026-08-03",
    "mls": "133612",
    "url": "https://www.coldwellbanker.com/nc/duck/117-sea-colony-dr-unit-d129/lid-P00800000HHIDxVW7FeaUUPXV7LyC0PaubUDb2b5",
-   "cbUpdated": "2026-10-22T16:01"
+   "cbUpdated": "2026-10-26T15:33"
   },
   {
    "address": "2014 Phoebus Street",
@@ -400,7 +430,7 @@
    "listedAt": "2026-08-04",
    "mls": "133623",
    "url": "https://www.coldwellbanker.com/nc/kill-devil-hills/2014-phoebus-st/lid-P00800000HFAuY9WxiEWluS5AsInD1amB0RCyVjr",
-   "cbUpdated": "2026-10-21T15:49"
+   "cbUpdated": "2026-10-26T15:33"
   },
   {
    "address": "1104 W Sportsman Drive",
@@ -430,7 +460,7 @@
    "listedAt": "2026-08-05",
    "mls": "133636",
    "url": "https://www.coldwellbanker.com/nc/manteo/119-cutter-ct/lid-P00800000HFD6cm6pow8ZFvQ9Tca4860gJcYXfyw",
-   "cbUpdated": "2026-10-21T15:49"
+   "cbUpdated": "2026-10-26T15:33"
   },
   {
    "address": "163 Church Road",
@@ -445,7 +475,7 @@
    "listedAt": "2026-08-05",
    "mls": "133637",
    "url": "https://www.coldwellbanker.com/nc/harbinger/163-church-rd/lid-P00800000HFDVojlhhOXz21eeVqE3EbWlmGMg07y",
-   "cbUpdated": "2026-08-08T16:10"
+   "cbUpdated": "2026-10-26T15:33"
   },
   {
    "address": "104 Admirals View Drive",
@@ -460,7 +490,7 @@
    "listedAt": "2026-08-05",
    "mls": "133642",
    "url": "https://www.coldwellbanker.com/nc/grandy/104-admirals-view-dr/lid-P00800000HFEO6MuHDp74XqipZqhytRlsY2I2NSa",
-   "cbUpdated": "2026-10-25T18:58"
+   "cbUpdated": "2026-10-26T15:33"
   },
   {
    "address": "116 Buffell Head Road",
@@ -475,7 +505,7 @@
    "listedAt": "2026-08-05",
    "mls": "133645",
    "url": "https://www.coldwellbanker.com/nc/duck/116-buffell-head-rd/lid-P00800000HFEmVOFNDJY8du0Z2XrcTvwx49UuQjp",
-   "cbUpdated": "2026-10-12T20:01"
+   "cbUpdated": "2026-10-26T15:33"
   },
   {
    "address": "1707 Sioux Street",
@@ -490,7 +520,7 @@
    "listedAt": "2026-08-06",
    "mls": "133646",
    "url": "https://www.coldwellbanker.com/nc/kill-devil-hills/1707-sioux-st/lid-P00800000HFGpmFIvClRFncC2YsIvWibLuPz3MTF",
-   "cbUpdated": "2026-10-21T15:49"
+   "cbUpdated": "2026-10-26T15:33"
   },
   {
    "address": "108 Bridge View Drive S",
@@ -505,7 +535,7 @@
    "listedAt": "2026-08-06",
    "mls": "133649",
    "url": "https://www.coldwellbanker.com/nc/grandy/108-bridge-view-dr-s/lid-P00800000HFHJfr1jxTbm1aghms38yVIzDcLk2Uq",
-   "cbUpdated": "2026-10-25T18:58"
+   "cbUpdated": "2026-10-26T15:33"
   },
   {
    "address": "2016 S Virginia Dare Trail Unit 202",
@@ -520,7 +550,7 @@
    "listedAt": "2026-08-06",
    "mls": "133651",
    "url": "https://www.coldwellbanker.com/nc/kill-devil-hills/2016-s-virginia-dare-trl-apt-202/lid-P00800000HFHJfzsDYsBYiBvsagOYszc8V1fw6jb",
-   "cbUpdated": "2026-10-24T12:40"
+   "cbUpdated": "2026-10-26T15:33"
   },
   {
    "address": "313 Sir Chandler Drive",
@@ -535,7 +565,7 @@
    "listedAt": "2026-08-07",
    "mls": "133665",
    "url": "https://www.coldwellbanker.com/nc/kill-devil-hills/313-sir-chandler-dr/lid-P00800000HFKf3gUVpDm871ix9XxiFqCB6JcZEmG",
-   "cbUpdated": "2026-10-21T15:49"
+   "cbUpdated": "2026-10-26T15:33"
   },
   {
    "address": "5218 Niblick Court",
@@ -550,7 +580,7 @@
    "listedAt": "2026-08-07",
    "mls": "133668",
    "url": "https://www.coldwellbanker.com/nc/nags-head/5218-w-niblick-ct/lid-P00800000HFKnDDKBqgjMXNrJfXtPNQ03BIHRV52",
-   "cbUpdated": "2026-10-21T15:49"
+   "cbUpdated": "2026-10-26T15:33"
   },
   {
    "address": "0 Pond Road Lots 9&11",
@@ -565,7 +595,7 @@
    "listedAt": "2026-08-07",
    "mls": "133671",
    "url": "https://www.coldwellbanker.com/nc/wanchese/0-pond-rd-lot-911/lid-P00800000HHLJEgx4Xx3hVObBLg4jJDBiCXpo7AR",
-   "cbUpdated": "2026-10-21T15:49"
+   "cbUpdated": "2026-10-26T15:33"
   },
   {
    "address": "108 W Coastal Way",
@@ -580,7 +610,7 @@
    "listedAt": "2026-08-08",
    "mls": "133677",
    "url": "https://www.coldwellbanker.com/nc/nags-head/108-w-coastal-way/lid-P00800000HFNFmJHcG2QRhd2xZpB5cGWdDVjlETM",
-   "cbUpdated": "2026-10-24T15:29"
+   "cbUpdated": "2026-10-26T15:33"
   },
   {
    "address": "27 Spindrift Trail",
@@ -595,7 +625,7 @@
    "listedAt": "2026-08-08",
    "mls": "133679",
    "url": "https://www.coldwellbanker.com/nc/southern-shores/27-spindrift-trl-lot-366/lid-P00800000HHLJEgx4Xx3hVObBLg4jJDEtg11LA6d",
-   "cbUpdated": "2026-10-21T15:49"
+   "cbUpdated": "2026-10-26T15:33"
   },
   {
    "address": "404 W Green Jacket Way",
@@ -610,7 +640,7 @@
    "listedAt": "2026-08-09",
    "mls": "133685",
    "url": "https://www.coldwellbanker.com/nc/nags-head/404-w-green-jacket-way/lid-P00800000HFQXC0gkeyxCWotd2lBkCanvUfiSMkj",
-   "cbUpdated": "2026-10-21T15:50"
+   "cbUpdated": "2026-10-26T15:33"
   },
   {
    "address": "808 Lindsey Lane",
@@ -655,7 +685,7 @@
    "listedAt": "2026-08-10",
    "mls": "133699",
    "url": "https://www.coldwellbanker.com/nc/kitty-hawk/410-first-flight-run--lot/lid-P00800000HFUoK4IDDLlhXZ67oj8nTWWD0scvIuB",
-   "cbUpdated": "2026-10-21T15:49"
+   "cbUpdated": "2026-10-26T15:33"
   },
   {
    "address": "10107 S Colony South Drive",
@@ -670,7 +700,7 @@
    "listedAt": "2026-08-12",
    "mls": "133714",
    "url": "https://www.coldwellbanker.com/nc/nags-head/10107-s-colony-south-dr/lid-P00800000HFa4k5VfKo5fcjNDGV7vsQxwyZ1sUY6",
-   "cbUpdated": "2026-10-21T15:49"
+   "cbUpdated": "2026-10-26T15:33"
   },
   {
    "address": "3032 Martins Point Road",
@@ -700,7 +730,7 @@
    "listedAt": "2026-08-12",
    "mls": "133718",
    "url": "https://www.coldwellbanker.com/nc/manteo/9-s-hammock-ct/lid-P00800000HFaZHeEAyVs4EuOfRrbARNh4v5b8wun",
-   "cbUpdated": "2026-10-21T15:49"
+   "cbUpdated": "2026-10-26T15:33"
   },
   {
    "address": "6321 S Bobwhite Avenue",
@@ -715,7 +745,7 @@
    "listedAt": "2026-08-12",
    "mls": "133720",
    "url": "https://www.coldwellbanker.com/nc/nags-head/6321-s-bobwhite-ave/lid-P00800000HFahgsANLaJgFLSCLBWpmqG4QRo6ahp",
-   "cbUpdated": "2026-10-21T15:49"
+   "cbUpdated": "2026-10-26T15:33"
   },
   {
    "address": "163 Buffell Head Road",
@@ -730,7 +760,7 @@
    "listedAt": "2026-08-12",
    "mls": "133722",
    "url": "https://www.coldwellbanker.com/nc/duck/163-buffell-head-rd/lid-P00800000HFapzXAbyQDAe9FiH9ZHDloytJHMmW9",
-   "cbUpdated": "2026-10-21T15:49"
+   "cbUpdated": "2026-10-26T15:33"
   },
   {
    "address": "1103 Cambridge Road Unit 303-F",
@@ -745,37 +775,7 @@
    "listedAt": "2026-08-12",
    "mls": "133724",
    "url": "https://www.coldwellbanker.com/nc/kill-devil-hills/1103f-cambridge-rd-unit-303/lid-P00800000HHebMRHNpGBIjIob9DCXdVUAuXAZFkV",
-   "cbUpdated": "2026-10-26T02:58"
-  },
-  {
-   "address": "200 E Martin Street Unit 302",
-   "town": "Kill Devil Hills",
-   "price": 339000,
-   "status": "Active",
-   "kind": "condo",
-   "beds": 1,
-   "baths": 1,
-   "sqft": 742,
-   "acres": null,
-   "listedAt": "2026-08-13",
-   "mls": "133733",
-   "url": "https://www.coldwellbanker.com/nc/kill-devil-hills/200-martone-ln-unit-302/lid-P00800000HFe1ymjs6dkFGpzVHL0TN0PVSxRRke9",
-   "cbUpdated": "2026-09-15T15:38"
-  },
-  {
-   "address": "167 West Side Lane",
-   "town": "Powells Point",
-   "price": 115000,
-   "status": "Active",
-   "kind": "lot",
-   "beds": null,
-   "baths": null,
-   "sqft": null,
-   "acres": 0.35,
-   "listedAt": "2026-08-13",
-   "mls": "133737",
-   "url": "https://www.coldwellbanker.com/nc/powells-point/167-west-side-ln-lot-5/lid-P00800000HHLJFY1wAKWPd04EAY9Em9Rfsj5QMKE",
-   "cbUpdated": "2026-10-21T15:49"
+   "cbUpdated": "2026-10-26T15:33"
   }
  ]
 }
