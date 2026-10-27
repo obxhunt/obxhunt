@@ -1,6 +1,6 @@
 {
  "note": "Daily spot-check sample for the OBX House Hunt site. Public MLS facts only.",
- "checkedAt": "2026-10-27T10:03:17.362Z",
+ "checkedAt": "2026-10-27T13:03:02.186Z",
  "asOf": "2026-10-27",
  "totals": {
   "listings": 724,
@@ -520,7 +520,7 @@
    "listedAt": "2026-08-27",
    "mls": "133884",
    "url": "https://www.coldwellbanker.com/nc/point-harbor/104-darsel-ln/lid-P00800000HGN4XJTc5jJU6aVqv0H13z1mKXf44n8",
-   "cbUpdated": "2026-10-26T15:33"
+   "cbUpdated": "2026-10-27T11:34"
   },
   {
    "address": "141 Tuscarora Court",
@@ -595,7 +595,7 @@
    "listedAt": "2026-08-28",
    "mls": "133892",
    "url": "https://www.coldwellbanker.com/nc/manteo/330-fernando-st-lot-4/lid-P00800000HHLJFY1wAKWPd04EAY9Em9R0jHFwCGl",
-   "cbUpdated": "2026-10-26T15:33"
+   "cbUpdated": "2026-10-27T11:33"
   },
   {
    "address": "4212 Lindbergh Avenue",
