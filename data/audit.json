@@ -1,9 +1,9 @@
 {
  "note": "Daily spot-check sample for the OBX House Hunt site. Public MLS facts only.",
- "checkedAt": "2026-10-27T16:03:07.778Z",
+ "checkedAt": "2026-10-27T19:02:54.208Z",
  "asOf": "2026-10-27",
  "totals": {
-  "listings": 724,
+  "listings": 725,
   "active": 524,
   "pending": 155,
   "gone": 19
@@ -15,11 +15,11 @@
   "Harbinger": 2,
   "Kitty Hawk": 66,
   "Southern Shores": 35,
-  "Kill Devil Hills": 228,
+  "Kill Devil Hills": 227,
   "Jarvisburg": 37,
   "Nags Head": 123,
   "Duck": 52,
-  "Grandy": 52,
+  "Grandy": 53,
   "Wanchese": 6
  },
  "batch": 7,
@@ -27,6 +27,21 @@
  "batchSize": 50,
  "rotationKey": "2026-10-27",
  "sample": [
+  {
+   "address": "200 E Martin Street Unit 302",
+   "town": "Kill Devil Hills",
+   "price": 339000,
+   "status": "Active",
+   "kind": "condo",
+   "beds": 1,
+   "baths": 1,
+   "sqft": 742,
+   "acres": null,
+   "listedAt": "2026-08-13",
+   "mls": "133733",
+   "url": "https://www.coldwellbanker.com/nc/kill-devil-hills/200-martone-ln-unit-302/lid-P00800000HFe1ymjs6dkFGpzVHL0TN0PVSxRRke9",
+   "cbUpdated": "2026-10-26T15:33"
+  },
   {
    "address": "167 West Side Lane",
    "town": "Powells Point",
@@ -175,7 +190,7 @@
    "listedAt": "2026-08-20",
    "mls": "133794",
    "url": "https://www.coldwellbanker.com/nc/kill-devil-hills/1102-cambridge-rd-unit-f/lid-P00800000HHIDyMays23Cc10XwE2hTLnPlPltsx9",
-   "cbUpdated": "2026-10-27T04:50"
+   "cbUpdated": "2026-10-27T18:02"
   },
   {
    "address": "506 W Fifth Street",
@@ -385,7 +400,7 @@
    "listedAt": "2026-08-24",
    "mls": "133846",
    "url": "https://www.coldwellbanker.com/nc/kill-devil-hills/522-w-archdale-st/lid-P00800000HGD3HksSvt4FBlLPlHx8NzqDluG3hpi",
-   "cbUpdated": "2026-10-27T04:50"
+   "cbUpdated": "2026-10-27T18:01"
   },
   {
    "address": "149 Duck Woods Drive",
@@ -640,7 +655,7 @@
    "listedAt": "2026-08-28",
    "mls": "133904",
    "url": "https://www.coldwellbanker.com/nc/grandy/106-admirals-view-dr/lid-P00800000HGQGyfmw32YG5cSyC9lXhioSpOrAyNt",
-   "cbUpdated": "2026-10-27T04:50"
+   "cbUpdated": "2026-10-27T17:01"
   },
   {
    "address": "337 Sea Oats Trail",
@@ -730,7 +745,7 @@
    "listedAt": "2026-08-29",
    "mls": "133914",
    "url": "https://www.coldwellbanker.com/nc/southern-shores/7-red-bay-ln/lid-P00800000HGT5IhiMo0vLB5TxdIwFjiPkkmfFoIz",
-   "cbUpdated": "2026-10-26T15:33"
+   "cbUpdated": "2026-10-27T18:02"
   },
   {
    "address": "3 Spinnaker Drive",
@@ -761,21 +776,6 @@
    "mls": "133921",
    "url": "https://www.coldwellbanker.com/nc/kill-devil-hills/1401-n-virginia-dare-trl--5-a5-a/lid-P00800000HGTkBuk3tMI7ii80nKtsdZBX5OSSvtQ",
    "cbUpdated": "2026-10-26T15:33"
-  },
-  {
-   "address": "204 Landing Lane",
-   "town": "Manteo",
-   "price": 449000,
-   "status": "Pending",
-   "kind": "house",
-   "beds": 3,
-   "baths": 2,
-   "sqft": 1196,
-   "acres": null,
-   "listedAt": "2026-08-31",
-   "mls": "133925",
-   "url": "https://www.coldwellbanker.com/nc/manteo/204-landing-ln/lid-P00800000HGXUK1f4cetYHhuxKhRMGNZcmzjbLx2",
-   "cbUpdated": "2026-10-26T08:49"
   }
  ]
 }
