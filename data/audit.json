@@ -1,11 +1,11 @@
 {
  "note": "Daily spot-check sample for the OBX House Hunt site. Public MLS facts only.",
- "checkedAt": "2026-10-27T19:02:54.208Z",
+ "checkedAt": "2026-10-27T22:02:52.112Z",
  "asOf": "2026-10-27",
  "totals": {
-  "listings": 725,
+  "listings": 726,
   "active": 524,
-  "pending": 155,
+  "pending": 154,
   "gone": 19
  },
  "onMarketByTown": {
@@ -15,10 +15,10 @@
   "Harbinger": 2,
   "Kitty Hawk": 66,
   "Southern Shores": 35,
-  "Kill Devil Hills": 227,
+  "Kill Devil Hills": 225,
   "Jarvisburg": 37,
   "Nags Head": 123,
-  "Duck": 52,
+  "Duck": 53,
   "Grandy": 53,
   "Wanchese": 6
  },
@@ -27,21 +27,6 @@
  "batchSize": 50,
  "rotationKey": "2026-10-27",
  "sample": [
-  {
-   "address": "200 E Martin Street Unit 302",
-   "town": "Kill Devil Hills",
-   "price": 339000,
-   "status": "Active",
-   "kind": "condo",
-   "beds": 1,
-   "baths": 1,
-   "sqft": 742,
-   "acres": null,
-   "listedAt": "2026-08-13",
-   "mls": "133733",
-   "url": "https://www.coldwellbanker.com/nc/kill-devil-hills/200-martone-ln-unit-302/lid-P00800000HFe1ymjs6dkFGpzVHL0TN0PVSxRRke9",
-   "cbUpdated": "2026-10-26T15:33"
-  },
   {
    "address": "167 West Side Lane",
    "town": "Powells Point",
@@ -496,7 +481,7 @@
    "address": "800 Lindsey Lane",
    "town": "Manteo",
    "price": 524900,
-   "status": "Active",
+   "status": "Pending",
    "kind": "house",
    "beds": 3,
    "baths": 2,
@@ -505,7 +490,7 @@
    "listedAt": "2026-08-27",
    "mls": "133875",
    "url": "https://www.coldwellbanker.com/nc/manteo/800-lindsey-ln/lid-P00800000HGMOQC9u7Usw1Nf6KyX3RWlmZmPM81a",
-   "cbUpdated": "2026-10-26T15:33"
+   "cbUpdated": "2026-10-27T18:56"
   },
   {
    "address": "542 Harbour View Drive",
@@ -776,6 +761,21 @@
    "mls": "133921",
    "url": "https://www.coldwellbanker.com/nc/kill-devil-hills/1401-n-virginia-dare-trl--5-a5-a/lid-P00800000HGTkBuk3tMI7ii80nKtsdZBX5OSSvtQ",
    "cbUpdated": "2026-10-26T15:33"
+  },
+  {
+   "address": "204 Landing Lane",
+   "town": "Manteo",
+   "price": 449000,
+   "status": "Active",
+   "kind": "house",
+   "beds": 3,
+   "baths": 2,
+   "sqft": 1196,
+   "acres": null,
+   "listedAt": "2026-08-31",
+   "mls": "133925",
+   "url": "https://www.coldwellbanker.com/nc/manteo/204-landing-ln/lid-P00800000HGXUK1f4cetYHhuxKhRMGNZcmzjbLx2",
+   "cbUpdated": "2026-10-27T18:04"
   }
  ]
 }
