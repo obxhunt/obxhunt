@@ -1,19 +1,19 @@
 {
  "note": "Daily spot-check sample for the OBX House Hunt site. Public MLS facts only.",
- "checkedAt": "2026-10-28T19:02:47.573Z",
+ "checkedAt": "2026-10-28T22:02:50.205Z",
  "asOf": "2026-10-28",
  "totals": {
   "listings": 729,
-  "active": 522,
-  "pending": 155,
+  "active": 521,
+  "pending": 154,
   "gone": 21
  },
  "onMarketByTown": {
   "Point Harbor": 3,
-  "Manteo": 55,
+  "Manteo": 54,
   "Powells Point": 19,
   "Harbinger": 2,
-  "Kitty Hawk": 66,
+  "Kitty Hawk": 65,
   "Southern Shores": 35,
   "Kill Devil Hills": 224,
   "Jarvisburg": 37,
@@ -27,21 +27,6 @@
  "batchSize": 50,
  "rotationKey": "2026-10-28",
  "sample": [
-  {
-   "address": "149 Linden Street",
-   "town": "Jarvisburg",
-   "price": 51300,
-   "status": "Active",
-   "kind": "lot",
-   "beds": null,
-   "baths": null,
-   "sqft": null,
-   "acres": 0.13,
-   "listedAt": "2026-09-01",
-   "mls": "133932",
-   "url": "https://www.coldwellbanker.com/nc/jarvisburg/149-linden-st-lot-9r/lid-P00800000HHLJG7PqZupYNP2vNnWuQ6uz3Fow8nx",
-   "cbUpdated": "2026-10-26T15:33"
-  },
   {
    "address": "112 Sandpebble Court",
    "town": "Nags Head",
@@ -598,21 +583,6 @@
    "cbUpdated": "2026-10-26T08:49"
   },
   {
-   "address": "109 Kellam Court",
-   "town": "Manteo",
-   "price": 545000,
-   "status": "Pending",
-   "kind": "house",
-   "beds": 3,
-   "baths": 3,
-   "sqft": 2261,
-   "acres": null,
-   "listedAt": "2026-09-11",
-   "mls": "134045",
-   "url": "https://www.coldwellbanker.com/nc/manteo/109-kellam-ct/lid-P00800000HH8N31qF7rcUkd0xj3l21N1PvWESV6r",
-   "cbUpdated": "2026-10-26T08:49"
-  },
-  {
    "address": "1713 Sunset Avenue",
    "town": "Kill Devil Hills",
    "price": 435000,
@@ -775,6 +745,36 @@
    "listedAt": "2026-09-14",
    "mls": "134071",
    "url": "https://www.coldwellbanker.com/nc/kitty-hawk/4409-seascape-dr/lid-P00800000HHI7rgDm3yD51hS5f7DXLG9LpcjcLVd",
+   "cbUpdated": "2026-10-26T08:49"
+  },
+  {
+   "address": "108 Savannah Avenue",
+   "town": "Grandy",
+   "price": 599000,
+   "status": "Pending",
+   "kind": "house",
+   "beds": 4,
+   "baths": 5,
+   "sqft": 2937,
+   "acres": null,
+   "listedAt": "2026-09-14",
+   "mls": "134072",
+   "url": "https://www.coldwellbanker.com/nc/grandy/108-savannah-ave/lid-P00800000HHIX6mV9D9Jlv14QNCSiUXvShQeN61T",
+   "cbUpdated": "2026-10-26T08:50"
+  },
+  {
+   "address": "6362 Caratoke Highway Lot 1",
+   "town": "Grandy",
+   "price": 134500,
+   "status": "Pending",
+   "kind": "lot",
+   "beds": null,
+   "baths": null,
+   "sqft": null,
+   "acres": null,
+   "listedAt": "2026-09-14",
+   "mls": "134073",
+   "url": "https://www.coldwellbanker.com/nc/grandy/6362-caratoke-hwy-lot-1/lid-P00800000HHIn1RQr7IWxH0UM1LFdvw2C7ZwkHH0",
    "cbUpdated": "2026-10-26T08:49"
   }
  ]
