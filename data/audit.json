@@ -1,11 +1,11 @@
 {
  "note": "Daily spot-check sample for the OBX House Hunt site. Public MLS facts only.",
- "checkedAt": "2026-10-29T16:03:01.713Z",
+ "checkedAt": "2026-10-29T19:03:06.018Z",
  "asOf": "2026-10-29",
  "totals": {
   "listings": 731,
-  "active": 519,
-  "pending": 155,
+  "active": 518,
+  "pending": 153,
   "gone": 24
  },
  "onMarketByTown": {
@@ -15,8 +15,8 @@
   "Harbinger": 2,
   "Kitty Hawk": 65,
   "Southern Shores": 33,
-  "Kill Devil Hills": 225,
-  "Jarvisburg": 37,
+  "Kill Devil Hills": 224,
+  "Jarvisburg": 35,
   "Nags Head": 124,
   "Duck": 54,
   "Grandy": 53,
@@ -101,21 +101,6 @@
    "mls": "134091",
    "url": "https://www.coldwellbanker.com/nc/nags-head/0-coastal-way-lot-3/lid-P00800000HHOwqipt6d5EB9GebOIecjrOUKkoJHA",
    "cbUpdated": "2026-10-26T15:33"
-  },
-  {
-   "address": "119 B Jarvis Landing Drive",
-   "town": "Jarvisburg",
-   "price": 385000,
-   "status": "Pending",
-   "kind": "house",
-   "beds": 3,
-   "baths": 3,
-   "sqft": 1549,
-   "acres": null,
-   "listedAt": "2026-09-17",
-   "mls": "134096",
-   "url": "https://www.coldwellbanker.com/nc/jarvisburg/119-jarvis-landing-dr--b/lid-P00800000HHPcZaGQXTOHSEVmbNJZLv7cxOEMsW2",
-   "cbUpdated": "2026-10-26T08:49"
   },
   {
    "address": "2109 S Virginia Dare Trail",
@@ -776,6 +761,21 @@
    "mls": "134197",
    "url": "https://www.coldwellbanker.com/nc/nags-head/500-w-villa-dunes-dr--k6/lid-P00800000HHyTwIkpHdrfkdo77CGEDCSWvDeqINv",
    "cbUpdated": "2026-10-27T22:02"
+  },
+  {
+   "address": "1120 Cambridge Road Unit A",
+   "town": "Kill Devil Hills",
+   "price": 495000,
+   "status": "Pending",
+   "kind": "condo",
+   "beds": 2,
+   "baths": 3,
+   "sqft": 1648,
+   "acres": null,
+   "listedAt": "2026-09-28",
+   "mls": "134200",
+   "url": "https://www.coldwellbanker.com/nc/kill-devil-hills/1120a-cambridge-rd-unit-a/lid-P00800000HI0hWoGsHBGBDOBkMpM4q22F5vORjPb",
+   "cbUpdated": "2026-10-26T08:49"
   }
  ]
 }
