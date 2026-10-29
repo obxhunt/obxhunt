@@ -1,10 +1,10 @@
 {
  "note": "Daily spot-check sample for the OBX House Hunt site. Public MLS facts only.",
- "checkedAt": "2026-10-29T10:03:01.854Z",
+ "checkedAt": "2026-10-29T13:02:52.608Z",
  "asOf": "2026-10-29",
  "totals": {
-  "listings": 730,
-  "active": 518,
+  "listings": 731,
+  "active": 519,
   "pending": 155,
   "gone": 24
  },
@@ -18,7 +18,7 @@
   "Kill Devil Hills": 225,
   "Jarvisburg": 37,
   "Nags Head": 124,
-  "Duck": 53,
+  "Duck": 54,
   "Grandy": 53,
   "Wanchese": 6
  },
@@ -370,7 +370,7 @@
    "listedAt": "2026-09-22",
    "mls": "134143",
    "url": "https://www.coldwellbanker.com/nc/kill-devil-hills/2306-raymond-ave/lid-P00800000HHfm76relqdEHuy7ehvI5U1ZLLE3LBr",
-   "cbUpdated": "2026-10-28T11:13"
+   "cbUpdated": "2026-10-29T10:48"
   },
   {
    "address": "1114 South Bay Club Drive Unit 1114",
@@ -745,7 +745,7 @@
    "listedAt": "2026-09-26",
    "mls": "134194",
    "url": "https://www.coldwellbanker.com/nc/nags-head/213-w-amberjack-ct/lid-P00800000HHusonX6xGvbDTCLxu9ueC4fnYT88O2",
-   "cbUpdated": "2026-10-28T11:13"
+   "cbUpdated": "2026-10-29T10:48"
   },
   {
    "address": "128 Broadbay Drive",
