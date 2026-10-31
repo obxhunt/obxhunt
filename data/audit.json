@@ -1,10 +1,10 @@
 {
  "note": "Daily spot-check sample for the OBX House Hunt site. Public MLS facts only.",
- "checkedAt": "2026-10-31T16:02:49.497Z",
+ "checkedAt": "2026-10-31T19:02:53.277Z",
  "asOf": "2026-10-31",
  "totals": {
-  "listings": 738,
-  "active": 520,
+  "listings": 739,
+  "active": 521,
   "pending": 150,
   "gone": 25
  },
@@ -17,7 +17,7 @@
   "Southern Shores": 32,
   "Kill Devil Hills": 222,
   "Jarvisburg": 35,
-  "Nags Head": 123,
+  "Nags Head": 124,
   "Duck": 55,
   "Grandy": 54,
   "Wanchese": 6
@@ -27,21 +27,6 @@
  "batchSize": 50,
  "rotationKey": "2026-10-31",
  "sample": [
-  {
-   "address": "314 Sea Oats Trail",
-   "town": "Southern Shores",
-   "price": 1065000,
-   "status": "Pending",
-   "kind": "house",
-   "beds": 5,
-   "baths": 5,
-   "sqft": 2803,
-   "acres": null,
-   "listedAt": "2026-10-10",
-   "mls": "134334",
-   "url": "https://www.coldwellbanker.com/nc/southern-shores/314-sea-oats-trl/lid-P00800000HIbusP8ela6yrNSCCjFkCfTFLD9qzCh",
-   "cbUpdated": "2026-10-27T09:11"
-  },
   {
    "address": "4717 Clubhouse Estates Drive",
    "town": "Kitty Hawk",
@@ -776,6 +761,21 @@
    "mls": "134435",
    "url": "https://www.coldwellbanker.com/nc/kill-devil-hills/3123-bay-dr/lid-P00800000HJCmwAhpxE1ykgoqPPjde5h4iKrn2s6",
    "cbUpdated": "2026-10-26T15:33"
+  },
+  {
+   "address": "72 S Dogwood Trail",
+   "town": "Southern Shores",
+   "price": 725000,
+   "status": "Pending",
+   "kind": "house",
+   "beds": 3,
+   "baths": 3,
+   "sqft": 2600,
+   "acres": null,
+   "listedAt": "2026-10-21",
+   "mls": "134436",
+   "url": "https://www.coldwellbanker.com/nc/southern-shores/72-s-dogwood-trl/lid-P00800000HJCmwSOnA1BY7tJC12QTT4OkNkAIggE",
+   "cbUpdated": "2026-10-26T08:49"
   }
  ]
 }
