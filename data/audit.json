@@ -1,6 +1,6 @@
 {
  "note": "Daily spot-check sample for the OBX House Hunt site. Public MLS facts only.",
- "checkedAt": "2026-11-01T11:02:56.281Z",
+ "checkedAt": "2026-11-01T14:02:50.755Z",
  "asOf": "2026-11-01",
  "totals": {
   "listings": 739,
@@ -400,7 +400,7 @@
    "listedAt": "2026-10-24",
    "mls": "134470",
    "url": "https://www.coldwellbanker.com/nc/powells-point/7864-caratoke-hwy/lid-P00800000HJK88VNa8mIQ32aXcOQose0QUdH4BPZ",
-   "cbUpdated": "2026-11-01T05:36"
+   "cbUpdated": "2026-11-01T12:55"
   },
   {
    "address": "168 Yacht Club Court",
@@ -730,7 +730,7 @@
    "listedAt": "2026-03-05",
    "mls": "10623718",
    "url": "https://www.coldwellbanker.com/nc/jarvisburg/105-indian-kettle-rd/lid-P00800000H9h7N123hwY34wzJOmf4QAPOwZcDfo7",
-   "cbUpdated": "2026-10-31T09:35"
+   "cbUpdated": "2026-11-01T13:16"
   },
   {
    "address": "MM Indian Kettle (hancock) Road",
@@ -745,7 +745,7 @@
    "listedAt": "2026-04-12",
    "mls": "10629441",
    "url": "https://www.coldwellbanker.com/nc/jarvisburg/indian-kettle-rd/lid-P00800000H9H4jSfMLC15knUthjfA8Byx6SfOGVr",
-   "cbUpdated": "2026-10-31T09:35"
+   "cbUpdated": "2026-11-01T13:16"
   },
   {
    "address": "MM Indian Kettle (price) Road",
@@ -760,7 +760,7 @@
    "listedAt": "2026-04-12",
    "mls": "10629444",
    "url": "https://www.coldwellbanker.com/nc/jarvisburg/indian-kettle-rd/lid-P00800000H9H4jkMJXzAf7zzFJMLzxAhrfvTVsIO",
-   "cbUpdated": "2026-10-31T09:35"
+   "cbUpdated": "2026-11-01T13:17"
   }
  ]
 }
