@@ -1,11 +1,11 @@
 {
  "note": "Daily spot-check sample for the OBX House Hunt site. Public MLS facts only.",
- "checkedAt": "2026-11-03T20:03:11.852Z",
+ "checkedAt": "2026-11-03T23:02:50.438Z",
  "asOf": "2026-11-03",
  "totals": {
-  "listings": 748,
-  "active": 506,
-  "pending": 165,
+  "listings": 751,
+  "active": 507,
+  "pending": 163,
   "gone": 31
  },
  "onMarketByTown": {
@@ -15,16 +15,16 @@
   "Harbinger": 2,
   "Kitty Hawk": 66,
   "Southern Shores": 33,
-  "Kill Devil Hills": 224,
+  "Kill Devil Hills": 222,
   "Jarvisburg": 35,
-  "Nags Head": 124,
-  "Duck": 51,
+  "Nags Head": 126,
+  "Duck": 50,
   "Grandy": 54,
   "Wanchese": 6
  },
  "batch": 1,
  "batches": 13,
- "batchSize": 50,
+ "batchSize": 49,
  "rotationKey": "2026-11-03",
  "sample": [
   {
@@ -761,21 +761,6 @@
    "mls": "131569",
    "url": "https://www.coldwellbanker.com/nc/southern-shores/269-hillcrest-dr-lot-1/lid-P00800000HHLJEY6awYTuonM0XrjJOipNKDIoIBK",
    "cbUpdated": "2026-11-03T18:46"
-  },
-  {
-   "address": "1303 Tranquil Place",
-   "town": "Kill Devil Hills",
-   "price": 719784,
-   "status": "Pending",
-   "kind": "house",
-   "beds": 4,
-   "baths": 3,
-   "sqft": 2028,
-   "acres": null,
-   "listedAt": "2026-01-21",
-   "mls": "131583",
-   "url": "https://www.coldwellbanker.com/nc/kill-devil-hills/1303-tranquil-pl/lid-P00800000H55w4UfwPCHTwGajDk4sfF2rGPMVydY",
-   "cbUpdated": "2026-10-26T08:49"
   }
  ]
 }
