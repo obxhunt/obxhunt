@@ -1,24 +1,24 @@
 {
  "note": "Daily spot-check sample for the OBX House Hunt site. Public MLS facts only.",
- "checkedAt": "2026-11-04T17:02:59.880Z",
+ "checkedAt": "2026-11-04T20:02:58.854Z",
  "asOf": "2026-11-04",
  "totals": {
-  "listings": 752,
-  "active": 498,
-  "pending": 165,
+  "listings": 754,
+  "active": 499,
+  "pending": 163,
   "gone": 37
  },
  "onMarketByTown": {
   "Point Harbor": 3,
-  "Manteo": 51,
+  "Manteo": 52,
   "Powells Point": 21,
   "Harbinger": 2,
-  "Kitty Hawk": 66,
+  "Kitty Hawk": 67,
   "Southern Shores": 34,
-  "Kill Devil Hills": 216,
+  "Kill Devil Hills": 214,
   "Jarvisburg": 35,
   "Nags Head": 126,
-  "Duck": 50,
+  "Duck": 49,
   "Grandy": 54,
   "Wanchese": 5
  },
@@ -235,7 +235,7 @@
    "listedAt": "2026-02-13",
    "mls": "131810",
    "url": "https://www.coldwellbanker.com/nc/kitty-hawk/3916-ivy-ln/lid-P00800000H6HQttPVjMkJt5z8uDWa6xQOVMXkXSQ",
-   "cbUpdated": "2026-11-04T03:53"
+   "cbUpdated": "2026-11-04T18:42"
   },
   {
    "address": "7105 S Virginia Dare Trail",
@@ -346,7 +346,7 @@
    "address": "247 Kilmarlic Club Drive",
    "town": "Powells Point",
    "price": 165000,
-   "status": "Active",
+   "status": "Pending",
    "kind": "lot",
    "beds": null,
    "baths": null,
@@ -355,7 +355,7 @@
    "listedAt": "2026-02-26",
    "mls": "131934",
    "url": "https://www.coldwellbanker.com/nc/powells-point/247-kilmarlic-club-dr--121r/lid-P00800000HHKSrUKneXYOIAfd7eJfsxDUmoyDstm",
-   "cbUpdated": "2026-11-03T18:46"
+   "cbUpdated": "2026-11-04T19:11"
   },
   {
    "address": "93 Osprey Lane",
@@ -730,7 +730,7 @@
    "listedAt": "2026-04-10",
    "mls": "132476",
    "url": "https://www.coldwellbanker.com/nc/nags-head/109d-w-danube-st/lid-P00800000H9AsZDJDX72ykK3YqfdXjgpHjpxhSAJ",
-   "cbUpdated": "2026-11-04T03:53"
+   "cbUpdated": "2026-11-04T18:42"
   },
   {
    "address": "2229 S Virginia Dare Trail Unit 302",
