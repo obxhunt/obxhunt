@@ -1,10 +1,10 @@
 {
  "note": "Daily spot-check sample for the OBX House Hunt site. Public MLS facts only.",
- "checkedAt": "2026-11-06T17:02:54.174Z",
+ "checkedAt": "2026-11-06T20:02:57.405Z",
  "asOf": "2026-11-06",
  "totals": {
-  "listings": 761,
-  "active": 498,
+  "listings": 763,
+  "active": 499,
   "pending": 164,
   "gone": 40
  },
@@ -15,11 +15,11 @@
   "Harbinger": 2,
   "Kitty Hawk": 67,
   "Southern Shores": 35,
-  "Kill Devil Hills": 212,
+  "Kill Devil Hills": 211,
   "Jarvisburg": 35,
   "Nags Head": 127,
   "Duck": 49,
-  "Grandy": 53,
+  "Grandy": 55,
   "Wanchese": 5
  },
  "batch": 4,
@@ -643,21 +643,6 @@
    "cbUpdated": "2026-11-05T19:10"
   },
   {
-   "address": "309 W Durham Street",
-   "town": "Kill Devil Hills",
-   "price": 399500,
-   "status": "Pending",
-   "kind": "house",
-   "beds": 3,
-   "baths": 2,
-   "sqft": 1524,
-   "acres": null,
-   "listedAt": "2026-06-26",
-   "mls": "133298",
-   "url": "https://www.coldwellbanker.com/nc/kill-devil-hills/309-w-durham-st/lid-P00800000HDAVJAHBYB9dqlbosCeVBQ6WNlw1LJ7",
-   "cbUpdated": "2026-11-04T11:06"
-  },
-  {
    "address": "321 Wax Myrtle Trail",
    "town": "Southern Shores",
    "price": 974900,
@@ -761,6 +746,21 @@
    "mls": "133345",
    "url": "https://www.coldwellbanker.com/nc/southern-shores/3-circle-dr/lid-P00800000HDVmucmAneyDsOfY9qut1Cw6jWlArvm",
    "cbUpdated": "2026-11-03T18:46"
+  },
+  {
+   "address": "1200 Wrightsville Boulevard",
+   "town": "Kill Devil Hills",
+   "price": 379000,
+   "status": "Active",
+   "kind": "condo",
+   "beds": 2,
+   "baths": 2,
+   "sqft": 864,
+   "acres": null,
+   "listedAt": "2026-07-03",
+   "mls": "133347",
+   "url": "https://www.coldwellbanker.com/nc/kill-devil-hills/1200-wrightsville-blvd/lid-P00800000HDWI28n0RGCVdxMunqRRBb9DnDn0jf0",
+   "cbUpdated": "2026-11-03T18:45"
   }
  ]
 }
