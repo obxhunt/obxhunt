@@ -1,17 +1,17 @@
 {
  "note": "Daily spot-check sample for the OBX House Hunt site. Public MLS facts only.",
- "checkedAt": "2026-11-06T14:03:06.009Z",
+ "checkedAt": "2026-11-06T17:02:54.174Z",
  "asOf": "2026-11-06",
  "totals": {
-  "listings": 759,
-  "active": 496,
+  "listings": 761,
+  "active": 498,
   "pending": 164,
   "gone": 40
  },
  "onMarketByTown": {
   "Point Harbor": 3,
-  "Manteo": 51,
-  "Powells Point": 21,
+  "Manteo": 52,
+  "Powells Point": 22,
   "Harbinger": 2,
   "Kitty Hawk": 67,
   "Southern Shores": 35,
