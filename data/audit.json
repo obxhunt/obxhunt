@@ -1,25 +1,25 @@
 {
  "note": "Daily spot-check sample for the OBX House Hunt site. Public MLS facts only.",
- "checkedAt": "2026-11-07T20:02:49.459Z",
+ "checkedAt": "2026-11-07T23:02:48.691Z",
  "asOf": "2026-11-07",
  "totals": {
-  "listings": 765,
-  "active": 497,
-  "pending": 164,
-  "gone": 40
+  "listings": 767,
+  "active": 499,
+  "pending": 165,
+  "gone": 39
  },
  "onMarketByTown": {
   "Point Harbor": 3,
-  "Manteo": 52,
+  "Manteo": 53,
   "Powells Point": 23,
   "Harbinger": 2,
   "Kitty Hawk": 65,
   "Southern Shores": 35,
   "Kill Devil Hills": 209,
   "Jarvisburg": 35,
-  "Nags Head": 127,
+  "Nags Head": 128,
   "Duck": 50,
-  "Grandy": 55,
+  "Grandy": 56,
   "Wanchese": 5
  },
  "batch": 5,
@@ -27,6 +27,21 @@
  "batchSize": 49,
  "rotationKey": "2026-11-07",
  "sample": [
+  {
+   "address": "134 Joclar Lane",
+   "town": "Manteo",
+   "price": 490000,
+   "status": "Pending",
+   "kind": "house",
+   "beds": 3,
+   "baths": 2,
+   "sqft": 1600,
+   "acres": null,
+   "listedAt": "2026-07-03",
+   "mls": "133350",
+   "url": "https://www.coldwellbanker.com/nc/manteo/134-joclar-ln/lid-P00800000HDWI28n0RGCVdxMunqRRBb9JHxK1Liq",
+   "cbUpdated": "2026-11-04T11:06"
+  },
   {
    "address": "7545 S Virginia Dare Trail",
    "town": "Nags Head",
@@ -595,7 +610,7 @@
    "listedAt": "2026-07-21",
    "mls": "133523",
    "url": "https://www.coldwellbanker.com/nc/kill-devil-hills/2038-n-virginia-dare-trl/lid-P00800000HES0T87kC6ihh9xaEJos0m0GmlEhJFW",
-   "cbUpdated": "2026-11-07T16:40"
+   "cbUpdated": "2026-11-07T21:56"
   },
   {
    "address": "118 Weir Point Drive",
@@ -746,21 +761,6 @@
    "mls": "133585",
    "url": "https://www.coldwellbanker.com/nc/duck/1223-duck-rd/lid-P00800000HEvX1IkilgSFX1W0lOyADVfOWATjl6e",
    "cbUpdated": "2026-11-04T18:42"
-  },
-  {
-   "address": "3 Redbay Lane",
-   "town": "Southern Shores",
-   "price": 1249000,
-   "status": "Pending",
-   "kind": "house",
-   "beds": 4,
-   "baths": 5,
-   "sqft": 4350,
-   "acres": null,
-   "listedAt": "2026-07-31",
-   "mls": "133590",
-   "url": "https://www.coldwellbanker.com/nc/southern-shores/3-red-bay-ln/lid-P00800000HExaty6nbBISlvYfBuxDi6h4boGTjD9",
-   "cbUpdated": "2026-11-04T11:06"
   }
  ]
 }
