@@ -1,6 +1,6 @@
 {
  "note": "Daily spot-check sample for the OBX House Hunt site. Public MLS facts only.",
- "checkedAt": "2026-11-09T11:02:49.071Z",
+ "checkedAt": "2026-11-09T14:02:44.638Z",
  "asOf": "2026-11-09",
  "totals": {
   "listings": 769,
@@ -205,7 +205,7 @@
    "listedAt": "2026-08-28",
    "mls": "133892",
    "url": "https://www.coldwellbanker.com/nc/manteo/330-fernando-st-lot-4/lid-P00800000HHLJFY1wAKWPd04EAY9Em9R0jHFwCGl",
-   "cbUpdated": "2026-11-08T11:53"
+   "cbUpdated": "2026-11-09T11:34"
   },
   {
    "address": "4212 Lindbergh Avenue",
@@ -235,7 +235,7 @@
    "listedAt": "2026-08-28",
    "mls": "133904",
    "url": "https://www.coldwellbanker.com/nc/grandy/106-admirals-view-dr/lid-P00800000HGQGyfmw32YG5cSyC9lXhioSpOrAyNt",
-   "cbUpdated": "2026-11-08T11:53"
+   "cbUpdated": "2026-11-08T12:40"
   },
   {
    "address": "337 Sea Oats Trail",
@@ -280,7 +280,7 @@
    "listedAt": "2026-08-29",
    "mls": "133909",
    "url": "https://www.coldwellbanker.com/nc/kill-devil-hills/2307-bay-dr/lid-P00800000HGR4gDirfDwrZPFDeQSOJFXAvmkhyPr",
-   "cbUpdated": "2026-11-09T01:14"
+   "cbUpdated": "2026-11-09T11:34"
   },
   {
    "address": "4101 Tarkle Ridge Drive",
