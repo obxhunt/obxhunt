@@ -1,10 +1,10 @@
 {
  "note": "Daily spot-check sample for the OBX House Hunt site. Public MLS facts only.",
- "checkedAt": "2026-11-09T14:02:44.638Z",
+ "checkedAt": "2026-11-09T17:02:53.993Z",
  "asOf": "2026-11-09",
  "totals": {
-  "listings": 769,
-  "active": 491,
+  "listings": 771,
+  "active": 493,
   "pending": 169,
   "gone": 45
  },
@@ -15,7 +15,7 @@
   "Harbinger": 2,
   "Kitty Hawk": 66,
   "Southern Shores": 35,
-  "Kill Devil Hills": 208,
+  "Kill Devil Hills": 210,
   "Jarvisburg": 35,
   "Nags Head": 127,
   "Duck": 49,
@@ -235,7 +235,7 @@
    "listedAt": "2026-08-28",
    "mls": "133904",
    "url": "https://www.coldwellbanker.com/nc/grandy/106-admirals-view-dr/lid-P00800000HGQGyfmw32YG5cSyC9lXhioSpOrAyNt",
-   "cbUpdated": "2026-11-08T12:40"
+   "cbUpdated": "2026-11-09T16:39"
   },
   {
    "address": "337 Sea Oats Trail",
@@ -280,7 +280,7 @@
    "listedAt": "2026-08-29",
    "mls": "133909",
    "url": "https://www.coldwellbanker.com/nc/kill-devil-hills/2307-bay-dr/lid-P00800000HGR4gDirfDwrZPFDeQSOJFXAvmkhyPr",
-   "cbUpdated": "2026-11-09T11:34"
+   "cbUpdated": "2026-11-09T16:39"
   },
   {
    "address": "4101 Tarkle Ridge Drive",
@@ -505,7 +505,7 @@
    "listedAt": "2026-09-02",
    "mls": "133953",
    "url": "https://www.coldwellbanker.com/nc/duck/1341-duck-rd/lid-P00800000HGgJ5cAtFoeKwAspoHGDK0z4jiujYjM",
-   "cbUpdated": "2026-11-03T18:46"
+   "cbUpdated": "2026-11-09T16:39"
   },
   {
    "address": "700 W First Street Unit J6",
@@ -625,7 +625,7 @@
    "listedAt": "2026-09-04",
    "mls": "133978",
    "url": "https://www.coldwellbanker.com/nc/jarvisburg/112-jarvis-landing-dr--a/lid-P00800000HGlqWmbEnhEQBg3UXxqsVRi45MdOG4U",
-   "cbUpdated": "2026-11-07T18:58"
+   "cbUpdated": "2026-11-09T16:39"
   },
   {
    "address": "10303D E Loon Court",
@@ -745,7 +745,7 @@
    "listedAt": "2026-09-05",
    "mls": "133999",
    "url": "https://www.coldwellbanker.com/nc/kill-devil-hills/1402-hill-st/lid-P00800000HGpvzQtvIHjZYlOXyyN4MmTQnYylTXJ",
-   "cbUpdated": "2026-11-03T18:46"
+   "cbUpdated": "2026-11-09T16:39"
   },
   {
    "address": "115 Clam Shell Trail",
