@@ -1,11 +1,11 @@
 {
  "note": "Daily spot-check sample for the OBX House Hunt site. Public MLS facts only.",
- "checkedAt": "2026-11-12T17:03:07.681Z",
+ "checkedAt": "2026-11-12T20:03:00.691Z",
  "asOf": "2026-11-12",
  "totals": {
-  "listings": 784,
+  "listings": 785,
   "active": 499,
-  "pending": 168,
+  "pending": 169,
   "gone": 49
  },
  "onMarketByTown": {
@@ -15,7 +15,7 @@
   "Harbinger": 2,
   "Kitty Hawk": 66,
   "Southern Shores": 36,
-  "Kill Devil Hills": 216,
+  "Kill Devil Hills": 217,
   "Jarvisburg": 35,
   "Nags Head": 128,
   "Duck": 49,
@@ -90,7 +90,7 @@
   {
    "address": "249 Wax Myrtle Trail",
    "town": "Southern Shores",
-   "price": 1095000,
+   "price": 999000,
    "status": "Active",
    "kind": "house",
    "beds": 5,
@@ -100,7 +100,7 @@
    "listedAt": "2026-10-06",
    "mls": "134295",
    "url": "https://www.coldwellbanker.com/nc/southern-shores/249-wax-myrtle-trl/lid-P00800000HIRUa9tfw2yMpUxaEZk2e0thBNRqjKw",
-   "cbUpdated": "2026-11-11T17:16"
+   "cbUpdated": "2026-11-12T19:03"
   },
   {
    "address": "311 Jean Court",
