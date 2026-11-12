@@ -1,21 +1,21 @@
 {
  "note": "Daily spot-check sample for the OBX House Hunt site. Public MLS facts only.",
- "checkedAt": "2026-11-12T20:03:00.691Z",
+ "checkedAt": "2026-11-12T23:02:57.532Z",
  "asOf": "2026-11-12",
  "totals": {
-  "listings": 785,
-  "active": 499,
-  "pending": 169,
+  "listings": 787,
+  "active": 501,
+  "pending": 168,
   "gone": 49
  },
  "onMarketByTown": {
   "Point Harbor": 4,
   "Manteo": 51,
-  "Powells Point": 23,
+  "Powells Point": 24,
   "Harbinger": 2,
   "Kitty Hawk": 66,
-  "Southern Shores": 36,
-  "Kill Devil Hills": 217,
+  "Southern Shores": 37,
+  "Kill Devil Hills": 216,
   "Jarvisburg": 35,
   "Nags Head": 128,
   "Duck": 49,
@@ -100,22 +100,7 @@
    "listedAt": "2026-10-06",
    "mls": "134295",
    "url": "https://www.coldwellbanker.com/nc/southern-shores/249-wax-myrtle-trl/lid-P00800000HIRUa9tfw2yMpUxaEZk2e0thBNRqjKw",
-   "cbUpdated": "2026-11-12T19:03"
-  },
-  {
-   "address": "311 Jean Court",
-   "town": "Kill Devil Hills",
-   "price": 569000,
-   "status": "Pending",
-   "kind": "house",
-   "beds": 3,
-   "baths": 2,
-   "sqft": 1544,
-   "acres": null,
-   "listedAt": "2026-10-07",
-   "mls": "134297",
-   "url": "https://www.coldwellbanker.com/nc/kill-devil-hills/311-jean-ct/lid-P00800000HIU9UthCwVpF1DSFIAiHzSGipVaHMz1",
-   "cbUpdated": "2026-11-11T09:22"
+   "cbUpdated": "2026-11-12T20:23"
   },
   {
    "address": "103 W Bias Drive",
@@ -205,7 +190,7 @@
    "listedAt": "2026-10-08",
    "mls": "134317",
    "url": "https://www.coldwellbanker.com/nc/duck/104-sprigtail-dr/lid-P00800000HIXm6rOK7kmAneev3efPxtOmDehfJ0V",
-   "cbUpdated": "2026-11-11T17:16"
+   "cbUpdated": "2026-11-12T20:23"
   },
   {
    "address": "4249 Seascape Drive",
@@ -761,6 +746,21 @@
    "mls": "134394",
    "url": "https://www.coldwellbanker.com/nc/kitty-hawk/3848-ivy-ln/lid-P00800000HIwkKhBhfcPqra1grWJX2xxp8IeokVG",
    "cbUpdated": "2026-11-11T17:16"
+  },
+  {
+   "address": "307 Jejac Drive",
+   "town": "Kitty Hawk",
+   "price": 629999,
+   "status": "Active",
+   "kind": "house",
+   "beds": 4,
+   "baths": 3,
+   "sqft": 1400,
+   "acres": null,
+   "listedAt": "2026-10-16",
+   "mls": "134397",
+   "url": "https://www.coldwellbanker.com/nc/kitty-hawk/307-jejac-dr/lid-P00800000HIwtUikVsiB2F3MNHBYHF6Wmp8wWBd6",
+   "cbUpdated": "2026-11-11T17:17"
   }
  ]
 }
