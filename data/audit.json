@@ -1,21 +1,21 @@
 {
  "note": "Daily spot-check sample for the OBX House Hunt site. Public MLS facts only.",
- "checkedAt": "2026-11-13T17:03:02.763Z",
+ "checkedAt": "2026-11-13T20:02:57.917Z",
  "asOf": "2026-11-13",
  "totals": {
-  "listings": 788,
-  "active": 501,
+  "listings": 790,
+  "active": 502,
   "pending": 169,
   "gone": 49
  },
  "onMarketByTown": {
   "Point Harbor": 4,
-  "Manteo": 51,
+  "Manteo": 52,
   "Powells Point": 24,
   "Harbinger": 2,
-  "Kitty Hawk": 66,
+  "Kitty Hawk": 65,
   "Southern Shores": 37,
-  "Kill Devil Hills": 217,
+  "Kill Devil Hills": 218,
   "Jarvisburg": 35,
   "Nags Head": 128,
   "Duck": 49,
@@ -27,21 +27,6 @@
  "batchSize": 49,
  "rotationKey": "2026-11-13",
  "sample": [
-  {
-   "address": "113 Base Hit Drive",
-   "town": "Grandy",
-   "price": 290000,
-   "status": "Active",
-   "kind": "lot",
-   "beds": null,
-   "baths": null,
-   "sqft": null,
-   "acres": 0.36,
-   "listedAt": "2026-10-16",
-   "mls": "134400",
-   "url": "https://www.coldwellbanker.com/nc/grandy/113-base-hit-dr/lid-P00800000HIxYq2WGn9FW91DkiBZEdSMg779krpA",
-   "cbUpdated": "2026-11-11T17:16"
-  },
   {
    "address": "1529 Sir Walter Road",
    "town": "Kill Devil Hills",
@@ -761,6 +746,21 @@
    "mls": "134497",
    "url": "https://www.coldwellbanker.com/nc/duck/187-ocean-front-dr/lid-P00800000HJbqijQmko8srxUbH7zS0fS092uhDYs",
    "cbUpdated": "2026-11-11T09:21"
+  },
+  {
+   "address": "106 Old Squaw Drive",
+   "town": "Duck",
+   "price": 749000,
+   "status": "Active",
+   "kind": "house",
+   "beds": 3,
+   "baths": 2,
+   "sqft": 945,
+   "acres": null,
+   "listedAt": "2026-10-30",
+   "mls": "134504",
+   "url": "https://www.coldwellbanker.com/nc/duck/106-old-squaw-dr/lid-P00800000HJe3e9BK2BJERhO38tawEQ7MEWEJ38s",
+   "cbUpdated": "2026-11-11T17:16"
   }
  ]
 }
