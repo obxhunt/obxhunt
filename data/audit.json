@@ -1,6 +1,6 @@
 {
  "note": "Daily spot-check sample for the OBX House Hunt site. Public MLS facts only.",
- "checkedAt": "2026-11-14T11:03:07.932Z",
+ "checkedAt": "2026-11-14T14:03:04.564Z",
  "asOf": "2026-11-14",
  "totals": {
   "listings": 791,
@@ -55,7 +55,7 @@
    "listedAt": "2026-11-01",
    "mls": "134529",
    "url": "https://www.coldwellbanker.com/nc/kill-devil-hills/127-lee-ct/lid-P00800000HJmjKHDbkvlxhuqounEQFb8ERSqE0hy",
-   "cbUpdated": "2026-11-14T02:51"
+   "cbUpdated": "2026-11-14T11:50"
   },
   {
    "address": "205 S Cutty Sark Lane",
@@ -100,7 +100,7 @@
    "listedAt": "2026-11-02",
    "mls": "134542",
    "url": "https://www.coldwellbanker.com/nc/kill-devil-hills/600-canal-dr/lid-P00800000HJpnvnV8vThs5URcY0SvVM3NRslEpDo",
-   "cbUpdated": "2026-11-13T12:01"
+   "cbUpdated": "2026-11-14T11:50"
   },
   {
    "address": "7117 S Virginia Dare Trail",
@@ -430,7 +430,7 @@
    "listedAt": "2026-11-10",
    "mls": "134602",
    "url": "https://www.coldwellbanker.com/nc/kitty-hawk/1048-creek-rd/lid-P00800000HKFrVzk5C9SZoXWeRnRbGf1d44dsHC8",
-   "cbUpdated": "2026-11-14T02:51"
+   "cbUpdated": "2026-11-14T11:50"
   },
   {
    "address": "1505 Ketch Lane",
