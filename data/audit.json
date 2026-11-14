@@ -1,6 +1,6 @@
 {
  "note": "Daily spot-check sample for the OBX House Hunt site. Public MLS facts only.",
- "checkedAt": "2026-11-14T14:03:04.564Z",
+ "checkedAt": "2026-11-14T17:02:49.916Z",
  "asOf": "2026-11-14",
  "totals": {
   "listings": 791,
@@ -205,7 +205,7 @@
    "listedAt": "2026-11-05",
    "mls": "134555",
    "url": "https://www.coldwellbanker.com/nc/kill-devil-hills/339-eagle-dr/lid-P00800000HJyo7NuATbRCAjq7aqPVZgCjBxbBlzO",
-   "cbUpdated": "2026-11-11T17:16"
+   "cbUpdated": "2026-11-14T16:21"
   },
   {
    "address": "2406 S Memorial Avenue",
@@ -430,7 +430,7 @@
    "listedAt": "2026-11-10",
    "mls": "134602",
    "url": "https://www.coldwellbanker.com/nc/kitty-hawk/1048-creek-rd/lid-P00800000HKFrVzk5C9SZoXWeRnRbGf1d44dsHC8",
-   "cbUpdated": "2026-11-14T11:50"
+   "cbUpdated": "2026-11-14T16:21"
   },
   {
    "address": "1505 Ketch Lane",
@@ -565,7 +565,7 @@
    "listedAt": "2026-11-13",
    "mls": "134621",
    "url": "https://www.coldwellbanker.com/nc/kill-devil-hills/109-cove-ct/lid-P00800000HKN4qUXM9OL9t1ValT2uMNcgcajoZA6",
-   "cbUpdated": "2026-11-13T19:53"
+   "cbUpdated": "2026-11-14T16:21"
   },
   {
    "address": "517 Cypress Lane",
@@ -625,7 +625,7 @@
    "listedAt": "2026-09-11",
    "mls": "4423916",
    "url": "https://www.coldwellbanker.com/nc/kill-devil-hills/220-e-bickett-st/lid-P00800000HH8xBSBU4EWtjA111S1EXATc0Vin9t4",
-   "cbUpdated": "2026-11-10T14:26"
+   "cbUpdated": "2026-11-14T14:31"
   },
   {
    "address": "2101 Colington Road",
@@ -640,7 +640,7 @@
    "listedAt": "2025-07-23",
    "mls": "10111013",
    "url": "https://www.coldwellbanker.com/nc/kill-devil-hills/2101-colington-rd/lid-P00800000Gvez7KRZkAJoj5iZQGKBOAWCaOvqyy5",
-   "cbUpdated": "2026-11-13T15:01"
+   "cbUpdated": "2026-11-14T14:57"
   },
   {
    "address": "105 Indian Kettle Road",
