@@ -1,10 +1,10 @@
 {
  "note": "Daily spot-check sample for the OBX House Hunt site. Public MLS facts only.",
- "checkedAt": "2026-11-15T11:03:04.612Z",
+ "checkedAt": "2026-11-15T14:02:58.630Z",
  "asOf": "2026-11-15",
  "totals": {
-  "listings": 793,
-  "active": 496,
+  "listings": 794,
+  "active": 497,
   "pending": 172,
   "gone": 50
  },
@@ -17,7 +17,7 @@
   "Southern Shores": 37,
   "Kill Devil Hills": 216,
   "Jarvisburg": 35,
-  "Nags Head": 127,
+  "Nags Head": 128,
   "Duck": 49,
   "Grandy": 52,
   "Wanchese": 5
@@ -40,7 +40,7 @@
    "listedAt": "2026-06-11",
    "mls": "10639320",
    "url": "https://www.coldwellbanker.com/nc/jarvisburg/114-indian-kettle-rd/lid-P00800000HCOHj1llYZJZbQeW3mLSBy8BSkccBt3",
-   "cbUpdated": "2026-11-14T10:28"
+   "cbUpdated": "2026-11-15T10:58"
   },
   {
    "address": "110 Indian Kettle Road",
@@ -55,7 +55,7 @@
    "listedAt": "2026-06-11",
    "mls": "10639324",
    "url": "https://www.coldwellbanker.com/nc/jarvisburg/110-indian-kettle-rd/lid-P00800000HCOHisvHxAjmupPLFy02HTk5Gso95U3",
-   "cbUpdated": "2026-11-14T10:28"
+   "cbUpdated": "2026-11-15T10:58"
   },
   {
    "address": "106 Indian Kettle Road",
@@ -70,7 +70,7 @@
    "listedAt": "2026-06-11",
    "mls": "10639328",
    "url": "https://www.coldwellbanker.com/nc/jarvisburg/106-indian-kettle-rd/lid-P00800000HCOHisvHxAjmupPLFy02HTitZCWHlB1",
-   "cbUpdated": "2026-11-14T10:28"
+   "cbUpdated": "2026-11-15T10:58"
   },
   {
    "address": "104 Indian Kettle Road",
@@ -85,7 +85,7 @@
    "listedAt": "2026-06-11",
    "mls": "10639335",
    "url": "https://www.coldwellbanker.com/nc/jarvisburg/104-indian-kettle-rd/lid-P00800000HCOHj1llYZJZbQeW3mLSBy4Q5jf09RQ",
-   "cbUpdated": "2026-11-14T10:28"
+   "cbUpdated": "2026-11-15T10:58"
   },
   {
    "address": "110 N Compass Drive",
@@ -115,7 +115,7 @@
    "listedAt": "2026-07-23",
    "mls": "10645812",
    "url": "https://www.coldwellbanker.com/nc/jarvisburg/104-indian-kettle-rd/lid-P00800000HEYyglNwkXpADIwPIFC6e42jdACFaIS",
-   "cbUpdated": "2026-11-14T10:28"
+   "cbUpdated": "2026-11-15T10:58"
   },
   {
    "address": "117-B Jarvis Landing Drive #33",
@@ -145,7 +145,7 @@
    "listedAt": "2025-03-23",
    "mls": "100493489",
    "url": "https://www.coldwellbanker.com/nc/jarvisburg/101-indian-kettle-rd/lid-P00800000GohHjDIrI6knep1uD9C2tXtiItdY8qK",
-   "cbUpdated": "2026-11-14T11:50"
+   "cbUpdated": "2026-11-15T11:24"
   },
   {
    "address": "121-B Jarvis Landing #29",
@@ -190,7 +190,7 @@
    "listedAt": "2026-03-03",
    "mls": "100557731",
    "url": "https://www.coldwellbanker.com/nc/kill-devil-hills/111-shedders-walk/lid-P00800000H7DPpUyHOFvaRffeRSkFyxxHhUHm1cj",
-   "cbUpdated": "2026-11-15T01:08"
+   "cbUpdated": "2026-11-15T12:07"
   },
   {
    "address": "110 Duck Ridge Village Court",
@@ -205,7 +205,7 @@
    "listedAt": "2026-04-01",
    "mls": "100564067",
    "url": "https://www.coldwellbanker.com/nc/duck/110-duck-ridge-village-ct/lid-P00800000H8hlJzoVOQ0KLzjAib3iHStdppGw6rB",
-   "cbUpdated": "2026-11-14T11:50"
+   "cbUpdated": "2026-11-15T12:07"
   },
   {
    "address": "106 William Tryon Court",
@@ -220,7 +220,7 @@
    "listedAt": "2026-04-03",
    "mls": "100564857",
    "url": "https://www.coldwellbanker.com/nc/kill-devil-hills/106-william-tryon-ct/lid-P00800000H8oAwNHwJtBACHxAMkaV7hClYuCvZAA",
-   "cbUpdated": "2026-11-14T11:50"
+   "cbUpdated": "2026-11-15T11:25"
   },
   {
    "address": "151 Carolina Club Drive",
@@ -250,7 +250,7 @@
    "listedAt": "2026-04-07",
    "mls": "100565332",
    "url": "https://www.coldwellbanker.com/nc/nags-head/104-e-blackman-st/lid-P00800000H90AMbIYqkHLdcwwfLpZmw5i7q28nCy",
-   "cbUpdated": "2026-11-15T01:08"
+   "cbUpdated": "2026-11-15T12:07"
   },
   {
    "address": "108 Young Rider Lane",
@@ -265,7 +265,7 @@
    "listedAt": "2026-06-06",
    "mls": "100579646",
    "url": "https://www.coldwellbanker.com/nc/grandy/108-young-rider-ln/lid-P00800000HC7QAxFrwicnC8v1D7goyn6Y9bp5DvG",
-   "cbUpdated": "2026-11-14T11:15"
+   "cbUpdated": "2026-11-15T11:24"
   },
   {
    "address": "105 N Mallard Court N",
@@ -295,7 +295,7 @@
    "listedAt": "2026-07-04",
    "mls": "100586523",
    "url": "https://www.coldwellbanker.com/nc/duck/131-hillside-ct/lid-P00800000HDZ0LuQiX0ho48qI7QKn5XoydMtsPdq",
-   "cbUpdated": "2026-11-14T11:50"
+   "cbUpdated": "2026-11-15T11:24"
   },
   {
    "address": "115 Treasure Run",
@@ -310,7 +310,7 @@
    "listedAt": "2026-07-08",
    "mls": "100587198",
    "url": "https://www.coldwellbanker.com/nc/grandy/115-treasure-run--lot/lid-P00800000HDmBYs3zpRPVZospf7PGIi7Og19s9Ge",
-   "cbUpdated": "2026-11-15T01:09"
+   "cbUpdated": "2026-11-15T11:24"
   },
   {
    "address": "104 Perry's Way",
@@ -325,7 +325,7 @@
    "listedAt": "2026-07-18",
    "mls": "100589889",
    "url": "https://www.coldwellbanker.com/nc/grandy/104-perrys-way/lid-P00800000HEGVrRYS585MdU6zii9lKltm6OdHO39",
-   "cbUpdated": "2026-11-14T11:50"
+   "cbUpdated": "2026-11-15T11:24"
   },
   {
    "address": "101 Edgewater Drive",
@@ -340,7 +340,7 @@
    "listedAt": "2026-07-21",
    "mls": "100590451",
    "url": "https://www.coldwellbanker.com/nc/grandy/101-edgewater-dr/lid-P00800000HERs8BZruvaeIkFHRMFk00S1eGyfaVn",
-   "cbUpdated": "2026-11-14T11:50"
+   "cbUpdated": "2026-11-15T12:07"
   },
   {
    "address": "3836 N Virginia Dare Trail Unit G-8",
@@ -355,7 +355,7 @@
    "listedAt": "2026-07-29",
    "mls": "100592169",
    "url": "https://www.coldwellbanker.com/nc/kitty-hawk/3836-virginia-dare-trl-n--g8/lid-P00800000HEpFcjVHxZYCj6lbjbjbpYGkZVY7lcs",
-   "cbUpdated": "2026-11-14T11:50"
+   "cbUpdated": "2026-11-15T11:24"
   },
   {
    "address": "100 Mercedes Court Unit A",
@@ -370,7 +370,7 @@
    "listedAt": "2026-08-01",
    "mls": "100593243",
    "url": "https://www.coldwellbanker.com/nc/grandy/100a-mercedes-ct/lid-P00800000HF1oxG3siYQ37VXBnD2Vo5quzfM8Hwl",
-   "cbUpdated": "2026-11-14T11:50"
+   "cbUpdated": "2026-11-15T11:24"
   },
   {
    "address": "103 Sir John White Court",
@@ -385,7 +385,7 @@
    "listedAt": "2026-08-08",
    "mls": "100594868",
    "url": "https://www.coldwellbanker.com/nc/kill-devil-hills/103-sir-john-white-ct/lid-P00800000HAQWr6Yq3QZzZguhVdeMfd8zfc5hHs4",
-   "cbUpdated": "2026-11-14T11:51"
+   "cbUpdated": "2026-11-15T12:07"
   },
   {
    "address": "113 Briggs Street",
@@ -445,7 +445,7 @@
    "listedAt": "2026-09-21",
    "mls": "100604978",
    "url": "https://www.coldwellbanker.com/nc/kill-devil-hills/700-w-first-st--c7/lid-P00800000HHeZx7HAgewiDf1xSFmm1iERn3Q7CsU",
-   "cbUpdated": "2026-11-15T01:09"
+   "cbUpdated": "2026-11-15T11:24"
   },
   {
    "address": "111 Indian Kettle Road",
@@ -475,7 +475,7 @@
    "listedAt": "2026-09-25",
    "mls": "100606222",
    "url": "https://www.coldwellbanker.com/nc/kill-devil-hills/164-shingle-landing-ln/lid-P00800000HHrvpHB342JNn5Dy2rftOtQ2PBM4ql6",
-   "cbUpdated": "2026-11-14T11:50"
+   "cbUpdated": "2026-11-15T11:24"
   },
   {
    "address": "213 W Amberjack Court",
@@ -490,7 +490,7 @@
    "listedAt": "2026-09-30",
    "mls": "100607165",
    "url": "https://www.coldwellbanker.com/nc/nags-head/213-w-amberjack-ct/lid-P00800000HHusonX6xGvbDTCLxu9ueC4fnYT88O2",
-   "cbUpdated": "2026-11-14T11:50"
+   "cbUpdated": "2026-11-15T11:24"
   },
   {
    "address": "217 W Walker Street",
@@ -505,7 +505,7 @@
    "listedAt": "2026-10-08",
    "mls": "100609128",
    "url": "https://www.coldwellbanker.com/nc/kill-devil-hills/217-w-walker-st/lid-P00800000HIXm6QqtJZ2ojqvOeDdAEQKrcsrBTmy",
-   "cbUpdated": "2026-11-14T11:50"
+   "cbUpdated": "2026-11-15T11:24"
   },
   {
    "address": "243 Colonial Beach Road",
@@ -520,7 +520,7 @@
    "listedAt": "2026-10-13",
    "mls": "100610051",
    "url": "https://www.coldwellbanker.com/nc/jarvisburg/243-colonial-beach-rd/lid-P00800000HInfi0u7DDsW28lEp6LCKBpKSgj37Tq",
-   "cbUpdated": "2026-11-14T11:51"
+   "cbUpdated": "2026-11-15T12:07"
   },
   {
    "address": "112 Duck Ridge Village Court",
@@ -535,7 +535,7 @@
    "listedAt": "2026-10-19",
    "mls": "100611266",
    "url": "https://www.coldwellbanker.com/nc/duck/112-duck-ridge-village-ct/lid-P00800000HJ6wO0q66BxB4C23GsB8YMadHlXEXHg",
-   "cbUpdated": "2026-11-14T11:50"
+   "cbUpdated": "2026-11-15T12:07"
   },
   {
    "address": "117 Old Nc Highway 345",
@@ -565,7 +565,7 @@
    "listedAt": "2026-10-23",
    "mls": "100612223",
    "url": "https://www.coldwellbanker.com/nc/powells-point/8413-caratoke-hwy/lid-P00800000HJJc1Cs0KX96lMuj5nKJC8zVQdHlXNY",
-   "cbUpdated": "2026-11-14T11:51"
+   "cbUpdated": "2026-11-15T12:07"
   },
   {
    "address": "4712 N Croatan Highway",
@@ -580,7 +580,7 @@
    "listedAt": "2026-10-28",
    "mls": "100612993",
    "url": "https://www.coldwellbanker.com/nc/kitty-hawk/4712-n-croatan-hwy/lid-P00800000HJZV2Xvx1VNLX4aJCQIBrUAb2MkQagX",
-   "cbUpdated": "2026-11-14T11:50"
+   "cbUpdated": "2026-11-15T11:24"
   },
   {
    "address": "179 Kilmarlic Club Drive",
@@ -595,7 +595,7 @@
    "listedAt": "2026-10-29",
    "mls": "100613353",
    "url": "https://www.coldwellbanker.com/nc/powells-point/179-kilmarlic-club-dr/lid-P00800000HJdNjjC6kEFZVxJo48bAhYoRjMdmjE6",
-   "cbUpdated": "2026-11-14T11:50"
+   "cbUpdated": "2026-11-15T12:07"
   },
   {
    "address": "108 Raleigh Avenue",
@@ -625,7 +625,7 @@
    "listedAt": "2026-11-06",
    "mls": "100614903",
    "url": "https://www.coldwellbanker.com/nc/powells-point/8399-caratoke-hwy/lid-P00800000HK2ETGlnaBjxj8HZXg9MycyYjDtiZV4",
-   "cbUpdated": "2026-11-14T11:50"
+   "cbUpdated": "2026-11-15T11:24"
   },
   {
    "address": "070b Caratoke Highway",
@@ -640,7 +640,7 @@
    "listedAt": "2026-11-06",
    "mls": "100614908",
    "url": "https://www.coldwellbanker.com/nc/powells-point/70-caratoke-hwy/lid-P00800000HK5TfQEeWzriBECGVp99EjC1tNUrkxm",
-   "cbUpdated": "2026-11-14T11:50"
+   "cbUpdated": "2026-11-15T12:08"
   },
   {
    "address": "155 Savannah Avenue",
@@ -670,7 +670,7 @@
    "listedAt": "2026-11-12",
    "mls": "100616138",
    "url": "https://www.coldwellbanker.com/nc/powells-point/175-west-side-ln/lid-P00800000HKM0oJcoqugRzulhRGh4UJ5sHxex9HI",
-   "cbUpdated": "2026-11-14T11:50"
+   "cbUpdated": "2026-11-15T11:24"
   }
  ]
 }
