@@ -1,11 +1,11 @@
 {
  "note": "Daily spot-check sample for the OBX House Hunt site. Public MLS facts only.",
- "checkedAt": "2026-11-16T14:02:53.433Z",
+ "checkedAt": "2026-11-16T17:03:05.633Z",
  "asOf": "2026-11-16",
  "totals": {
-  "listings": 795,
-  "active": 498,
-  "pending": 172,
+  "listings": 798,
+  "active": 500,
+  "pending": 173,
   "gone": 50
  },
  "onMarketByTown": {
@@ -17,9 +17,9 @@
   "Southern Shores": 37,
   "Kill Devil Hills": 216,
   "Jarvisburg": 35,
-  "Nags Head": 129,
+  "Nags Head": 131,
   "Duck": 49,
-  "Grandy": 52,
+  "Grandy": 53,
   "Wanchese": 5
  },
  "batch": 1,
@@ -160,7 +160,7 @@
    "listedAt": "2025-03-27",
    "mls": "127629",
    "url": "https://www.coldwellbanker.com/nc/kill-devil-hills/805-harbour-view-dr-lot-21/lid-P00800000GjgKf9cNRfH8NsNKD06jJoroQuMh9RM",
-   "cbUpdated": "2026-11-11T17:16"
+   "cbUpdated": "2026-11-16T16:08"
   },
   {
    "address": "0 West Side Lane",
