@@ -1,6 +1,6 @@
 {
  "note": "Daily spot-check sample for the OBX House Hunt site. Public MLS facts only.",
- "checkedAt": "2026-11-17T11:03:21.269Z",
+ "checkedAt": "2026-11-17T14:03:12.099Z",
  "asOf": "2026-11-17",
  "totals": {
   "listings": 801,
@@ -310,7 +310,7 @@
    "listedAt": "2026-03-03",
    "mls": "131984",
    "url": "https://www.coldwellbanker.com/nc/kill-devil-hills/121-roanoke-dr/lid-P00800000H7DAHNm0mjuTeavFjcXMUyWOOnbMcMh",
-   "cbUpdated": "2026-11-16T21:05"
+   "cbUpdated": "2026-11-17T11:56"
   },
   {
    "address": "1014 S Virginia Dare Trail Unit 402",
@@ -430,7 +430,7 @@
    "listedAt": "2026-03-18",
    "mls": "132198",
    "url": "https://www.coldwellbanker.com/nc/nags-head/9427-s-old-oregon-inlet-rd/lid-P00800000H7zW1376nohmKI0v42m6c0F6YXflxqC",
-   "cbUpdated": "2026-11-17T03:50"
+   "cbUpdated": "2026-11-17T11:56"
   },
   {
    "address": "103 Seahawk Court",
@@ -460,7 +460,7 @@
    "listedAt": "2026-03-19",
    "mls": "132208",
    "url": "https://www.coldwellbanker.com/nc/southern-shores/209-sea-oats-ln/lid-P00800000H82CeEKpm08T695ZTPS7esltFtX2jC9",
-   "cbUpdated": "2026-11-17T03:50"
+   "cbUpdated": "2026-11-17T11:56"
   },
   {
    "address": "2603 S Virginia Dare Trail",
@@ -655,7 +655,7 @@
    "listedAt": "2026-04-12",
    "mls": "132495",
    "url": "https://www.coldwellbanker.com/nc/nags-head/2229-s-virginia-dare-trl-unit-302/lid-P00800000HHLJF7UVM8n3ZCKhl76z2gJmf7ZlH2T",
-   "cbUpdated": "2026-11-16T21:05"
+   "cbUpdated": "2026-11-17T11:56"
   },
   {
    "address": "141 W Mobile Road",
