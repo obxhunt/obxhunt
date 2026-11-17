@@ -1,11 +1,11 @@
 {
  "note": "Daily spot-check sample for the OBX House Hunt site. Public MLS facts only.",
- "checkedAt": "2026-11-17T17:02:59.884Z",
+ "checkedAt": "2026-11-17T20:03:04.581Z",
  "asOf": "2026-11-17",
  "totals": {
-  "listings": 802,
-  "active": 496,
-  "pending": 178,
+  "listings": 803,
+  "active": 498,
+  "pending": 176,
   "gone": 50
  },
  "onMarketByTown": {
@@ -55,7 +55,7 @@
    "listedAt": "2026-01-30",
    "mls": "131667",
    "url": "https://www.coldwellbanker.com/nc/kill-devil-hills/1319-north-virginia-dare-trail-unit-2k/lid-P00800000Ga3YbzDnfS1omngF3T9AbVpnms4s2Dz",
-   "cbUpdated": "2026-11-11T17:16"
+   "cbUpdated": "2026-11-17T16:46"
   },
   {
    "address": "5 Live Oak Lane",
@@ -70,7 +70,7 @@
    "listedAt": "2026-01-30",
    "mls": "131675",
    "url": "https://www.coldwellbanker.com/nc/southern-shores/5-live-oak-ln-lot-1/lid-P00800000GmK23uCR0MwkEXn0FlLaCdjrTNqMdru",
-   "cbUpdated": "2026-11-11T17:16"
+   "cbUpdated": "2026-11-17T16:46"
   },
   {
    "address": "118 Dolphin Court Lot 47",
@@ -85,7 +85,7 @@
    "listedAt": "2026-02-01",
    "mls": "131683",
    "url": "https://www.coldwellbanker.com/nc/grandy/118-dolphin-ct-lot-47/lid-P00800000HHLJEY6awYTuonM0XrjJOioDaROYtvI",
-   "cbUpdated": "2026-11-11T17:16"
+   "cbUpdated": "2026-11-17T16:46"
   },
   {
    "address": "201 Case Landing Road",
@@ -100,7 +100,22 @@
    "listedAt": "2026-02-02",
    "mls": "131695",
    "url": "https://www.coldwellbanker.com/nc/jarvisburg/201-case-landing-rd/lid-P00800000H5i0smVq5Ve1ncY9Il8HPq3sTHms31M",
-   "cbUpdated": "2026-11-11T17:16"
+   "cbUpdated": "2026-11-17T16:46"
+  },
+  {
+   "address": "902 S Virginia Dare Trail",
+   "town": "Kill Devil Hills",
+   "price": 716900,
+   "status": "Active",
+   "kind": "condo",
+   "beds": 3,
+   "baths": 4,
+   "sqft": 1793,
+   "acres": null,
+   "listedAt": "2026-02-04",
+   "mls": "131720",
+   "url": "https://www.coldwellbanker.com/nc/kill-devil-hills/902-s-virginia-dare-trl/lid-P00800000H5uTyCl3S2cQ4GJzgLEMVO6V2kudxDf",
+   "cbUpdated": "2026-11-17T16:46"
   },
   {
    "address": "8530 S Old Oregon Inlet Road",
@@ -145,7 +160,7 @@
    "listedAt": "2026-02-11",
    "mls": "131793",
    "url": "https://www.coldwellbanker.com/nc/southern-shores/343-sea-oats-trl/lid-P00800000H6BHR9jv2fO7XrsNGT3bNYJE1BeLu4Z",
-   "cbUpdated": "2026-11-11T17:16"
+   "cbUpdated": "2026-11-17T16:46"
   },
   {
    "address": "3916 Ivy Lane",
@@ -175,7 +190,7 @@
    "listedAt": "2026-02-15",
    "mls": "131827",
    "url": "https://www.coldwellbanker.com/nc/nags-head/7105-s-virginia-dare-trl--3/lid-P00800000HHLJFGKyxXMqFnZsYvSOxAhEnhbyM5D",
-   "cbUpdated": "2026-11-11T17:16"
+   "cbUpdated": "2026-11-17T16:46"
   },
   {
    "address": "7104 S Virginia Dare Trail",
@@ -205,7 +220,7 @@
    "listedAt": "2026-02-18",
    "mls": "131859",
    "url": "https://www.coldwellbanker.com/nc/kitty-hawk/3005-martins-point-rd-lot-2/lid-P00800000HHLJFGKyxXMqFnZsYvSOxAl1sIomzJo",
-   "cbUpdated": "2026-11-11T17:16"
+   "cbUpdated": "2026-11-17T16:46"
   },
   {
    "address": "102 Bridge View Drive S",
@@ -235,7 +250,7 @@
    "listedAt": "2026-02-21",
    "mls": "131893",
    "url": "https://www.coldwellbanker.com/nc/duck/129-martin-ln/lid-P00800000H6h5FH423eXu61wBhXwuXxSBYN15Jng",
-   "cbUpdated": "2026-11-11T17:16"
+   "cbUpdated": "2026-11-17T16:46"
   },
   {
    "address": "88 Ballast Point Drive",
@@ -265,7 +280,7 @@
    "listedAt": "2026-02-26",
    "mls": "131930",
    "url": "https://www.coldwellbanker.com/nc/nags-head/107-w-gray-eagle-st-unit-102/lid-P00800000H6wivcnddZrHHvNP12ULYNLSX1VUv1v",
-   "cbUpdated": "2026-11-11T17:16"
+   "cbUpdated": "2026-11-17T16:46"
   },
   {
    "address": "247 Kilmarlic Club Drive",
@@ -325,7 +340,7 @@
    "listedAt": "2026-03-05",
    "mls": "132015",
    "url": "https://www.coldwellbanker.com/nc/kill-devil-hills/1014-s-virginia-dare-trl--402/lid-P00800000HHLJFGKyxXMqFnZsYvSOxAlcEW0NqM7",
-   "cbUpdated": "2026-11-11T17:16"
+   "cbUpdated": "2026-11-17T16:46"
   },
   {
    "address": "1319 N Virginia Dare Trail Unit 3E",
@@ -340,7 +355,7 @@
    "listedAt": "2026-03-09",
    "mls": "132067",
    "url": "https://www.coldwellbanker.com/nc/kill-devil-hills/1319-n-virginia-dare-trl--3e/lid-P00800000HHLJFgsPlj6CJbJOyMUegdoiW7XsVwq",
-   "cbUpdated": "2026-11-11T17:16"
+   "cbUpdated": "2026-11-17T16:46"
   },
   {
    "address": "15 Seventh Avenue",
@@ -385,7 +400,7 @@
    "listedAt": "2026-03-13",
    "mls": "132127",
    "url": "https://www.coldwellbanker.com/nc/kitty-hawk/1005-creek-rd-lot-2/lid-P00800000HHLJF7UVM8n3ZCKhl76z2gJr2xlMEAu",
-   "cbUpdated": "2026-11-11T17:16"
+   "cbUpdated": "2026-11-17T16:46"
   },
   {
    "address": "306 W Villa Dunes Drive",
@@ -460,7 +475,7 @@
    "listedAt": "2026-03-19",
    "mls": "132208",
    "url": "https://www.coldwellbanker.com/nc/southern-shores/209-sea-oats-ln/lid-P00800000H82CeEKpm08T695ZTPS7esltFtX2jC9",
-   "cbUpdated": "2026-11-17T11:56"
+   "cbUpdated": "2026-11-17T16:46"
   },
   {
    "address": "2603 S Virginia Dare Trail",
@@ -490,7 +505,7 @@
    "listedAt": "2026-03-24",
    "mls": "132249",
    "url": "https://www.coldwellbanker.com/nc/kill-devil-hills/815-s-virginia-dare-trl--101/lid-P00800000HHLJFPBSYvwcwOp3Mjnorf2pJnT4jwZ",
-   "cbUpdated": "2026-11-11T17:16"
+   "cbUpdated": "2026-11-17T16:46"
   },
   {
    "address": "117 Sea Colony Drive Unit 3-122",
@@ -520,7 +535,7 @@
    "listedAt": "2026-03-27",
    "mls": "132294",
    "url": "https://www.coldwellbanker.com/nc/nags-head/6317-s-virginia-dare-trl--104/lid-P00800000HHLJEgx4Xx3hVObBLg4jJDElZeHTs0N",
-   "cbUpdated": "2026-11-11T17:16"
+   "cbUpdated": "2026-11-17T16:46"
   },
   {
    "address": "8721 S Old Oregon Inlet Road",
@@ -550,7 +565,7 @@
    "listedAt": "2026-03-28",
    "mls": "132310",
    "url": "https://www.coldwellbanker.com/nc/duck/114-sea-hawk-dr-w/lid-P00800000H8V3WFcLNGWsiL3BGw9RRkDbUk8Vin2",
-   "cbUpdated": "2026-11-11T17:16"
+   "cbUpdated": "2026-11-17T16:46"
   },
   {
    "address": "336 Harbour Road",
@@ -580,7 +595,7 @@
    "listedAt": "2026-04-01",
    "mls": "132360",
    "url": "https://www.coldwellbanker.com/nc/grandy/100-larry-ave--lot/lid-P00800000H8hcIfsoyVS2tAK7JStSfD2r09ujzYu",
-   "cbUpdated": "2026-11-11T17:16"
+   "cbUpdated": "2026-11-17T16:46"
   },
   {
    "address": "112 Caco Street",
@@ -610,7 +625,7 @@
    "listedAt": "2026-04-03",
    "mls": "132408",
    "url": "https://www.coldwellbanker.com/nc/duck/101-nash-rd--1/lid-P00800000HHLJEgx4Xx3hVObBLg4jJDEIQut0FzY",
-   "cbUpdated": "2026-11-11T17:16"
+   "cbUpdated": "2026-11-17T16:46"
   },
   {
    "address": "200 E Martin Street Unit 309",
@@ -670,7 +685,7 @@
    "listedAt": "2026-04-16",
    "mls": "132544",
    "url": "https://www.coldwellbanker.com/nc/harbinger/141-w-mobile-rd/lid-P00800000H9Tt4ZW0xXGVT6UvfLzkTbkLqAf5jiA",
-   "cbUpdated": "2026-11-11T17:16"
+   "cbUpdated": "2026-11-17T16:46"
   },
   {
    "address": "509 W Palmetto Street",
@@ -700,7 +715,7 @@
    "listedAt": "2026-04-17",
    "mls": "132555",
    "url": "https://www.coldwellbanker.com/nc/nags-head/3709-s-virginia-dare-trl/lid-P00800000H9XKTWLN6slMLQXpyTGBLvt02XnbcuN",
-   "cbUpdated": "2026-11-11T17:16"
+   "cbUpdated": "2026-11-17T16:46"
   },
   {
    "address": "1237 S Virginia Dare Trail Lot 3",
@@ -730,7 +745,7 @@
    "listedAt": "2026-04-19",
    "mls": "132571",
    "url": "https://www.coldwellbanker.com/nc/duck/116-snipe-ct/lid-P00800000H9bTI3rjQ2DeplTlzb6Hizm0nqNKMcM",
-   "cbUpdated": "2026-11-11T17:16"
+   "cbUpdated": "2026-11-17T16:46"
   },
   {
    "address": "3836 N Virginia Dare Trail",
@@ -746,21 +761,6 @@
    "mls": "132576",
    "url": "https://www.coldwellbanker.com/nc/kitty-hawk/3836-virginia-dare-trl-n/lid-P00800000H9eHH7MyVjkIuvW9KNUYoymsoMxeOqS",
    "cbUpdated": "2026-11-17T16:46"
-  },
-  {
-   "address": "319 W Ocean Acres Drive",
-   "town": "Kill Devil Hills",
-   "price": 549000,
-   "status": "Active",
-   "kind": "house",
-   "beds": 4,
-   "baths": 4,
-   "sqft": 2155,
-   "acres": null,
-   "listedAt": "2026-04-20",
-   "mls": "132588",
-   "url": "https://www.coldwellbanker.com/nc/kill-devil-hills/319-w-ocean-acres-dr/lid-P00800000H9hcv4ThXH8OeFD5ToRM3ffVNKd3uAK",
-   "cbUpdated": "2026-11-11T17:16"
   }
  ]
 }
