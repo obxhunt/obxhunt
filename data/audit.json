@@ -1,6 +1,6 @@
 {
  "note": "Daily spot-check sample for the OBX House Hunt site. Public MLS facts only.",
- "checkedAt": "2026-11-21T11:03:15.596Z",
+ "checkedAt": "2026-11-21T14:03:01.347Z",
  "asOf": "2026-11-21",
  "totals": {
   "listings": 828,
@@ -535,7 +535,7 @@
    "listedAt": "2026-08-28",
    "mls": "133892",
    "url": "https://www.coldwellbanker.com/nc/manteo/330-fernando-st-lot-4/lid-P00800000HHLJFY1wAKWPd04EAY9Em9R0jHFwCGl",
-   "cbUpdated": "2026-11-20T12:15"
+   "cbUpdated": "2026-11-21T11:47"
   },
   {
    "address": "4212 Lindbergh Avenue",
@@ -565,7 +565,7 @@
    "listedAt": "2026-08-28",
    "mls": "133904",
    "url": "https://www.coldwellbanker.com/nc/grandy/106-admirals-view-dr/lid-P00800000HGQGyfmw32YG5cSyC9lXhioSpOrAyNt",
-   "cbUpdated": "2026-11-21T01:06"
+   "cbUpdated": "2026-11-21T11:45"
   },
   {
    "address": "337 Sea Oats Trail",
