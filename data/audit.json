@@ -1,11 +1,11 @@
 {
  "note": "Daily spot-check sample for the OBX House Hunt site. Public MLS facts only.",
- "checkedAt": "2026-11-21T14:03:01.347Z",
+ "checkedAt": "2026-11-21T17:02:56.668Z",
  "asOf": "2026-11-21",
  "totals": {
   "listings": 828,
-  "active": 510,
-  "pending": 169,
+  "active": 509,
+  "pending": 170,
   "gone": 56
  },
  "onMarketByTown": {
