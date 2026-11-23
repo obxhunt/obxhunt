@@ -1,24 +1,24 @@
 {
  "note": "Daily spot-check sample for the OBX House Hunt site. Public MLS facts only.",
- "checkedAt": "2026-11-23T20:03:14.335Z",
+ "checkedAt": "2026-11-23T23:03:12.915Z",
  "asOf": "2026-11-23",
  "totals": {
-  "listings": 834,
-  "active": 506,
-  "pending": 171,
+  "listings": 836,
+  "active": 508,
+  "pending": 165,
   "gone": 61
  },
  "onMarketByTown": {
   "Point Harbor": 4,
-  "Manteo": 54,
+  "Manteo": 55,
   "Powells Point": 23,
   "Harbinger": 2,
-  "Kitty Hawk": 63,
+  "Kitty Hawk": 64,
   "Southern Shores": 34,
-  "Kill Devil Hills": 224,
+  "Kill Devil Hills": 219,
   "Jarvisburg": 37,
   "Nags Head": 134,
-  "Duck": 46,
+  "Duck": 45,
   "Grandy": 51,
   "Wanchese": 5
  },
@@ -27,36 +27,6 @@
  "batchSize": 49,
  "rotationKey": "2026-11-23",
  "sample": [
-  {
-   "address": "2109 S Virginia Dare Trail",
-   "town": "Nags Head",
-   "price": 2350000,
-   "status": "Active",
-   "kind": "house",
-   "beds": 6,
-   "baths": 6,
-   "sqft": 3570,
-   "acres": null,
-   "listedAt": "2026-09-17",
-   "mls": "134097",
-   "url": "https://www.coldwellbanker.com/nc/nags-head/2109-s-virginia-dare-trl/lid-P00800000HHPcZaGQXTOHSEVmbNJZLv4hM2PEztW",
-   "cbUpdated": "2026-11-19T05:53"
-  },
-  {
-   "address": "35 Ballast Point Drive",
-   "town": "Manteo",
-   "price": 2300000,
-   "status": "Pending",
-   "kind": "house",
-   "beds": 5,
-   "baths": 6,
-   "sqft": 3864,
-   "acres": null,
-   "listedAt": "2026-09-17",
-   "mls": "134098",
-   "url": "https://www.coldwellbanker.com/nc/manteo/35-ballast-point-dr/lid-P00800000HHPcZIZTKgEi521QzkcjWwIjSnJjfHr",
-   "cbUpdated": "2026-11-17T09:27"
-  },
   {
    "address": "108 Colington Drive",
    "town": "Kill Devil Hills",
@@ -360,7 +330,7 @@
   {
    "address": "119 Spindrift Lane",
    "town": "Duck",
-   "price": 4500000,
+   "price": 4400000,
    "status": "Active",
    "kind": "house",
    "beds": 5,
@@ -370,7 +340,7 @@
    "listedAt": "2026-09-24",
    "mls": "134174",
    "url": "https://www.coldwellbanker.com/nc/duck/119-spindrift-ln/lid-P00800000HHoSt9nDbHpkc4vpr7zhnpaqtn5qzsX",
-   "cbUpdated": "2026-11-17T16:46"
+   "cbUpdated": "2026-11-23T21:56"
   },
   {
    "address": "3622 S Virginia Dare Trail",
@@ -536,21 +506,6 @@
    "mls": "134197",
    "url": "https://www.coldwellbanker.com/nc/nags-head/500-w-villa-dunes-dr--k6/lid-P00800000HHyTwIkpHdrfkdo77CGEDCSWvDeqINv",
    "cbUpdated": "2026-11-17T09:27"
-  },
-  {
-   "address": "154 Baycliff Trail",
-   "town": "Kill Devil Hills",
-   "price": 795000,
-   "status": "Pending",
-   "kind": "house",
-   "beds": 4,
-   "baths": 4,
-   "sqft": 2259,
-   "acres": null,
-   "listedAt": "2026-09-28",
-   "mls": "134207",
-   "url": "https://www.coldwellbanker.com/nc/kill-devil-hills/154-baycliff-trl/lid-P00800000HI1xmvJjbMuH1X1FSUjucFMsN5eBmAb",
-   "cbUpdated": "2026-11-20T10:23"
   },
   {
    "address": "115 A Ocean Bay Boulevard",
@@ -760,6 +715,51 @@
    "listedAt": "2026-10-02",
    "mls": "134249",
    "url": "https://www.coldwellbanker.com/nc/kitty-hawk/3836-virginia-dare-trl-n/lid-P00800000HIEG1RtCQRtItAZKuZh4pbybHir1Fny",
+   "cbUpdated": "2026-11-17T16:46"
+  },
+  {
+   "address": "3836 N Virginia Dare Trail",
+   "town": "Kitty Hawk",
+   "price": 494000,
+   "status": "Active",
+   "kind": "condo",
+   "beds": 2,
+   "baths": 3,
+   "sqft": 1210,
+   "acres": null,
+   "listedAt": "2026-10-02",
+   "mls": "134250",
+   "url": "https://www.coldwellbanker.com/nc/kitty-hawk/3836-virginia-dare-trl-n/lid-P00800000HIEG1sQdEdcewyIrK0jKZ54cJw5cjPz",
+   "cbUpdated": "2026-11-17T16:46"
+  },
+  {
+   "address": "31 Sailfish Drive",
+   "town": "Manteo",
+   "price": 1294900,
+   "status": "Pending",
+   "kind": "house",
+   "beds": 4,
+   "baths": 4,
+   "sqft": 2200,
+   "acres": null,
+   "listedAt": "2026-10-02",
+   "mls": "134252",
+   "url": "https://www.coldwellbanker.com/nc/manteo/31-sailfish-dr--lot/lid-P00800000HIEedsnB7CaBZgrRtbK04900UVTF3wc",
+   "cbUpdated": "2026-11-22T01:18"
+  },
+  {
+   "address": "163 Victoria Court",
+   "town": "Duck",
+   "price": 1499900,
+   "status": "Active",
+   "kind": "house",
+   "beds": 6,
+   "baths": 7,
+   "sqft": 3094,
+   "acres": null,
+   "listedAt": "2026-10-02",
+   "mls": "134254",
+   "url": "https://www.coldwellbanker.com/nc/duck/163-victoria-ct/lid-P00800000HIEn2xstssS0tWfnz6uFV7HN7njoBnA",
    "cbUpdated": "2026-11-17T16:46"
   }
  ]
