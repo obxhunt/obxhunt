@@ -1,10 +1,10 @@
 {
  "note": "Daily spot-check sample for the OBX House Hunt site. Public MLS facts only.",
- "checkedAt": "2026-11-24T11:03:26.180Z",
+ "checkedAt": "2026-11-24T14:03:12.596Z",
  "asOf": "2026-11-24",
  "totals": {
-  "listings": 836,
-  "active": 505,
+  "listings": 837,
+  "active": 506,
   "pending": 168,
   "gone": 61
  },
@@ -14,7 +14,7 @@
   "Powells Point": 23,
   "Harbinger": 2,
   "Kitty Hawk": 64,
-  "Southern Shores": 34,
+  "Southern Shores": 35,
   "Kill Devil Hills": 219,
   "Jarvisburg": 37,
   "Nags Head": 134,
