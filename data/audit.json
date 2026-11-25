@@ -1,10 +1,10 @@
 {
  "note": "Daily spot-check sample for the OBX House Hunt site. Public MLS facts only.",
- "checkedAt": "2026-11-25T17:03:19.151Z",
+ "checkedAt": "2026-11-25T20:03:19.327Z",
  "asOf": "2026-11-25",
  "totals": {
   "listings": 843,
-  "active": 512,
+  "active": 511,
   "pending": 165,
   "gone": 60
  },
@@ -19,7 +19,7 @@
   "Jarvisburg": 37,
   "Nags Head": 133,
   "Duck": 45,
-  "Grandy": 52,
+  "Grandy": 51,
   "Wanchese": 5
  },
  "batch": 10,
@@ -27,21 +27,6 @@
  "batchSize": 49,
  "rotationKey": "2026-11-25",
  "sample": [
-  {
-   "address": "2004 N Croatan Highway",
-   "town": "Kill Devil Hills",
-   "price": 359900,
-   "status": "Active",
-   "kind": "house",
-   "beds": 2,
-   "baths": 1,
-   "sqft": 920,
-   "acres": null,
-   "listedAt": "2026-10-15",
-   "mls": "134384",
-   "url": "https://www.coldwellbanker.com/nc/kill-devil-hills/2004-n-croatan-hwy/lid-P00800000HItwRUO2JAYOx31ST25OJ4AMP45Bnwj",
-   "cbUpdated": "2026-11-17T16:46"
-  },
   {
    "address": "109 Beachcomber Court",
    "town": "Duck",
@@ -340,7 +325,7 @@
    "listedAt": "2026-10-20",
    "mls": "134425",
    "url": "https://www.coldwellbanker.com/nc/kill-devil-hills/307-w-arch-st/lid-P00800000HJA7yR8HHR3c8MBWTlVcAMTTnaOoHLJ",
-   "cbUpdated": "2026-11-17T16:46"
+   "cbUpdated": "2026-11-25T17:37"
   },
   {
    "address": "5129 N Virginia Dare Trail",
@@ -415,7 +400,7 @@
    "listedAt": "2026-10-22",
    "mls": "134439",
    "url": "https://www.coldwellbanker.com/nc/kill-devil-hills/1601-n-virginia-dare-trl--305/lid-P00800000HJFf5UDImQFyV9qbvxOLsiqSpOURJkc",
-   "cbUpdated": "2026-11-17T16:46"
+   "cbUpdated": "2026-11-25T17:37"
   },
   {
    "address": "502 Anika Way",
@@ -640,7 +625,7 @@
    "listedAt": "2026-10-26",
    "mls": "134473",
    "url": "https://www.coldwellbanker.com/nc/nags-head/110-e-mccall-ct/lid-P00800000HJSUVwZK5rw2X0Mt6qmCHLu9FNTHxwR",
-   "cbUpdated": "2026-11-24T19:51"
+   "cbUpdated": "2026-11-25T17:37"
   },
   {
    "address": "918 Wingina Avenue",
@@ -761,6 +746,21 @@
    "mls": "134489",
    "url": "https://www.coldwellbanker.com/nc/kill-devil-hills/507-w-walker-st/lid-P00800000HJXV8irtfn3ezPx6ghw8cLUfGoffxXW",
    "cbUpdated": "2026-11-17T09:27"
+  },
+  {
+   "address": "4317 W Barracuda Drive",
+   "town": "Nags Head",
+   "price": 595000,
+   "status": "Active",
+   "kind": "house",
+   "beds": 3,
+   "baths": 2,
+   "sqft": 1549,
+   "acres": null,
+   "listedAt": "2026-10-28",
+   "mls": "134493",
+   "url": "https://www.coldwellbanker.com/nc/nags-head/4317-w-barracuda-dr/lid-P00800000HJZV3ghlqfzd1sXhcv3X9P7ZIHmcrIs",
+   "cbUpdated": "2026-11-17T16:46"
   }
  ]
 }
