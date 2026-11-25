@@ -1,12 +1,12 @@
 {
  "note": "Daily spot-check sample for the OBX House Hunt site. Public MLS facts only.",
- "checkedAt": "2026-11-25T11:03:37.006Z",
+ "checkedAt": "2026-11-25T14:03:07.659Z",
  "asOf": "2026-11-25",
  "totals": {
-  "listings": 841,
-  "active": 509,
+  "listings": 842,
+  "active": 511,
   "pending": 165,
-  "gone": 61
+  "gone": 60
  },
  "onMarketByTown": {
   "Point Harbor": 4,
@@ -14,12 +14,12 @@
   "Powells Point": 23,
   "Harbinger": 2,
   "Kitty Hawk": 63,
-  "Southern Shores": 36,
+  "Southern Shores": 37,
   "Kill Devil Hills": 220,
   "Jarvisburg": 37,
   "Nags Head": 133,
   "Duck": 45,
-  "Grandy": 51,
+  "Grandy": 52,
   "Wanchese": 5
  },
  "batch": 10,
@@ -27,6 +27,21 @@
  "batchSize": 49,
  "rotationKey": "2026-11-25",
  "sample": [
+  {
+   "address": "2004 N Croatan Highway",
+   "town": "Kill Devil Hills",
+   "price": 359900,
+   "status": "Active",
+   "kind": "house",
+   "beds": 2,
+   "baths": 1,
+   "sqft": 920,
+   "acres": null,
+   "listedAt": "2026-10-15",
+   "mls": "134384",
+   "url": "https://www.coldwellbanker.com/nc/kill-devil-hills/2004-n-croatan-hwy/lid-P00800000HItwRUO2JAYOx31ST25OJ4AMP45Bnwj",
+   "cbUpdated": "2026-11-17T16:46"
+  },
   {
    "address": "109 Beachcomber Court",
    "town": "Duck",
@@ -700,7 +715,7 @@
    "listedAt": "2026-10-26",
    "mls": "134481",
    "url": "https://www.coldwellbanker.com/nc/kill-devil-hills/221-sir-chandler-dr--lot/lid-P00800000HJTdKTTZAgOlXoRh8cd3YrosK2WdxRG",
-   "cbUpdated": "2026-11-24T11:49"
+   "cbUpdated": "2026-11-25T11:58"
   },
   {
    "address": "0 Bath Street",
@@ -746,21 +761,6 @@
    "mls": "134489",
    "url": "https://www.coldwellbanker.com/nc/kill-devil-hills/507-w-walker-st/lid-P00800000HJXV8irtfn3ezPx6ghw8cLUfGoffxXW",
    "cbUpdated": "2026-11-17T09:27"
-  },
-  {
-   "address": "4317 W Barracuda Drive",
-   "town": "Nags Head",
-   "price": 595000,
-   "status": "Active",
-   "kind": "house",
-   "beds": 3,
-   "baths": 2,
-   "sqft": 1549,
-   "acres": null,
-   "listedAt": "2026-10-28",
-   "mls": "134493",
-   "url": "https://www.coldwellbanker.com/nc/nags-head/4317-w-barracuda-dr/lid-P00800000HJZV3ghlqfzd1sXhcv3X9P7ZIHmcrIs",
-   "cbUpdated": "2026-11-17T16:46"
   }
  ]
 }
