@@ -1,24 +1,24 @@
 {
  "note": "Daily spot-check sample for the OBX House Hunt site. Public MLS facts only.",
- "checkedAt": "2026-11-25T20:03:19.327Z",
+ "checkedAt": "2026-11-25T23:03:09.661Z",
  "asOf": "2026-11-25",
  "totals": {
-  "listings": 843,
+  "listings": 844,
   "active": 511,
-  "pending": 165,
+  "pending": 163,
   "gone": 60
  },
  "onMarketByTown": {
   "Point Harbor": 4,
-  "Manteo": 55,
+  "Manteo": 54,
   "Powells Point": 23,
   "Harbinger": 2,
-  "Kitty Hawk": 64,
+  "Kitty Hawk": 65,
   "Southern Shores": 37,
   "Kill Devil Hills": 220,
   "Jarvisburg": 37,
   "Nags Head": 133,
-  "Duck": 45,
+  "Duck": 43,
   "Grandy": 51,
   "Wanchese": 5
  },
@@ -27,36 +27,6 @@
  "batchSize": 49,
  "rotationKey": "2026-11-25",
  "sample": [
-  {
-   "address": "109 Beachcomber Court",
-   "town": "Duck",
-   "price": 1190000,
-   "status": "Pending",
-   "kind": "house",
-   "beds": 4,
-   "baths": 4,
-   "sqft": 2436,
-   "acres": null,
-   "listedAt": "2026-10-16",
-   "mls": "134387",
-   "url": "https://www.coldwellbanker.com/nc/duck/109-beachcomber-ct/lid-P00800000HIubsnhqYFrriFA9e8btxzj3zTKjBqQ",
-   "cbUpdated": "2026-11-25T09:23"
-  },
-  {
-   "address": "109 A W Danube Street",
-   "town": "Nags Head",
-   "price": 185000,
-   "status": "Active",
-   "kind": "lot",
-   "beds": null,
-   "baths": null,
-   "sqft": null,
-   "acres": 0.22,
-   "listedAt": "2026-10-16",
-   "mls": "134388",
-   "url": "https://www.coldwellbanker.com/nc/nags-head/109-w-danube-st/lid-P00800000HIv1DK9McUuOiO56t4yxjtWmlTalXo9",
-   "cbUpdated": "2026-11-17T16:46"
-  },
   {
    "address": "303 E Eighth Street",
    "town": "Nags Head",
@@ -346,7 +316,7 @@
    "address": "182 Charleston Drive",
    "town": "Grandy",
    "price": 599000,
-   "status": "Active",
+   "status": "Pending",
    "kind": "house",
    "beds": 4,
    "baths": 3,
@@ -355,7 +325,7 @@
    "listedAt": "2026-10-20",
    "mls": "134427",
    "url": "https://www.coldwellbanker.com/nc/grandy/182-charleston-dr/lid-P00800000HJAFXa8CUopbLWuS7hLjx1edff0tBLm",
-   "cbUpdated": "2026-11-17T16:46"
+   "cbUpdated": "2026-11-25T21:10"
   },
   {
    "address": "3123 Bay Drive",
@@ -761,6 +731,36 @@
    "mls": "134493",
    "url": "https://www.coldwellbanker.com/nc/nags-head/4317-w-barracuda-dr/lid-P00800000HJZV3ghlqfzd1sXhcv3X9P7ZIHmcrIs",
    "cbUpdated": "2026-11-17T16:46"
+  },
+  {
+   "address": "205 Calvin Street",
+   "town": "Kill Devil Hills",
+   "price": 800000,
+   "status": "Active",
+   "kind": "house",
+   "beds": 4,
+   "baths": 5,
+   "sqft": 2252,
+   "acres": null,
+   "listedAt": "2026-10-29",
+   "mls": "134494",
+   "url": "https://www.coldwellbanker.com/nc/kill-devil-hills/205-calvin-st/lid-P00800000HJaIoNGCja5Vcshml3LZni3VfpbzuLA",
+   "cbUpdated": "2026-11-17T16:46"
+  },
+  {
+   "address": "187 Ocean Front Drive",
+   "town": "Duck",
+   "price": 850000,
+   "status": "Pending",
+   "kind": "house",
+   "beds": 4,
+   "baths": 3,
+   "sqft": 1440,
+   "acres": null,
+   "listedAt": "2026-10-29",
+   "mls": "134497",
+   "url": "https://www.coldwellbanker.com/nc/duck/187-ocean-front-dr/lid-P00800000HJbqijQmko8srxUbH7zS0fS092uhDYs",
+   "cbUpdated": "2026-11-17T09:27"
   }
  ]
 }
