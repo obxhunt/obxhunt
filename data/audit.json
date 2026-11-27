@@ -1,11 +1,11 @@
 {
  "note": "Daily spot-check sample for the OBX House Hunt site. Public MLS facts only.",
- "checkedAt": "2026-11-27T17:03:04.848Z",
+ "checkedAt": "2026-11-27T20:03:01.196Z",
  "asOf": "2026-11-27",
  "totals": {
   "listings": 850,
-  "active": 510,
-  "pending": 163,
+  "active": 507,
+  "pending": 165,
   "gone": 64
  },
  "onMarketByTown": {
@@ -18,7 +18,7 @@
   "Kill Devil Hills": 222,
   "Jarvisburg": 37,
   "Nags Head": 132,
-  "Duck": 43,
+  "Duck": 42,
   "Grandy": 51,
   "Wanchese": 5
  },
@@ -27,21 +27,6 @@
  "batchSize": 49,
  "rotationKey": "2026-11-27",
  "sample": [
-  {
-   "address": "4724 S Roanoke Way",
-   "town": "Nags Head",
-   "price": 1195000,
-   "status": "Active",
-   "kind": "house",
-   "beds": 4,
-   "baths": 4,
-   "sqft": 2860,
-   "acres": null,
-   "listedAt": "2026-11-17",
-   "mls": "134659",
-   "url": "https://www.coldwellbanker.com/nc/nags-head/4724-s-roanoke-way/lid-P00800000HKbmOvd0utC25t9dIsCU7t8SyxaMyKM",
-   "cbUpdated": "2026-11-20T18:53"
-  },
   {
    "address": "208 W Kitty Hawk Road 208",
    "town": "Kitty Hawk",
@@ -550,7 +535,7 @@
    "listedAt": "2026-11-24",
    "mls": "134736",
    "url": "https://www.coldwellbanker.com/nc/nags-head/9309-s-old-oregon-inlet-rd/lid-P00800000HKydRdA6ICtCI4l3Napf4OOOd4UxpXm",
-   "cbUpdated": "2026-11-25T17:37"
+   "cbUpdated": "2026-11-27T18:57"
   },
   {
    "address": "102 Sunset Drive",
@@ -640,7 +625,7 @@
    "listedAt": "2026-11-27",
    "mls": "134750",
    "url": "https://www.coldwellbanker.com/nc/kill-devil-hills/2004-harbour-view-dr/lid-P00800000HL7MXVGx7DtHDlQPQX7LCWJUS8QDl2O",
-   "cbUpdated": "2026-11-27T16:28"
+   "cbUpdated": "2026-11-27T16:54"
   },
   {
    "address": "220 Bickett Street",
@@ -760,6 +745,21 @@
    "listedAt": "2026-06-11",
    "mls": "10639292",
    "url": "https://www.coldwellbanker.com/nc/jarvisburg/109-indian-kettle-rd/lid-P00800000HCNs6xDWIZHS5Od7zxTzLocMVJ0Oi4p",
+   "cbUpdated": "2026-11-27T10:19"
+  },
+  {
+   "address": "113 Indian Kettle Road",
+   "town": "Jarvisburg",
+   "price": 159900,
+   "status": "Active",
+   "kind": "lot",
+   "beds": null,
+   "baths": null,
+   "sqft": null,
+   "acres": 0.92,
+   "listedAt": "2026-06-11",
+   "mls": "10639309",
+   "url": "https://www.coldwellbanker.com/nc/jarvisburg/113-indian-kettle-rd/lid-P00800000HCOHisvHxAjmupPLFy02HTgULhcjVfa",
    "cbUpdated": "2026-11-27T10:19"
   }
  ]
