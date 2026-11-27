@@ -1,6 +1,6 @@
 {
  "note": "Daily spot-check sample for the OBX House Hunt site. Public MLS facts only.",
- "checkedAt": "2026-11-27T11:03:40.266Z",
+ "checkedAt": "2026-11-27T14:03:11.077Z",
  "asOf": "2026-11-27",
  "totals": {
   "listings": 849,
@@ -520,7 +520,7 @@
    "listedAt": "2026-11-24",
    "mls": "134729",
    "url": "https://www.coldwellbanker.com/nc/southern-shores/35-pintail-trl/lid-P00800000HKxUgWZJguHJlgYQdJGpedSyckMPQjM",
-   "cbUpdated": "2026-11-26T11:48"
+   "cbUpdated": "2026-11-27T11:41"
   },
   {
    "address": "143 Lee Court",
@@ -610,7 +610,7 @@
    "listedAt": "2026-11-25",
    "mls": "134747",
    "url": "https://www.coldwellbanker.com/nc/kitty-hawk/4121-lindbergh-ave/lid-P00800000HL1hyIfOxHCPJE1vhCJxLUzrZuNw9tZ",
-   "cbUpdated": "2026-11-26T16:49"
+   "cbUpdated": "2026-11-27T11:42"
   },
   {
    "address": "304 Sextant Court 304",
